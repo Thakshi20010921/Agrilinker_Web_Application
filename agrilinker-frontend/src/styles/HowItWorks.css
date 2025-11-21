@@ -1,0 +1,47 @@
+.how-it-works {
+  background: #fff;
+  padding: 2.5rem 8% 2rem 8%;
+  border-radius: 12px;
+  margin: 2rem auto;
+  max-width: 1100px;
+  box-shadow: 0 2px 16px rgba(30,60,20,0.065);
+}
+.how-it-works h3 {
+  text-align: center;
+  font-size: 1.7rem;
+  color: #178a3f;
+  margin-bottom: 1.6rem;
+}
+.how-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+.step-list {
+  flex: 1;
+  min-width: 240px;
+  background: #f6f8fa;
+  padding: 1.7rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 8px 0 rgba(30,60,20,0.06);
+}
+.step-list h4 {
+  color: #198440;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.step-list ol {
+  padding-left: 1.3rem;
+}
+.step-list li {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+@media (max-width: 700px) {
+  .how-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
