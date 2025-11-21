@@ -2,25 +2,30 @@ import React from "react";
 
 function Header() {
   return (
-    <header className="bg-green-800 flex items-center justify-between px-8 py-4">
-      <div className="text-white text-2xl font-bold tracking-wide">AgriLinker</div>
+    <header className="bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
+      <div className="flex items-center space-x-3">
+        <span className="rounded-full bg-white p-2 shadow-md">
+          <span className="text-green-700 text-2xl font-extrabold">A</span>
+        </span>
+        <span className="text-white text-3xl font-extrabold tracking-wide drop-shadow-lg">AgriLinker</span>
+      </div>
       <nav className="flex space-x-8">
         <a
           href="#home"
-          className="text-white text-lg font-medium hover:text-green-300 transition"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
         >
           Home
         </a>
         <a
           href="#marketplace"
-          className="text-white text-lg font-medium hover:text-green-300 transition"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
         >
           Marketplace
         </a>
       </nav>
       <div className="flex items-center space-x-4">
-        <span className="text-2xl text-white hover:text-green-300 transition cursor-pointer">🛒</span>
-        <span className="text-2xl text-white hover:text-green-300 transition cursor-pointer">👤</span>
+        <span className="text-3xl text-white hover:text-green-300 hover:scale-110 transition cursor-pointer">🛒</span>
+        <span className="text-3xl text-white hover:text-green-300 hover:scale-110 transition cursor-pointer">👤</span>
       </div>
     </header>
   );
