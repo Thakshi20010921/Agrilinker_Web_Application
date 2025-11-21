@@ -1,5 +1,4 @@
 import React from "react";
-import "../styles/Benefits.css";
 
 const benefits = [
   {
@@ -36,12 +35,15 @@ const benefits = [
 
 function Benefits() {
   return (
-    <section className="benefits">
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
       {benefits.map((benefit, i) => (
-        <div className="benefit-card" key={i}>
-          <div className="benefit-icon">{benefit.icon}</div>
-          <h4>{benefit.title}</h4>
-          <p>{benefit.description}</p>
+        <div
+          key={i}
+          className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition duration-200"
+        >
+          <div className="text-4xl mb-4">{benefit.icon}</div>
+          <h4 className="text-xl font-semibold text-green-700 mb-2">{benefit.title}</h4>
+          <p className="text-gray-600 text-sm">{benefit.description}</p>
         </div>
       ))}
     </section>
