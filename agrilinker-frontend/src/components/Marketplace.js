@@ -26,9 +26,10 @@ const Marketplace = () => {
   }, []);
 
   const filtered = products
-    .filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) &&
-      (category === "All" || p.category === category)
+    .filter(
+      (p) =>
+        p.name.toLowerCase().includes(search.toLowerCase()) &&
+        (category === "All" || p.category === category)
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -107,68 +108,74 @@ const Marketplace = () => {
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filtered.map((product) => (
-          <div
-            key={product.id}
-            className="border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden bg-white"
-          >
-            <div className="relative">
-              <img
-                src={product.img}
-                alt={product.name}
-                className="h-48 w-full object-cover"
-              />
+        {filtered.map((product) => {
+          const imageUrl = product.product_image
+            ? `http://localhost:8081${product.product_image}`
+            : "/placeholder.jpg"; // optional fallback
 
-              {!product.inStock && (
-                <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                  Out of Stock
+          return (
+            <div
+              key={product.id}
+              className="border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden bg-white"
+            >
+              <div className="relative">
+                <img
+                  src={imageUrl}
+                  alt={product.name}
+                  className="h-48 w-full object-cover"
+                />
+
+                {!product.inStock && (
+                  <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                    Out of Stock
+                  </div>
+                )}
+
+                <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                  {product.category}
                 </div>
-              )}
-
-              <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                {product.category}
-              </div>
-            </div>
-
-            <div className="p-4">
-              <div className="flex justify-between items-start mb-2">
-                <h2 className="font-semibold text-lg text-gray-800">
-                  {product.name}
-                </h2>
-                <span className="text-green-600 font-bold text-lg">
-                  ${product.price}
-                </span>
               </div>
 
-              <p className="text-sm text-gray-600 mb-2">{product.farmer}</p>
-              <p className="text-sm text-gray-500 mb-3">{product.location}</p>
-
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <span className="text-yellow-500">⭐</span>
-                  <span className="text-sm font-medium ml-1">
-                    {product.rating}
-                  </span>
-                  <span className="text-sm text-gray-500 ml-1">
-                    ({product.reviews})
+              <div className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h2 className="font-semibold text-lg text-gray-800">
+                    {product.name}
+                  </h2>
+                  <span className="text-green-600 font-bold text-lg">
+                    ${product.price}
                   </span>
                 </div>
-                <span className="text-sm text-gray-500">/ kg</span>
-              </div>
 
-              <button
-                className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-                  product.inStock
-                    ? "bg-green-600 hover:bg-green-700 text-white"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-                disabled={!product.inStock}
-              >
-                {product.inStock ? "Add to Cart" : "Out of Stock"}
-              </button>
+                <p className="text-sm text-gray-600 mb-2">{product.farmer}</p>
+                <p className="text-sm text-gray-500 mb-3">{product.location}</p>
+
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center">
+                    <span className="text-yellow-500">⭐</span>
+                    <span className="text-sm font-medium ml-1">
+                      {product.rating}
+                    </span>
+                    <span className="text-sm text-gray-500 ml-1">
+                      ({product.reviews})
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-500">/ kg</span>
+                </div>
+
+                <button
+                  className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+                    product.inStock
+                      ? "bg-green-600 hover:bg-green-700 text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                  disabled={!product.inStock}
+                >
+                  {product.inStock ? "Add to Cart" : "Out of Stock"}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (
