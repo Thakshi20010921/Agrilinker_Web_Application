@@ -15,9 +15,16 @@ import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 
 import "./styles/App.css";
 
+// ✅ NEW — import Toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   return (
     <>
+      {/* ✅ Toast popup container */}
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <Header />
 
       <Routes>
