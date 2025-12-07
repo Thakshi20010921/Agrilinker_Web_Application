@@ -4,10 +4,14 @@ import com.agrilinker.backend.model.Fertilizer;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface FertilizerRepository extends MongoRepository<Fertilizer, String> {
-    List<Fertilizer> findByCategory(String category);
-    List<Fertilizer> findBySupplierId(String supplierId);
+
+    // ❌ REMOVE findByCategory (category no longer exists)
+
+    // Find fertilizers by supplier
+    java.util.List<Fertilizer> findBySupplierId(String supplierId);
+
+    // ✅ Needed for generating codes like CHEM-2025-0001
+    long countByFertilizerCodeStartingWith(String prefix);
 }
