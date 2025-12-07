@@ -1,19 +1,27 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import HowItWorks from "./components/HowItWorks";
 import Benefits from "./components/Benefits";
 import Footer from "./components/Footer";
 import Marketplace from "./components/Marketplace";
+
+// Fertilizer Pages
+import FertilizerList from "./components/Fertilizers/FertilizerList";
+import AddFertilizer from "./components/Fertilizers/AddFertilizer";
+import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
+
 import "./styles/App.css";
 
 function App() {
   return (
     <>
       <Header />
+
       <Routes>
-        {/* Home Page */}
+        {/* ------------ HOME PAGE ------------ */}
         <Route
           path="/"
           element={
@@ -24,9 +32,16 @@ function App() {
             </>
           }
         />
-        {/* Marketplace Page */}
+
+        {/* ------------ MARKETPLACE ------------ */}
         <Route path="/marketplace" element={<Marketplace />} />
+
+        {/* ------------ FERTILIZER PAGES ------------ */}
+        <Route path="/fertilizers" element={<FertilizerList />} />
+        <Route path="/fertilizers/add" element={<AddFertilizer />} />
+        <Route path="/fertilizers/update/:id" element={<UpdateFertilizer />} />
       </Routes>
+
       <Footer />
     </>
   );

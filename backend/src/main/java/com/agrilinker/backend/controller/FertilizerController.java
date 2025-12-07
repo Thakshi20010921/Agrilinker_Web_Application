@@ -13,6 +13,8 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class FertilizerController {
 
+
+    
     @Autowired
     private FertilizerService fertilizerService;
 
