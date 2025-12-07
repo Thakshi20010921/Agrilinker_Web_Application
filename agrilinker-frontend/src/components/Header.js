@@ -1,7 +1,11 @@
-import React from "react";
-import { Link } from "react-router-dom"; // Import Link
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { CartContext } from "../context/CartContext"; // import your CartContext
+import { FaShoppingCart } from "react-icons/fa";
 
 function Header() {
+  const { cart } = useContext(CartContext); // access cart state
+
   return (
     <header className="bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
       
@@ -31,7 +35,6 @@ function Header() {
           Marketplace
         </Link>
 
-        {/* ⭐ NEW Fertilizers Button */}
         <Link
           to="/fertilizers"
           className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
@@ -42,7 +45,19 @@ function Header() {
 
       {/* Cart + Profile Icons */}
       <div className="flex items-center space-x-4">
-        <span className="text-3xl text-white hover:text-green-300 hover:scale-110 transition cursor-pointer">🛒</span>
+        {/* Cart Icon with live count */}
+        <Link to="/cart" className="relative text-white text-3xl hover:text-green-300 hover:scale-110 transition">
+          <FaShoppingCart />
+          {cart.length > 0 && (
+            <span
+              className="absolute -top-2 -right-3 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center"
+            >
+              {cart.length}
+            </span>
+          )}
+        </Link>
+
+        {/* Profile Icon */}
         <span className="text-3xl text-white hover:text-green-300 hover:scale-110 transition cursor-pointer">👤</span>
       </div>
 

@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { CartContext } from "../context/CartContext";
+import { toast } from "react-toastify";
 
 const Marketplace = () => {
   const [products, setProducts] = useState([]);
@@ -9,11 +11,21 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const { addToCart } = useContext(CartContext);
+
   useEffect(() => {
     const loadProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8081/api/products");
-        setProducts(response.data);
+        
+        console.log("Backend Response:", response.data); 
+        // Adjust stock depending on your backend: 1/0
+        const productsWithStock = response.data.map((p) => ({
+          ...p,
+          inStock: p.quantity > 0 && p.status === "available",
+
+        }));
+        setProducts(productsWithStock);
         setLoading(false);
       } catch (err) {
         console.error("Error loading products:", err);
@@ -44,6 +56,11 @@ const Marketplace = () => {
       }
     });
 
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
+  };
+
   if (loading) {
     return (
       <div className="p-6 max-w-7xl mx-auto flex justify-center items-center h-64">
@@ -62,6 +79,7 @@ const Marketplace = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
         <div>
           <h1 className="text-4xl font-bold text-green-900">Fresh Marketplace</h1>
@@ -111,7 +129,7 @@ const Marketplace = () => {
         {filtered.map((product) => {
           const imageUrl = product.product_image
             ? `http://localhost:8081${product.product_image}`
-            : "/placeholder.jpg"; // optional fallback
+            : "/placeholder.jpg";
 
           return (
             <div
@@ -169,6 +187,7 @@ const Marketplace = () => {
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
                   disabled={!product.inStock}
+                  onClick={() => handleAddToCart(product)}
                 >
                   {product.inStock ? "Add to Cart" : "Out of Stock"}
                 </button>

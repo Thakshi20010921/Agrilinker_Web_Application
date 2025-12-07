@@ -15,14 +15,17 @@ import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 
 import "./styles/App.css";
 
-// ✅ NEW — import Toastify
+// ✅ Toastify
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// ✅ Cart Context
+import { CartProvider } from "./context/CartContext";
+
 function App() {
   return (
-    <>
-      {/* ✅ Toast popup container */}
+    <CartProvider>
+      {/* Toast popup container */}
       <ToastContainer position="top-right" autoClose={3000} />
 
       <Header />
@@ -50,7 +53,7 @@ function App() {
       </Routes>
 
       <Footer />
-    </>
+    </CartProvider>
   );
 }
 
