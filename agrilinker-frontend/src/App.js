@@ -21,6 +21,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 // ✅ Cart Context
 import { CartProvider } from "./context/CartContext";
+import CartPage from "./components/CartPage";
+
+import CheckoutPage from "./components/CheckoutPage";
 
 function App() {
   return (
@@ -50,6 +53,8 @@ function App() {
         <Route path="/fertilizers" element={<FertilizerList />} />
         <Route path="/fertilizers/add" element={<AddFertilizer />} />
         <Route path="/fertilizers/update/:id" element={<UpdateFertilizer />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
       </Routes>
 
       <Footer />
