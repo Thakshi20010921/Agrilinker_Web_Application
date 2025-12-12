@@ -5,7 +5,7 @@ function HeroSection() {
   return (
     <section className="relative bg-gradient-to-br from-green-200 via-white to-green-300 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        {/* Decorative overlay shapes or a softly blurred farm background image for extra style */}
+        
         <img
           src="/csa-produce-distribution.jpg"
           alt=""

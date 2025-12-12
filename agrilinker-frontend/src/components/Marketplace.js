@@ -79,7 +79,7 @@ const Marketplace = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
+      
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
         <div>
           <h1 className="text-4xl font-bold text-green-900">Fresh Marketplace</h1>
@@ -90,7 +90,7 @@ const Marketplace = () => {
         </div>
       </div>
 
-      {/* Filters */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
         <input
           type="text"
@@ -124,7 +124,7 @@ const Marketplace = () => {
         </select>
       </div>
 
-      {/* Products Grid */}
+     
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filtered.map((product) => {
           const imageUrl = product.product_image

@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { CartContext } from "../context/CartContext"; // import your CartContext
+import { CartContext } from "../context/CartContext"; 
 import { FaShoppingCart } from "react-icons/fa";
 
 function Header() {
-  const { cart } = useContext(CartContext); // access cart state
+  const { cart } = useContext(CartContext); 
 
   return (
     <header className="bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
       
-      {/* Logo + Title */}
+     
       <div className="flex items-center space-x-3">
         <span className="rounded-full bg-white p-2 shadow-md">
           <span className="text-green-700 text-2xl font-extrabold">A</span>
@@ -19,7 +19,7 @@ function Header() {
         </Link>
       </div>
 
-      {/* Navigation */}
+      
       <nav className="flex space-x-8">
         <Link
           to="/"
@@ -43,9 +43,9 @@ function Header() {
         </Link>
       </nav>
 
-      {/* Cart + Profile Icons */}
+    
       <div className="flex items-center space-x-4">
-        {/* Cart Icon with live count */}
+       
         <Link to="/cart" className="relative text-white text-3xl hover:text-green-300 hover:scale-110 transition">
           <FaShoppingCart />
           {cart.length > 0 && (
@@ -57,7 +57,7 @@ function Header() {
           )}
         </Link>
 
-        {/* Profile Icon */}
+       
         <span className="text-3xl text-white hover:text-green-300 hover:scale-110 transition cursor-pointer">👤</span>
       </div>
 
