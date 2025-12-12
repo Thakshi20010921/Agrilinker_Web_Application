@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/buyer/**").hasRole("BUYER")
                         .requestMatchers("/api/furtilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
                         .anyRequest().authenticated())
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
