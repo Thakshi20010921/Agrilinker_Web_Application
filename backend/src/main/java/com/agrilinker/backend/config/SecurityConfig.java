@@ -38,18 +38,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/error").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/farmer/**").hasRole("FARMER")
-                        .requestMatchers("/api/buyer/**").hasRole("BUYER")
-                        .requestMatchers("/api/furtilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
+
+                        // PUBLIC ENDPOINTS (NO AUTH REQUIRED)
+                        .requestMatchers("/api/auth/", "/error").permitAll()
+                        .requestMatchers("/api/orders/").permitAll()
+                        .requestMatchers("/api/products/").permitAll()
+                        .requestMatchers("/api/fertilizers/").permitAll()
+                        .requestMatchers("/uploads/").permitAll()
+
+                        // PROTECTED ROLE-BASED API
+                        .requestMatchers("/api/admin/").hasRole("ADMIN")
+                        .requestMatchers("/api/farmer/").hasRole("FARMER")
+                        .requestMatchers("/api/buyer/").hasRole("BUYER")
+                        .requestMatchers("/api/furtilizersupplier/").hasRole("FERTILIZERSUPPLIER")
+
+                        // ANYTHING ELSE NEEDS AUTHENTICATION
                         .anyRequest().authenticated())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -58,24 +68,24 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/", config);
         return source;
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(passwordEncoder());
-        authProvider.setUserDetailsService(userDetailsService);
-        return authProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder());
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
     }
 
     @Bean
