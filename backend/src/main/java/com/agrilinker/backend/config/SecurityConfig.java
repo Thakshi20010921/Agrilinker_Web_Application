@@ -44,18 +44,16 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
 
-                        // PUBLIC ENDPOINTS (NO AUTH REQUIRED)
-                        .requestMatchers("/api/auth/", "/error").permitAll()
-                        .requestMatchers("/api/orders/").permitAll()
-                        .requestMatchers("/api/products/").permitAll()
-                        .requestMatchers("/api/fertilizers/").permitAll()
-                        .requestMatchers("/uploads/").permitAll()
+                        .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/orders/**").permitAll()
+                        .requestMatchers("/api/products/**").permitAll()
+                        .requestMatchers("/api/fertilizers/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
 
-                        // PROTECTED ROLE-BASED API
-                        .requestMatchers("/api/admin/").hasRole("ADMIN")
-                        .requestMatchers("/api/farmer/").hasRole("FARMER")
-                        .requestMatchers("/api/buyer/").hasRole("BUYER")
-                        .requestMatchers("/api/furtilizersupplier/").hasRole("FERTILIZERSUPPLIER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/farmer/**").hasRole("FARMER")
+                        .requestMatchers("/api/buyer/**").hasRole("BUYER")
+                        .requestMatchers("/api/furtilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
 
                         // ANYTHING ELSE NEEDS AUTHENTICATION
                         .anyRequest().authenticated())
@@ -69,15 +67,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/", config);
+        source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 
