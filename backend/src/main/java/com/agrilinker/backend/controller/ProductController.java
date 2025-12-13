@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*") // allow frontend to access
+
 public class ProductController {
 
     @Autowired
