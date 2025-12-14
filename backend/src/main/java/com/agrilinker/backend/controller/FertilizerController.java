@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/fertilizers")
-@CrossOrigin(origins = "*")
+
 public class FertilizerController {
 
     @Autowired
@@ -21,18 +21,17 @@ public class FertilizerController {
     @PostMapping
     public ResponseEntity<Fertilizer> createFertilizer(@Valid @RequestBody FertilizerRequest request) {
         Fertilizer fertilizer = new Fertilizer(
-            request.getName(),
-            request.getDescription(),
-            request.getPrice(),
-            request.getUnit(),
-            null, // supplierId
-            request.getType(),
-            request.getCategory(),
-            null, // fertilizerCode will be generated
-            request.getImageUrl(),
-            request.getStock(),
-            request.getQuantityInside()
-        );
+                request.getName(),
+                request.getDescription(),
+                request.getPrice(),
+                request.getUnit(),
+                null, // supplierId
+                request.getType(),
+                request.getCategory(),
+                null, // fertilizerCode will be generated
+                request.getImageUrl(),
+                request.getStock(),
+                request.getQuantityInside());
         return ResponseEntity.ok(fertilizerService.createFertilizer(fertilizer));
     }
 
@@ -48,20 +47,20 @@ public class FertilizerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Fertilizer> updateFertilizer(@PathVariable String id, @Valid @RequestBody FertilizerRequest request) {
+    public ResponseEntity<Fertilizer> updateFertilizer(@PathVariable String id,
+            @Valid @RequestBody FertilizerRequest request) {
         Fertilizer updatedFertilizer = new Fertilizer(
-            request.getName(),
-            request.getDescription(),
-            request.getPrice(),
-            request.getUnit(),
-            null,
-            request.getType(),
-            request.getCategory(),
-            null,
-            request.getImageUrl(),
-            request.getStock(),
-            request.getQuantityInside()
-        );
+                request.getName(),
+                request.getDescription(),
+                request.getPrice(),
+                request.getUnit(),
+                null,
+                request.getType(),
+                request.getCategory(),
+                null,
+                request.getImageUrl(),
+                request.getStock(),
+                request.getQuantityInside());
         Fertilizer updated = fertilizerService.updateFertilizer(id, updatedFertilizer);
         return (updated != null) ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
