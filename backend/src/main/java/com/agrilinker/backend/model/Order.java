@@ -11,17 +11,15 @@ public class Order {
     @Id
     private String id;
 
-    private Customer customer; // buyer information
-    private List<OrderItem> items; // cart items list
-    private double totalAmount; // final total price
-
+    private Customer customer;
+    private List<OrderItem> items;
+    private double totalAmount;
     private String paymentMethod;
     private Date orderDate = new Date();
 
     public Order() {
     }
 
-    // Getters & Setters
     public String getId() {
         return id;
     }

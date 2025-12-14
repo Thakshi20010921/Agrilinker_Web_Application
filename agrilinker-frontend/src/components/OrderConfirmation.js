@@ -1,4 +1,4 @@
-// Create OrderConfirmation.js component
+
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
