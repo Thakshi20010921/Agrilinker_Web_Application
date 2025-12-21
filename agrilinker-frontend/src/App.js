@@ -30,8 +30,6 @@ import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 import MyProducts from "./components/farmer/MyProducts";
 
-
-
 function App() {
   return (
     <CartProvider>
@@ -61,11 +59,12 @@ function App() {
         <Route path="/fertilizers/add" element={<AddFertilizer />} />
         <Route path="/fertilizers/update/:id" element={<UpdateFertilizer />} />
 
-      {/*----------- FARMER */}
-      <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
-      <Route path="/farmer/add-product" element={<AddProduct />} />
-      <Route path="/farmer/my-products" element={<MyProducts />} />
-  </Routes>
+        {/* ------------ FARMER PAGES ------------ */}
+        <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+        <Route path="/farmer/add-product" element={<AddProduct />} />
+        <Route path="/farmer/my-products" element={<MyProducts />} />
+
+        {/* ------------ CART & CHECKOUT ------------ */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
       </Routes>
