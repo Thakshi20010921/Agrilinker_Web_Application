@@ -21,6 +21,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 // ✅ Cart Context
 import { CartProvider } from "./context/CartContext";
+import CartPage from "./components/CartPage";
+
+import CheckoutPage from "./components/CheckoutPage";
 
 //  Farmer Pages
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
@@ -63,6 +66,9 @@ function App() {
       <Route path="/farmer/add-product" element={<AddProduct />} />
       <Route path="/farmer/my-products" element={<MyProducts />} />
   </Routes>
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+      </Routes>
 
       <Footer />
     </CartProvider>
