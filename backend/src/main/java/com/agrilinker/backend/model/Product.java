@@ -41,16 +41,13 @@ public class Product {
         this.dateAdded = LocalDateTime.now();
     }
 
-    // delete veddi massage ekk ena vidihata
-    // Getters and Setters // change to spring to object type and dont save try it
-    // letter and see compass
     public String getid() {
         return id;
     }
 
     public void setProduct_id(String id) {
         this.id = id;
-    } // change
+    }
 
     public String getName() {
         return name;

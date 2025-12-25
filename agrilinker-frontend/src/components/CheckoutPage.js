@@ -23,7 +23,7 @@ const CheckoutPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Prepare order data
+    
     const orderData = {
       customer: {
         name: form.name,
@@ -38,11 +38,11 @@ const CheckoutPage = () => {
         price: item.price
       })),
       totalAmount: totalAmount,
-      paymentMethod: "cash", // Changed from "dummy" to something more common
+      paymentMethod: "cash", 
       orderDate: new Date().toISOString()
     };
 
-    console.log("Sending order data:", orderData); // Debug log
+    console.log("Sending order data:", orderData); 
 
     try {
       const response = await fetch("http://localhost:8081/api/orders", {
@@ -53,7 +53,7 @@ const CheckoutPage = () => {
         body: JSON.stringify(orderData)
       });
 
-      console.log("Response status:", response.status); // Debug log
+      console.log("Response status:", response.status); 
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -64,12 +64,10 @@ const CheckoutPage = () => {
       const data = await response.json();
       console.log("Order placed successfully:", data);
       
-      // Clear cart after successful order
-      // If you have a clearCart function in CartContext, you can add it here
-      
+     
       alert(`Order placed successfully! 🎉\nOrder ID: ${data.id || data.orderId || 'N/A'}`);
       
-      // Reset form
+      
       setForm({
         name: "",
         address: "",
@@ -80,7 +78,6 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error("Error placing order:", error);
       
-      // More specific error messages
       if (error.message.includes("Failed to fetch")) {
         alert("Cannot connect to server. Please check if the backend is running on http://localhost:8081");
       } else if (error.message.includes("HTTP error")) {
@@ -93,7 +90,7 @@ const CheckoutPage = () => {
     }
   };
 
-  // Alternative API endpoint test
+  
   const testConnection = async () => {
     try {
       console.log("Testing connection to http://localhost:8081/api/orders");
@@ -122,7 +119,7 @@ const CheckoutPage = () => {
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-green-900">Checkout</h1>
 
-      {/* Debug button */}
+      
       <button
         onClick={testConnection}
         className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -130,7 +127,7 @@ const CheckoutPage = () => {
         Test API Connection
       </button>
 
-      {/* Order Summary */}
+     
       <div className="mb-6 p-4 rounded-xl bg-white shadow">
         <h2 className="text-xl font-semibold mb-3">Order Summary</h2>
 
@@ -155,7 +152,7 @@ const CheckoutPage = () => {
         )}
       </div>
 
-      {/* Checkout Form */}
+      
       <form onSubmit={handleSubmit} className="bg-white shadow p-6 rounded-xl">
         <h2 className="text-xl font-semibold mb-4">Shipping Details</h2>
 
@@ -226,7 +223,7 @@ const CheckoutPage = () => {
         )}
       </form>
 
-      {/* Debug info */}
+     
       <div className="mt-4 p-4 bg-gray-100 rounded text-sm">
         <h3 className="font-semibold mb-2">Debug Info:</h3>
         <p>Cart items: {cart.length}</p>
