@@ -9,83 +9,126 @@ const USER_ID = "USER123"; // later from JWT
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  // ✅ STEP 1: Load cart from backend
+  // ✅ Load cart from backend first, then fallback to localStorage
   useEffect(() => {
-    axios.get(`${API_URL}/${USER_ID}`)
-      .then(res => setCart(res.data))
-      .catch(err => console.error(err));
+    axios
+      .get(`${API_URL}/${USER_ID}`)
+      .then((res) => {
+        setCart(res.data);
+        localStorage.setItem("cart", JSON.stringify(res.data)); // save to localStorage
+      })
+      .catch((err) => {
+        console.error(err);
+        // fallback: load from localStorage
+        const savedCart = localStorage.getItem("cart");
+        if (savedCart) setCart(JSON.parse(savedCart));
+      });
   }, []);
 
-  // ✅ ADD TO CART (Optimistic)
+  // ✅ Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
   const addToCart = (item) => {
-    setCart(prev => {
-      const exists = prev.find(p => p.productId === item.id);
+    setCart((prev) => {
+      const exists = prev.find((p) => p.productId === item._id);
       if (exists) {
-        return prev.map(p =>
-          p.productId === item.id
-            ? { ...p, quantity: p.quantity + 1 }
+        const updated = prev.map((p) =>
+          p.productId === item._id
+            ? { ...p, quantity: (p.quantity || 1) + 1 }
             : p
         );
+
+        // update backend
+        axios.put(`${API_URL}/${USER_ID}/${item._id}`, {
+          quantity: exists.quantity + 1,
+        }).catch(console.error);
+
+        return updated;
       }
-      return [
-        ...prev,
-        {
-          productId: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: 1,
-          unit: item.unit,
-          image: item.image
+
+      const newItem = {
+        productId: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: 1,
+        unit: item.unit,
+        image: item.image,
+      };
+
+      // add to backend
+      axios.post(`${API_URL}/${USER_ID}`, newItem).catch(console.error);
+
+      return [...prev, newItem];
+    });
+  };
+
+  const increaseQty = (productId) => {
+    setCart((prev) => {
+      const updated = prev.map((item) =>
+        item.productId === productId
+          ? { ...item, quantity: (item.quantity || 1) + 1 }
+          : item
+      );
+
+      const item = prev.find((i) => i.productId === productId);
+      if (item) {
+        axios.put(`${API_URL}/${USER_ID}/${productId}`, {
+          quantity: item.quantity + 1,
+        }).catch(console.error);
+      }
+
+      return updated;
+    });
+  };
+
+  const decreaseQty = (productId) => {
+    setCart((prev) => {
+      const updated = prev
+        .map((item) =>
+          item.productId === productId
+            ? { ...item, quantity: (item.quantity || 1) - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0);
+
+      const item = prev.find((i) => i.productId === productId);
+      if (item) {
+        if (item.quantity - 1 > 0) {
+          axios.put(`${API_URL}/${USER_ID}/${productId}`, {
+            quantity: item.quantity - 1,
+          }).catch(console.error);
+        } else {
+          axios.delete(`${API_URL}/${USER_ID}/${productId}`).catch(console.error);
         }
-      ];
-    });
+      }
 
-    axios.post(`${API_URL}/${USER_ID}`, {
-      productId: item.id,
-      name: item.name,
-      price: item.price,
-      unit: item.unit,
-      image: item.image
+      return updated;
     });
   };
 
-  // ✅ INCREASE
-  const increaseQty = (cartItemId, qty) => {
-    setCart(prev =>
-      prev.map(item =>
-        item.id === cartItemId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
-
-    axios.put(`${API_URL}/${cartItemId}?qty=${qty + 1}`);
+  const removeFromCart = (productId) => {
+    setCart((prev) => prev.filter((item) => item.productId !== productId));
+    axios.delete(`${API_URL}/${USER_ID}/${productId}`).catch(console.error);
   };
 
-  // ✅ DECREASE
-  const decreaseQty = (cartItemId, qty) => {
-    if (qty <= 1) return removeFromCart(cartItemId);
-
-    setCart(prev =>
-      prev.map(item =>
-        item.id === cartItemId
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-
-    axios.put(`${API_URL}/${cartItemId}?qty=${qty - 1}`);
-  };
-
-  // ✅ REMOVE
-  const removeFromCart = (cartItemId) => {
-    setCart(prev => prev.filter(item => item.id !== cartItemId));
-    axios.delete(`${API_URL}/${cartItemId}`);
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+    axios.delete(`${API_URL}/${USER_ID}/all`).catch(console.error); // delete all from backend
   };
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, increaseQty, decreaseQty, removeFromCart }}
+      value={{
+        cart,
+        addToCart,
+        increaseQty,
+        decreaseQty,
+        removeFromCart,
+        clearCart,
+      }}
     >
       {children}
     </CartContext.Provider>

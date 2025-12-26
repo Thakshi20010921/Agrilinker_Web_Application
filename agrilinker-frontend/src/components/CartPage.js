@@ -24,44 +24,42 @@ const CartPage = () => {
       ) : (
         <div className="space-y-4">
           {cart.map((item) => (
-            <div
-              key={item.id}
-              className="border p-4 rounded-xl flex justify-between items-center bg-white shadow-sm"
-            >
-              
-              <div>
-                <h2 className="text-lg font-semibold">{item.name}</h2>
-                <p className="text-green-600 font-bold">${item.price}</p>
-              </div>
+  <div
+    key={item.productId}
+    className="border p-4 rounded-xl flex justify-between items-center bg-white shadow-sm"
+  >
+    <div>
+      <h2 className="text-lg font-semibold">{item.name}</h2>
+      <p className="text-green-600 font-bold">Rs. {item.price}</p>
+    </div>
 
-              
-              <div className="flex items-center space-x-4">
-                <button
-                  className="px-3 py-1 bg-gray-300 rounded"
-                  onClick={() => decreaseQty(item.id)}
-                >
-                  −
-                </button>
+    <div className="flex items-center space-x-4">
+      <button
+        className="px-3 py-1 bg-gray-300 rounded"
+        onClick={() => decreaseQty(item.productId)}
+      >
+        −
+      </button>
 
-                <span className="text-lg font-semibold">{item.quantity}</span>
+      <span className="text-lg font-semibold">{item.quantity}</span>
 
-                <button
-                  className="px-3 py-1 bg-gray-300 rounded"
-                  onClick={() => increaseQty(item.id)}
-                >
-                  +
-                </button>
-              </div>
+      <button
+        className="px-3 py-1 bg-gray-300 rounded"
+        onClick={() => increaseQty(item.productId)}
+      >
+        +
+      </button>
+    </div>
 
-              
-              <button
-                onClick={() => removeFromCart(item.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+    <button
+      onClick={() => removeFromCart(item.productId)}
+      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+    >
+      Remove
+    </button>
+  </div>
+))}
+
 
           
           <div className="mt-8 p-4 border rounded-xl bg-gray-100">

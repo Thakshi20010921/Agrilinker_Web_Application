@@ -195,17 +195,20 @@ export default function FertilizerList() {
 
               {/* ✅ BUY BUTTON NOW WORKS WITH CART */}
               <button
-                onClick={() => addToCart({
-                  _id: f.id,
-                  name: f.name,
-                  price: f.price,
-                  unit: f.unit,
-                  image: f.imageUrl,
-                })}
-                className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
-              >
-                Buy
-              </button>
+  onClick={() =>
+    addToCart({
+      _id: f.id,  // consistent with CartContext
+      name: f.name,
+      price: f.price,
+      unit: f.unit,
+      image: f.imageUrl,
+    })
+  }
+  className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
+>
+  Buy
+</button>
+
             </div>
           </div>
         ))}
