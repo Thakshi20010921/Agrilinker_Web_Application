@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/auth";
+import { toast } from "react-toastify";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ export default function Register() {
         e.preventDefault();
         setError("");
 
-        // Frontend validation
+        // ✅ Frontend validation
         if (
             !form.fullName ||
             !form.email ||
@@ -58,7 +59,7 @@ export default function Register() {
         }
 
         try {
-            const res = await register({
+            await register({
                 fullName: form.fullName,
                 email: form.email,
                 password: form.password,
@@ -67,15 +68,12 @@ export default function Register() {
                 roles: form.roles,
             });
 
-            // Optional auto-login after registration
-            if (res.data?.token) {
-                localStorage.setItem("token", res.data.token);
-            }
+            // ✅ SUCCESS TOAST (professional)
+            toast.success("Registration completed! Please log in.");
 
-            alert("Account created successfully");
-
-            // Redirect to login (or dashboard if auto-login)
+            // ✅ Redirect to login
             navigate("/login");
+
         } catch (err) {
             if (err.response?.data?.error) {
                 setError(err.response.data.error);
@@ -84,6 +82,9 @@ export default function Register() {
             } else {
                 setError("Registration failed");
             }
+
+            // ❌ Error toast
+            toast.error("Registration failed");
         }
     };
 
@@ -95,7 +96,9 @@ export default function Register() {
                 <input
                     placeholder="Full Name"
                     value={form.fullName}
-                    onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                    onChange={(e) =>
+                        setForm({ ...form, fullName: e.target.value })
+                    }
                     required
                 />
 
@@ -103,21 +106,27 @@ export default function Register() {
                     type="email"
                     placeholder="Email"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                    }
                     required
                 />
 
                 <input
                     placeholder="Telephone (0771234567)"
                     value={form.telephone}
-                    onChange={(e) => setForm({ ...form, telephone: e.target.value })}
+                    onChange={(e) =>
+                        setForm({ ...form, telephone: e.target.value })
+                    }
                     required
                 />
 
                 <input
                     placeholder="Address"
                     value={form.address}
-                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    onChange={(e) =>
+                        setForm({ ...form, address: e.target.value })
+                    }
                     required
                 />
 
@@ -125,7 +134,9 @@ export default function Register() {
                     type="password"
                     placeholder="Password (min 8 characters)"
                     value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    onChange={(e) =>
+                        setForm({ ...form, password: e.target.value })
+                    }
                     required
                 />
 
@@ -152,7 +163,9 @@ export default function Register() {
                         <input
                             type="checkbox"
                             checked={form.roles.includes("FERTILIZERSUPPLIER")}
-                            onChange={() => toggleRole("FERTILIZERSUPPLIER")}
+                            onChange={() =>
+                                toggleRole("FERTILIZERSUPPLIER")
+                            }
                         />{" "}
                         Fertilizer Supplier
                     </label>

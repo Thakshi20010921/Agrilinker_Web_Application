@@ -6,16 +6,11 @@
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #0f3d2e, #1b5e20);
-    color: white;
-}
+
 
 .screen {
     min-height: 100vh;
-    background-image: url("c:\Users\user\Downloads\unnamed.jpg");
+    background-image: url("./assets/image.png");
     background-size: cover;
     background-position: center;
     display: flex;
@@ -109,4 +104,71 @@ button {
 .error {
     color: #ff7675;
     font-size: 14px;
+}
+
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-field input {
+    padding-right: 42px;
+    /* space for the eye icon */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle:hover {
+    color: #2ecc71;
+}
+
+.user-dropdown {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 8px;
+    min-width: 120px;
+    z-index: 100;
+}
+
+.user-dropdown button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.user-dropdown button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Fix input text visibility */
+input,
+textarea,
+select {
+    color: #000;
+    /* black text */
+    background-color: #fff;
+    /* white background */
+}
+
+/* Placeholder text */
+input::placeholder {
+    color: #777;
 }
