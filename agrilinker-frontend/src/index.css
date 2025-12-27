@@ -10,11 +10,7 @@
 
 .screen {
     min-height: 100vh;
-<<<<<<< HEAD
-    background-image: url("E:\Downloads\Agrilinker_Web_Application\agrilinker-frontend\public\unnamed.jpg");
-=======
     background-image: url("./assets/image.png");
->>>>>>> 892cc53adc8d78013b7a5e786dd11ba40276530d
     background-size: cover;
     background-position: center;
     display: flex;
