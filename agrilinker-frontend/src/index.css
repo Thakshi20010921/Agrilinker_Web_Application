@@ -6,12 +6,7 @@
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #0f3d2e, #1b5e20);
-    color: white;
-}
+
 
 .screen {
     min-height: 100vh;
@@ -161,4 +156,19 @@ button {
 
 .user-dropdown button:hover {
     background: rgba(255, 255, 255, 0.15);
+}
+
+/* Fix input text visibility */
+input,
+textarea,
+select {
+    color: #000;
+    /* black text */
+    background-color: #fff;
+    /* white background */
+}
+
+/* Placeholder text */
+input::placeholder {
+    color: #777;
 }
