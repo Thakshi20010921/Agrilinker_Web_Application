@@ -13,12 +13,10 @@ import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 
-// Auth Pages (YOUR PART)
+// Auth Pages
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
-import "./styles/App.css";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -36,12 +34,22 @@ function App() {
 
   return (
     <CartProvider>
-      <ToastContainer position="top-right" autoClose={3000} />
+      {/* ✅ Toast system (GLOBAL) */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
 
       {!hideLayout && <Header />}
 
       <Routes>
-        {/* Auth / Welcome */}
+        {/* Auth */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
