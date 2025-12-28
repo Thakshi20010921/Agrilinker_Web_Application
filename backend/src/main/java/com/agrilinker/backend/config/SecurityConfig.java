@@ -48,14 +48,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/api/fertilizers/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+
+                        .requestMatchers("/cart/**").permitAll() // ✅ ADD THIS
+
                         .requestMatchers("/cart/**").permitAll() // <-- ADD THIS
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/farmer/**").hasRole("FARMER")
                         .requestMatchers("/api/buyer/**").hasRole("BUYER")
                         .requestMatchers("/api/furtilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
 
-                        // ANYTHING ELSE NEEDS AUTHENTICATION
                         .anyRequest().authenticated())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

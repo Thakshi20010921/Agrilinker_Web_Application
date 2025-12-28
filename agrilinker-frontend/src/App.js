@@ -7,6 +7,7 @@ import HowItWorks from "./components/HowItWorks";
 import Benefits from "./components/Benefits";
 import Footer from "./components/Footer";
 import Marketplace from "./components/Marketplace";
+import OrderConfirmation from "./components/OrderConfirmation";
 
 // Fertilizer Pages
 import FertilizerList from "./components/Fertilizers/FertilizerList";
@@ -73,6 +74,17 @@ function App() {
         <Route path="/fertilizers" element={<FertilizerList />} />
         <Route path="/fertilizers/add" element={<AddFertilizer />} />
         <Route path="/fertilizers/update/:id" element={<UpdateFertilizer />} />
+
+        {/* ------------ FARMER PAGES ------------ */}
+        <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+        <Route path="/farmer/add-product" element={<AddProduct />} />
+        <Route path="/farmer/my-products" element={<MyProducts />} />
+
+        {/* ------------ CART & CHECKOUT ------------ */}
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/order-confirmation" element={<OrderConfirmation />} />
+
       </Routes>
 
       {!hideLayout && <Footer />}

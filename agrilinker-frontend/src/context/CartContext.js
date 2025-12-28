@@ -1,92 +1,97 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/api";
 
 export const CartContext = createContext();
 
-const API_URL = "http://localhost:8081/cart";
-const USER_ID = "USER123"; // later from JWT
+const USER_ID = "USER123"; // TEMP – later from JWT
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  // ✅ STEP 1: Load cart from backend
+  // LOAD CART
   useEffect(() => {
-    axios.get(`${API_URL}/${USER_ID}`)
+    api.get(`/cart/${USER_ID}`)
       .then(res => setCart(res.data))
-      .catch(err => console.error(err));
+      .catch(err => console.error("Load cart error:", err));
   }, []);
 
-  // ✅ ADD TO CART (Optimistic)
-  const addToCart = (item) => {
-    setCart(prev => {
-      const exists = prev.find(p => p.productId === item.id);
-      if (exists) {
-        return prev.map(p =>
-          p.productId === item.id
-            ? { ...p, quantity: p.quantity + 1 }
-            : p
-        );
+  // ADD TO CART
+ // Inside CartContext.js
+const addToCart = (item) => {
+  // Normalize the item ID because some objects use 'id' and others might use '_id'
+  const itemId = item.id || item._id;
+
+  setCart(prev => {
+    const exists = prev.find(p => p.productId === itemId);
+    if (exists) {
+      return prev.map(p =>
+        p.productId === itemId ? { ...p, quantity: p.quantity + 1 } : p
+      );
+    }
+    return [
+      ...prev,
+      {
+        cartItemId: Math.random().toString(36).substring(2, 9),
+        productId: itemId,
+        name: item.name,
+        price: item.price,
+        quantity: 1,
+        unit: item.unit || "unit",
+        image: item.imageUrl || (item.product_image ? `http://localhost:8081${item.product_image}` : "/images/placeholder.png"),
       }
-      return [
-        ...prev,
-        {
-          productId: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: 1,
-          unit: item.unit,
-          image: item.image
-        }
-      ];
-    });
+    ];
+  });
 
-    axios.post(`${API_URL}/${USER_ID}`, {
-      productId: item.id,
-      name: item.name,
-      price: item.price,
-      unit: item.unit,
-      image: item.image
-    });
-  };
+  // API Call - Ensure the field names match your Java CartItem.java model
+  api.post(`/cart/${USER_ID}`, {
+    productId: itemId,
+    name: item.name,
+    price: item.price,
+    unit: item.unit || "unit",
+    image: item.imageUrl || (item.product_image ? `http://localhost:8081${item.product_image}` : "/images/placeholder.png"),
+    quantity: 1
+  }).catch(err => console.error("Add to cart error:", err));
+};
 
-  // ✅ INCREASE
-  const increaseQty = (cartItemId, qty) => {
+  // INCREASE
+  const increaseQty = (cartItemId) => {
     setCart(prev =>
       prev.map(item =>
-        item.id === cartItemId
+        item.cartItemId === cartItemId
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
 
-    axios.put(`${API_URL}/${cartItemId}?qty=${qty + 1}`);
+    api.put(`/cart/${cartItemId}?qty=1`)
+      .catch(err => console.error("Update quantity error:", err));
   };
 
-  // ✅ DECREASE
-  const decreaseQty = (cartItemId, qty) => {
-    if (qty <= 1) return removeFromCart(cartItemId);
-
+  // DECREASE
+  const decreaseQty = (cartItemId) => {
     setCart(prev =>
-      prev.map(item =>
-        item.id === cartItemId
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
+      prev
+        .map(item =>
+          item.cartItemId === cartItemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter(item => item.quantity > 0)
     );
 
-    axios.put(`${API_URL}/${cartItemId}?qty=${qty - 1}`);
+    api.put(`/cart/${cartItemId}?qty=-1`)
+      .catch(err => console.error("Update quantity error:", err));
   };
 
-  // ✅ REMOVE
+  // REMOVE
   const removeFromCart = (cartItemId) => {
-    setCart(prev => prev.filter(item => item.id !== cartItemId));
-    axios.delete(`${API_URL}/${cartItemId}`);
+    setCart(prev => prev.filter(item => item.cartItemId !== cartItemId));
+    api.delete(`/cart/${cartItemId}`)
+      .catch(err => console.error("Remove from cart error:", err));
   };
 
   return (
-    <CartContext.Provider
-      value={{ cart, addToCart, increaseQty, decreaseQty, removeFromCart }}
-    >
+    <CartContext.Provider value={{ cart, addToCart, increaseQty, decreaseQty, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );
