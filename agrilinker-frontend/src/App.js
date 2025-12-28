@@ -7,6 +7,7 @@ import HowItWorks from "./components/HowItWorks";
 import Benefits from "./components/Benefits";
 import Footer from "./components/Footer";
 import Marketplace from "./components/Marketplace";
+import OrderConfirmation from "./components/OrderConfirmation";
 
 // Fertilizer Pages
 import FertilizerList from "./components/Fertilizers/FertilizerList";
@@ -67,6 +68,8 @@ function App() {
         {/* ------------ CART & CHECKOUT ------------ */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/order-confirmation" element={<OrderConfirmation />} />
+
       </Routes>
 
       <Footer />

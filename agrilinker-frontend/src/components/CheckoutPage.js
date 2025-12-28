@@ -1,235 +1,171 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage = () => {
   const { cart } = useContext(CartContext);
+  const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    name: "",
-    address: "",
-    phone: "",
-    email: "",
-  });
-
+  // --- Logic & State ---
+  const [form, setForm] = useState({ name: "", address: "", phone: "", email: "" });
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("cash"); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  // State for mock card details (Fixes ESLint error)
+  const [cardDetails, setCardDetails] = useState({ cardNumber: "", expiry: "", cvv: "" });
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  // Function to handle card input changes (Fixes ESLint error)
+  const handleCardChange = (e) => setCardDetails({ ...cardDetails, [e.target.name]: e.target.value });
 
   const totalAmount = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (paymentMethod === "card") {
+      setIsModalOpen(true);
+    } else {
+      processOrder("PENDING"); //
+    }
+  };
 
-    
+  const processOrder = async (payStatus) => {
+    setLoading(true);
     const orderData = {
-      customer: {
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        address: form.address
-      },
+      customer: { ...form },
       items: cart.map(item => ({
-        fertilizerId: item.id,
+        productId: item.productId, //
         name: item.name,
         quantity: item.quantity || 1,
         price: item.price
       })),
-      totalAmount: totalAmount,
-      paymentMethod: "cash", 
+      totalAmount,
+      paymentMethod,
+      paymentStatus: payStatus, //
       orderDate: new Date().toISOString()
     };
-
-    console.log("Sending order data:", orderData); 
 
     try {
       const response = await fetch("http://localhost:8081/api/orders", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData)
       });
 
-      console.log("Response status:", response.status); 
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server error response:", errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Order placed successfully:", data);
-      
-     
-      alert(`Order placed successfully! 🎉\nOrder ID: ${data.id || data.orderId || 'N/A'}`);
-      
-      
-      setForm({
-        name: "",
-        address: "",
-        phone: "",
-        email: "",
-      });
-
-    } catch (error) {
-      console.error("Error placing order:", error);
-      
-      if (error.message.includes("Failed to fetch")) {
-        alert("Cannot connect to server. Please check if the backend is running on http://localhost:8081");
-      } else if (error.message.includes("HTTP error")) {
-        alert(`Server error: ${error.message}`);
+      if (response.ok) {
+        setIsModalOpen(false);
+        // Ensure you have this route in your App.js
+        navigate("/order-success"); 
       } else {
-        alert("Failed to place order. Please check console for details.");
+        throw new Error("Order failed");
       }
+    } catch (error) {
+      alert("Error: Connection failed to backend");
     } finally {
       setLoading(false);
     }
   };
 
-  
-  const testConnection = async () => {
-    try {
-      console.log("Testing connection to http://localhost:8081/api/orders");
-      const response = await fetch("http://localhost:8081/api/orders", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      console.log("Connection test response:", response.status, response.statusText);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Existing orders:", data);
-        alert("Connection successful! API is reachable.");
-      } else {
-        alert(`API responded with status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error("Connection test failed:", error);
-      alert("Cannot connect to API. Make sure backend is running on port 8081.");
-    }
-  };
-
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-green-900">Checkout</h1>
+    <div className="bg-gray-50 min-h-screen pb-12">
+      <div className="max-w-6xl mx-auto px-4 pt-10">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-8 tracking-tight">Checkout</h1>
 
-      
-      <button
-        onClick={testConnection}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Test API Connection
-      </button>
-
-     
-      <div className="mb-6 p-4 rounded-xl bg-white shadow">
-        <h2 className="text-xl font-semibold mb-3">Order Summary</h2>
-
-        {cart.length === 0 ? (
-          <p className="text-gray-500">Your cart is empty</p>
-        ) : (
-          <>
-            {cart.map((item) => (
-              <div key={item.id} className="flex justify-between mb-2">
-                <span>{item.name} (Qty: {item.quantity || 1})</span>
-                <span className="font-semibold">${(item.price * (item.quantity || 1)).toFixed(2)}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: Forms */}
+          <div className="lg:col-span-7 space-y-6">
+            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
+                <span className="w-8 h-8 bg-green-100 text-green-700 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                Shipping Details
+              </h2>
+              <div className="grid grid-cols-1 gap-5">
+                <input type="text" name="name" placeholder="Full Name" onChange={handleChange} required className="w-full p-4 bg-gray-50 border-2 border-transparent rounded-xl focus:border-green-500 focus:bg-white transition-all outline-none" />
+                <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required className="w-full p-4 bg-gray-50 border-2 border-transparent rounded-xl focus:border-green-500 focus:bg-white transition-all outline-none" />
+                <input type="text" name="address" placeholder="Shipping Address" onChange={handleChange} required className="w-full p-4 bg-gray-50 border-2 border-transparent rounded-xl focus:border-green-500 focus:bg-white transition-all outline-none" />
+                <input type="tel" name="phone" placeholder="Phone Number" onChange={handleChange} required className="w-full p-4 bg-gray-50 border-2 border-transparent rounded-xl focus:border-green-500 focus:bg-white transition-all outline-none" />
               </div>
-            ))}
 
-            <hr className="my-3" />
+              <h2 className="text-xl font-bold mt-10 mb-6 text-gray-800 flex items-center">
+                <span className="w-8 h-8 bg-green-100 text-green-700 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                Payment Method
+              </h2>
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <button type="button" onClick={() => setPaymentMethod("cash")} className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === 'cash' ? 'border-green-500 bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                  <span className="text-2xl">💵</span>
+                  <span className="font-bold text-gray-700">Cash</span>
+                </button>
+                <button type="button" onClick={() => setPaymentMethod("card")} className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === 'card' ? 'border-green-500 bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                  <span className="text-2xl">💳</span>
+                  <span className="font-bold text-gray-700">Card</span>
+                </button>
+              </div>
 
-            <div className="flex justify-between text-lg font-bold">
-              <span>Total:</span>
-              <span>${totalAmount.toFixed(2)}</span>
+              <button type="submit" disabled={cart.length === 0 || loading} className="w-full bg-green-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-green-700 shadow-lg shadow-green-100 transition-all active:scale-[0.98]">
+                {loading ? "Processing..." : "Complete Order"}
+              </button>
+            </form>
+          </div>
+
+          {/* Right Column: Order Summary */}
+          <div className="lg:col-span-5">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 sticky top-10">
+              <h2 className="text-xl font-bold mb-6 text-gray-800">Order Summary</h2>
+              <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                {cart.map(item => (
+                  <div key={item.productId} className="flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-gray-800">{item.name}</p>
+                      <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                    </div>
+                    <p className="font-bold text-gray-700">Rs. {(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-dashed border-gray-200 mt-6 pt-6">
+                <div className="flex justify-between text-2xl font-black text-green-900">
+                  <span>Total</span>
+                  <span>Rs. {totalAmount.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
 
-      
-      <form onSubmit={handleSubmit} className="bg-white shadow p-6 rounded-xl">
-        <h2 className="text-xl font-semibold mb-4">Shipping Details</h2>
+      {/* --- MOCK PAYMENT MODAL --- */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-[999] p-4">
+          <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-300">
+            <h2 className="text-2xl font-bold mb-2 text-center text-gray-800">Card Payment</h2>
+            <p className="text-gray-400 text-center mb-8 text-sm uppercase tracking-widest">Secure Mock Transaction</p>
+            
+            <div className="bg-gradient-to-br from-green-600 to-green-800 p-6 rounded-2xl text-white mb-8 shadow-xl">
+               <p className="text-[10px] font-bold opacity-60 mb-1">PAYABLE AMOUNT</p>
+               <p className="text-3xl font-black mb-6">Rs. {totalAmount.toFixed(2)}</p>
+               <div className="flex justify-between items-end">
+                  <p className="text-sm tracking-widest font-mono">**** **** **** 1234</p>
+                  <div className="w-10 h-6 bg-yellow-400/20 rounded-md"></div>
+               </div>
+            </div>
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-3 border rounded-lg"
-          disabled={cart.length === 0 || loading}
-        />
+            <div className="space-y-4">
+              <input type="text" name="cardNumber" placeholder="Card Number" maxLength="16" onChange={handleCardChange} className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-green-500 transition-all" />
+              <div className="flex gap-4">
+                <input type="text" name="expiry" placeholder="MM/YY" maxLength="5" onChange={handleCardChange} className="w-1/2 p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-green-500 transition-all" />
+                <input type="text" name="cvv" placeholder="CVV" maxLength="3" onChange={handleCardChange} className="w-1/2 p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-green-500 transition-all" />
+              </div>
+            </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email Address"
-          value={form.email}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-3 border rounded-lg"
-          disabled={cart.length === 0 || loading}
-        />
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Address"
-          value={form.address}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-3 border rounded-lg"
-          disabled={cart.length === 0 || loading}
-        />
-
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Phone Number"
-          value={form.phone}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border rounded-lg"
-          disabled={cart.length === 0 || loading}
-        />
-
-        <button
-          type="submit"
-          className={`bg-green-600 text-white w-full py-3 rounded-lg hover:bg-green-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''} ${cart.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={cart.length === 0 || loading}
-        >
-          {loading ? (
-            <span className="flex items-center justify-center">
-              <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Processing...
-            </span>
-          ) : (
-            "Place Order"
-          )}
-        </button>
-
-        {cart.length === 0 && (
-          <p className="text-red-500 text-center mt-2">Add items to cart before checkout</p>
-        )}
-      </form>
-
-     
-      <div className="mt-4 p-4 bg-gray-100 rounded text-sm">
-        <h3 className="font-semibold mb-2">Debug Info:</h3>
-        <p>Cart items: {cart.length}</p>
-        <p>API Endpoint: http://localhost:8081/api/orders</p>
-        <p>Total Amount: ${totalAmount.toFixed(2)}</p>
-      </div>
+            <button onClick={() => processOrder("PAID")} className="w-full bg-green-600 text-white py-4 rounded-2xl mt-8 font-bold text-lg hover:bg-green-700 shadow-lg shadow-green-200">
+              Verify & Pay
+            </button>
+            <button onClick={() => setIsModalOpen(false)} className="w-full py-3 mt-2 text-gray-400 hover:text-gray-600 font-medium transition-colors text-sm">Return to Checkout</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
