@@ -51,6 +51,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/cart/**").permitAll() // ✅ ADD THIS
 
+                        .requestMatchers("/cart/**").permitAll() // <-- ADD THIS
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/farmer/**").hasRole("FARMER")
                         .requestMatchers("/api/buyer/**").hasRole("BUYER")
