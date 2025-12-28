@@ -14,6 +14,19 @@ import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 
+// Farmer Pages (Fixes: FarmerDashboard, AddProduct, MyProducts errors)
+import FarmerDashboard from "./components/Farmer/FarmerDashboard"; 
+import AddProduct from "./components/Farmer/AddProduct";
+import MyProducts from "./components/Farmer/MyProducts";
+
+// Cart & Checkout Pages (Fixes: CartPage, CheckoutPage errors)
+import CartPage from "./components/CartPage";
+import CheckoutPage from "./components/CheckoutPage";
+
+// NEW: Order History & Success Pages
+import OrderHistory from "./components/OrderHistory";
+import OrderSuccess from "./components/OrderSuccess";
+
 // Auth Pages
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -27,7 +40,6 @@ import { CartProvider } from "./context/CartContext";
 function App() {
   const location = useLocation();
 
-  // Hide Header & Footer on auth pages
   const hideLayout =
     location.pathname === "/" ||
     location.pathname === "/login" ||
@@ -35,27 +47,19 @@ function App() {
 
   return (
     <CartProvider>
-      {/* ✅ Toast system (GLOBAL) */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnHover
-        draggable
         theme="colored"
       />
 
       {!hideLayout && <Header />}
 
       <Routes>
-        {/* Auth */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Home */}
         <Route
           path="/home"
           element={
@@ -67,24 +71,22 @@ function App() {
           }
         />
 
-        {/* Marketplace */}
         <Route path="/marketplace" element={<Marketplace />} />
-
-        {/* Fertilizers */}
         <Route path="/fertilizers" element={<FertilizerList />} />
         <Route path="/fertilizers/add" element={<AddFertilizer />} />
         <Route path="/fertilizers/update/:id" element={<UpdateFertilizer />} />
 
-        {/* ------------ FARMER PAGES ------------ */}
+        {/* Farmer Routes */}
         <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
         <Route path="/farmer/add-product" element={<AddProduct />} />
         <Route path="/farmer/my-products" element={<MyProducts />} />
 
-        {/* ------------ CART & CHECKOUT ------------ */}
+        {/* Cart & Checkout Routes */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/order-confirmation" element={<OrderConfirmation />} />
-
+        <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
       </Routes>
 
       {!hideLayout && <Footer />}
