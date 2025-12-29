@@ -8,7 +8,11 @@ import Benefits from "./components/Benefits";
 import Footer from "./components/Footer";
 import Marketplace from "./components/Marketplace";
 import OrderConfirmation from "./components/OrderConfirmation";
-
+import FarmerDashboard from "./components/farmer/FarmerDashboard";
+import AddProduct from "./components/farmer/AddProduct";
+import MyProducts from "./components/farmer/MyProducts";
+import CartPage  from "./components/CartPage";
+import CheckoutPage from "./components/CheckoutPage";
 // Fertilizer Pages
 import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
