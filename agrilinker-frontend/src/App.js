@@ -22,6 +22,10 @@ import "react-toastify/dist/ReactToastify.css";
 // ✅ Cart Context
 import { CartProvider } from "./context/CartContext";
 
+//----farmer
+import FarmerDashboard from "./components/farmer/FarmerDashboard";
+import AddProduct from "./components/farmer/AddProduct";
+
 function App() {
   return (
     <CartProvider>
@@ -50,6 +54,12 @@ function App() {
         <Route path="/fertilizers" element={<FertilizerList />} />
         <Route path="/fertilizers/add" element={<AddFertilizer />} />
         <Route path="/fertilizers/update/:id" element={<UpdateFertilizer />} />
+
+        {/* ------------ FARMER PAGES ------------ */}
+        <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+        <Route path="/farmer/add-product" element={<AddProduct />} />
+
+
       </Routes>
 
       <Footer />
