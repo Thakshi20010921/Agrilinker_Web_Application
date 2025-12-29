@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react"; // Added useContext
 import axios from "axios";
 import { FiFilter } from "react-icons/fi";
+import { CartContext } from "../../context/CartContext";
 
 export default function FertilizerList() {
   const [fertilizers, setFertilizers] = useState([]);
@@ -11,6 +12,9 @@ export default function FertilizerList() {
   const [typeFilter, setTypeFilter] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
+
+  // 1. Consuming the Cart Context
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     axios
@@ -24,7 +28,7 @@ export default function FertilizerList() {
 
   // SAFE highlight function
   const highlightMatch = (text) => {
-    if (!text) return ""; // prevents null.replace error
+    if (!text) return ""; 
     if (!searchTerm) return text;
 
     const regex = new RegExp(`(${searchTerm})`, "gi");
@@ -73,7 +77,6 @@ export default function FertilizerList() {
         <h1 className="text-4xl font-extrabold text-green-800">Fertilizers</h1>
 
         <div className="flex space-x-3 items-center">
-          {/* 🔎 SEARCH */}
           <input
             type="text"
             placeholder="Search by name, code, type, category..."
@@ -136,62 +139,68 @@ export default function FertilizerList() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredFertilizers.map((f) => (
           <div
-            key={f.id}
-            className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition"
+            key={f.id || f._id}
+            className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
           >
-            <img
-              src={f.imageUrl || "https://via.placeholder.com/300x200"}
-              alt="Fertilizer"
-              className="rounded-lg mb-4"
-            />
+            <div>
+              <img
+                src={f.imageUrl || "https://via.placeholder.com/300x200"}
+                alt="Fertilizer"
+                className="rounded-lg mb-4 w-full h-48 object-cover"
+              />
 
-            <h2
-              className="text-2xl font-bold text-green-700"
-              dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
-            />
+              <h2
+                className="text-2xl font-bold text-green-700"
+                dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
+              />
 
-            <p className="text-sm text-gray-500 mb-1">
-              Code:{" "}
-              <span
-                className="font-semibold"
-                dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}
-              ></span>
-            </p>
+              <p className="text-sm text-gray-500 mb-1">
+                Code:{" "}
+                <span
+                  className="font-semibold"
+                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}
+                ></span>
+              </p>
 
-            <p className="text-sm text-gray-600 mb-1">
-              Type:{" "}
-              <span
-                className="font-semibold"
-                dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}
-              ></span>
-            </p>
+              <p className="text-sm text-gray-600 mb-1">
+                Type:{" "}
+                <span
+                  className="font-semibold"
+                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}
+                ></span>
+              </p>
 
-            <p className="text-sm text-gray-600 mb-2">
-              Category:{" "}
-              <span
-                className="font-semibold"
-                dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}
-              ></span>
-            </p>
+              <p className="text-sm text-gray-600 mb-2">
+                Category:{" "}
+                <span
+                  className="font-semibold"
+                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}
+                ></span>
+              </p>
 
-            <p className="text-gray-600 mb-2">{f.description}</p>
+              <p className="text-gray-600 mb-2 line-clamp-2">{f.description}</p>
 
-            <p className="text-lg font-semibold">
-              Rs. {f.price} / {f.unit}
-              {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
-                ? ` (${f.quantityInside} ${f.unit === "bag" ? "kg" : "L"})`
-                : ""}
-            </p>
+              <p className="text-lg font-semibold">
+                Rs. {f.price} / {f.unit}
+                {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
+                  ? ` (${f.quantityInside} ${f.unit === "bag" ? "kg" : "L"})`
+                  : ""}
+              </p>
+            </div>
 
             <div className="flex justify-between mt-4">
               <a
-                href={`/fertilizers/update/${f.id}`}
+                href={`/fertilizers/update/${f.id || f._id}`}
                 className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
               >
                 Edit
               </a>
 
-              <button className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition">
+              {/* 2. Connected Buy Button */}
+              <button 
+                onClick={() => addToCart(f)}
+                className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
+              >
                 Buy
               </button>
             </div>
