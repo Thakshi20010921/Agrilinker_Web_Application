@@ -12,10 +12,18 @@ const AddProduct = () => {
     quantity: "",
     unit: "kg",
     location: "",
+<<<<<<< HEAD
     status: "ACTIVE",
     product_image: null, // file
   });
 
+=======
+    status: "available",
+    product_image: null, // File object
+  });
+
+  // Handle input changes
+>>>>>>> development
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "product_image") {
@@ -25,6 +33,7 @@ const AddProduct = () => {
     }
   };
 
+<<<<<<< HEAD
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -56,6 +65,51 @@ const AddProduct = () => {
       console.log(res.data);
 
       // Reset form after save
+=======
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData();
+
+      // Wrap product fields into JSON for backend
+      const productData = {
+        name: product.name,
+        category: product.category,
+        description: product.description,
+        price: parseFloat(product.price),
+        quantity: parseInt(product.quantity),
+        unit: product.unit,
+        location: product.location,
+        status: product.status,
+        farmerId: MOCK_FARMER_ID, // mock for now
+      };
+
+      formData.append(
+        "product",
+        new Blob([JSON.stringify(productData)], { type: "application/json" })
+      );
+
+      // Append image file
+      if (product.product_image) {
+        formData.append("image", product.product_image);
+      }
+
+      // POST request to backend
+      const res = await axios.post(
+        "http://localhost:8081/api/products/with-image",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      alert("Product saved successfully!");
+      console.log(res.data);
+
+      // Reset form
+>>>>>>> development
       setProduct({
         name: "",
         category: "",
@@ -64,12 +118,21 @@ const AddProduct = () => {
         quantity: "",
         unit: "kg",
         location: "",
+<<<<<<< HEAD
         status: "ACTIVE",
         product_image: null,
       });
     } catch (err) {
       console.error(err);
       alert("Error saving product");
+=======
+        status: "available",
+        product_image: null,
+      });
+    } catch (err) {
+      console.error("Error saving product:", err.response || err.message);
+      alert("Error saving product. Check console for details.");
+>>>>>>> development
     }
   };
 
@@ -154,13 +217,22 @@ const AddProduct = () => {
           onChange={handleChange}
           className="w-full border p-2 rounded"
         >
+<<<<<<< HEAD
           <option value="ACTIVE">Active</option>
           <option value="INACTIVE">Inactive</option>
+=======
+          <option value="ACTIVE">available</option>
+          <option value="INACTIVE">Out of stok</option>
+>>>>>>> development
         </select>
 
         <input
           type="file"
           name="product_image"
+<<<<<<< HEAD
+=======
+          accept="image/*"
+>>>>>>> development
           onChange={handleChange}
           className="w-full border p-2 rounded"
         />

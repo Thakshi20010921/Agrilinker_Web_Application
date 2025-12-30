@@ -56,9 +56,6 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    /**
-     * Generate token with roles. rolesString should be comma separated names.
-     */
     public String generateToken(String username, String rolesString) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", rolesString);
@@ -80,9 +77,6 @@ public class JwtUtil {
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 
-    /**
-     * Extract roles from the "roles" claim (comma separated).
-     */
     public Set<String> extractRoles(String token) {
         Claims claims = extractAllClaims(token);
         Object rolesObj = claims.get("roles");

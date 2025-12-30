@@ -26,20 +26,17 @@ public class ProductController {
             @RequestPart("image") MultipartFile imageFile) {
 
         try {
-            // 1. ensure uploads directory exists
+
             String uploadDir = "uploads/";
             Files.createDirectories(Paths.get(uploadDir));
 
-            // 2. generate unique filename and save file
             String filename = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
             Path filePath = Paths.get(uploadDir, filename);
             Files.write(filePath, imageFile.getBytes());
 
-            // 3. set URL/path into Product_image
-            String imageUrl = "/uploads/" + filename; // React will call http://localhost:8081 + this
+            String imageUrl = "/uploads/" + filename;
             product.setProduct_image(imageUrl);
 
-            // 4. save product as usual
             Product saved = productService.createProduct(product);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {

@@ -35,13 +35,11 @@ public class OrderServiceImpl implements OrderService {
     public Order updateOrder(String id, Order order) {
         Order existingOrder = getOrderById(id);
         if (existingOrder != null) {
-            existingOrder.setBuyerId(order.getBuyerId());
-            existingOrder.setProductId(order.getProductId());
-            existingOrder.setQuantity(order.getQuantity());
-            existingOrder.setTotalPrice(order.getTotalPrice());
-            existingOrder.setInvoiceId(order.getInvoiceId());
-            existingOrder.setOrderDate(order.getOrderDate());
+            existingOrder.setCustomer(order.getCustomer());
+            existingOrder.setItems(order.getItems());
+            existingOrder.setTotalAmount(order.getTotalAmount());
             existingOrder.setPaymentMethod(order.getPaymentMethod());
+            existingOrder.setOrderDate(order.getOrderDate());
             return orderRepository.save(existingOrder);
         }
         return null;
