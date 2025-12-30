@@ -1,6 +1,5 @@
 package com.agrilinker.backend.config;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,22 +42,24 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        // Public routes
                         .requestMatchers("/api/auth/**", "/error").permitAll()
                         .requestMatchers("/api/orders/**").permitAll()
                         .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/api/fertilizers/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/cart/**").permitAll()
 
-                        .requestMatchers("/cart/**").permitAll() // ✅ ADD THIS
-
-                        .requestMatchers("/cart/**").permitAll() // <-- ADD THIS
+                        // Admin routes
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Role-based routes
                         .requestMatchers("/api/farmer/**").hasRole("FARMER")
                         .requestMatchers("/api/buyer/**").hasRole("BUYER")
-                        .requestMatchers("/api/furtilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
+                        .requestMatchers("/api/fertilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
 
+                        // All other requests need authentication
                         .anyRequest().authenticated())
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
