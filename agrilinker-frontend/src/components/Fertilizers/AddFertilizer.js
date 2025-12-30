@@ -66,7 +66,7 @@ export default function AddFertilizer() {
         price: Number(form.price),
         stock: Number(form.stock),
         quantityInside: form.quantityInside ? Number(form.quantityInside) : null
-      });
+      }) ;
 
       toast.success("Fertilizer added successfully!");
       setTimeout(() => navigate("/fertilizers"), 800);
