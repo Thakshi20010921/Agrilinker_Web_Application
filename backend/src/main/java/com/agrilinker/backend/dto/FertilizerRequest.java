@@ -34,6 +34,11 @@ public class FertilizerRequest {
     @NotBlank(message = "Image URL is required")
     private String imageUrl;
 
+    // ✅ New field: district
+    @NotBlank(message = "District is required")
+    private String district;
+
+    // Getters and Setters
     public String getName() {
         return name;
     }
@@ -104,5 +109,13 @@ public class FertilizerRequest {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 }
