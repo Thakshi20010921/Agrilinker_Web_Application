@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function HeroSection() {
   return (
     <section className="relative bg-gradient-to-br from-green-200 via-white to-green-300 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        
         <img
           src="/csa-produce-distribution.jpg"
           alt=""
@@ -18,19 +18,24 @@ function HeroSection() {
             Connect Farmers & Buyers Directly
           </h2>
           <p className="text-lg text-green-800 mb-8 max-w-xl">
-            AgriLinker bridges the gap between farmers and buyers, enabling direct trade of fresh agricultural products. No middlemen, better prices, fresher produce.
+            AgriLinker bridges the gap between farmers and buyers, enabling
+            direct trade of fresh agricultural products. No middlemen, better
+            prices, fresher produce.
           </p>
           <div className="flex space-x-4">
-             <Link
+            <Link
               to="/marketplace"
               className="bg-gradient-to-r from-green-600 to-green-400 text-white font-bold px-6 py-3 rounded-xl shadow-xl hover:scale-105 transition transform"
             >
               Buy Products
             </Link>
 
-            <button className="bg-white text-green-700 font-bold px-6 py-3 rounded-xl shadow-xl border-2 border-green-400 hover:bg-green-50 hover:border-green-600 transition">
+            <Link
+              to="/farmer/dashboard"
+              className="bg-white text-green-700 font-bold px-6 py-3 rounded-xl shadow-xl border-2 border-green-400 hover:bg-green-50 hover:border-green-600 transition"
+            >
               Sell Products
-            </button>
+            </Link>
           </div>
         </div>
         <img

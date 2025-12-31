@@ -8,8 +8,7 @@ import Benefits from "./components/Benefits";
 import Footer from "./components/Footer";
 import Marketplace from "./components/Marketplace";
 import OrderConfirmation from "./components/OrderConfirmation";
-import FarmerDashboard from "./components/farmer/FarmerDashboard";
-import AddProduct from "./components/farmer/AddProduct";
+
 import MyProducts from "./components/farmer/MyProducts";
 import CartPage from "./components/CartPage";
 import CheckoutPage from "./components/CheckoutPage";
@@ -28,6 +27,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { CartProvider } from "./context/CartContext";
+
+//----farmer
+import FarmerDashboard from "./components/farmer/FarmerDashboard";
+import AddProduct from "./components/farmer/AddProduct";
 
 function App() {
   const location = useLocation();
@@ -85,6 +88,7 @@ function App() {
         {/* ------------ FARMER PAGES ------------ */}
         <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
         <Route path="/farmer/add-product" element={<AddProduct />} />
+
         <Route path="/farmer/my-products" element={<MyProducts />} />
 
         {/* ------------ CART & CHECKOUT ------------ */}
