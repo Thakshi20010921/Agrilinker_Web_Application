@@ -14,15 +14,15 @@ export default function AddFertilizer() {
     category: "",
     type: "",
     stock: "",
-    imageUrl: "",
     quantityInside: "",
-    district: "" // ✅ new district field
+    district: ""
   });
+
+  const [imageFile, setImageFile] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Numeric-only input validation
     if (["price", "stock", "quantityInside"].includes(name)) {
       if (name === "price") {
         if (!/^\d*\.?\d*$/.test(value)) return;
@@ -34,11 +34,24 @@ export default function AddFertilizer() {
     setForm({ ...form, [name]: value });
   };
 
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Required fields
-    const requiredFields = ["name", "description", "price", "unit", "category", "type", "stock", "imageUrl", "district"];
+    const requiredFields = [
+      "name",
+      "description",
+      "price",
+      "unit",
+      "category",
+      "type",
+      "stock",
+      "district"
+    ];
+
     for (let field of requiredFields) {
       if (!form[field] || form[field].toString().trim() === "") {
         toast.error(`Please fill the ${field} field.`);
@@ -46,26 +59,33 @@ export default function AddFertilizer() {
       }
     }
 
-    // Numeric validation
-    if (isNaN(form.price) || Number(form.price) <= 0) {
-      toast.error("Unit Price must be a positive number.");
-      return;
-    }
-    if (isNaN(form.stock) || Number(form.stock) < 0) {
-      toast.error("Stock must be zero or more.");
-      return;
-    }
-    if ((form.unit === "bag" || form.unit === "bottle") && (!form.quantityInside || Number(form.quantityInside) <= 0)) {
-      toast.error("Quantity inside must be greater than zero.");
+    if (!imageFile) {
+      toast.error("Please upload an image for the fertilizer.");
       return;
     }
 
     try {
+      // ✅ 1. Upload image
+      const fileData = new FormData();
+      fileData.append("file", imageFile);
+
+      const uploadRes = await axios.post(
+        "http://localhost:8081/api/fertilizers/upload-image", // ✅ FIXED URL
+        fileData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      const imageUrl = uploadRes.data; // ✅ FIXED RESPONSE
+
+      // ✅ 2. Save fertilizer
       await axios.post("http://localhost:8081/api/fertilizers", {
         ...form,
         price: Number(form.price),
         stock: Number(form.stock),
-        quantityInside: form.quantityInside ? Number(form.quantityInside) : null
+        quantityInside: form.quantityInside
+          ? Number(form.quantityInside)
+          : null,
+        imageUrl
       });
 
       toast.success("Fertilizer added successfully!");
@@ -79,105 +99,76 @@ export default function AddFertilizer() {
 
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white shadow rounded-xl">
-      <h1 className="text-3xl font-extrabold text-green-800 mb-6">Add Fertilizer</h1>
+      <h1 className="text-3xl font-extrabold text-green-800 mb-6">
+        Add Fertilizer
+      </h1>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
-        <div>
-          <label className="font-semibold">Fertilizer Name</label>
-          <input type="text" name="name" className="w-full border p-3 rounded-lg" placeholder="Enter fertilizer name" onChange={handleChange} />
-        </div>
+        <input type="text" name="name" placeholder="Fertilizer Name"
+          className="w-full border p-3 rounded-lg"
+          onChange={handleChange} />
 
-        <div>
-          <label className="font-semibold">Description</label>
-          <textarea name="description" className="w-full border p-3 rounded-lg" placeholder="Enter description" rows="3" onChange={handleChange}></textarea>
-        </div>
+        <textarea name="description" placeholder="Description"
+          className="w-full border p-3 rounded-lg"
+          rows="3" onChange={handleChange}></textarea>
 
-        <div>
-          <label className="font-semibold">Unit Price (Rs.)</label>
-          <input type="number" name="price" className="w-full border p-3 rounded-lg" placeholder="Enter unit price" onChange={handleChange} min="0" step="0.01" />
-        </div>
+        <input type="number" name="price" placeholder="Price"
+          className="w-full border p-3 rounded-lg"
+          onChange={handleChange} />
 
-        <div>
-          <label className="font-semibold">Unit</label>
-          <select name="unit" className="w-full border p-3 rounded-lg" onChange={handleChange}>
-            <option value="">Select Unit</option>
-            <option value="bottle">Bottle</option>
-            <option value="bag">Bag</option>
-            <option value="kg">Kg</option>
-            <option value="liter">Liter</option>
-          </select>
-        </div>
+        <select name="unit" className="w-full border p-3 rounded-lg"
+          onChange={handleChange}>
+          <option value="">Select Unit</option>
+          <option value="bottle">Bottle</option>
+          <option value="bag">Bag</option>
+          <option value="kg">Kg</option>
+          <option value="liter">Liter</option>
+        </select>
 
         {(form.unit === "bag" || form.unit === "bottle") && (
-          <div>
-            <label className="font-semibold">Quantity inside ({form.unit === "bag" ? "kg" : "L"})</label>
-            <input type="number" name="quantityInside" className="w-full border p-3 rounded-lg" placeholder={form.unit === "bag" ? "e.g., 50 kg" : "e.g., 1.5 L"} onChange={handleChange} min="0" step="0.01" />
-          </div>
+          <input type="number" name="quantityInside"
+            placeholder="Quantity Inside"
+            className="w-full border p-3 rounded-lg"
+            onChange={handleChange} />
         )}
 
-        <div>
-          <label className="font-semibold">Category</label>
-          <select name="category" className="w-full border p-3 rounded-lg" onChange={handleChange}>
-            <option value="">Select Category</option>
-            <option>Organic</option>
-            <option>Chemical</option>
-          </select>
-        </div>
+        <select name="category" className="w-full border p-3 rounded-lg"
+          onChange={handleChange}>
+          <option value="">Category</option>
+          <option>Organic</option>
+          <option>Chemical</option>
+        </select>
 
-        <div>
-          <label className="font-semibold">Type</label>
-          <select name="type" className="w-full border p-3 rounded-lg" onChange={handleChange}>
-            <option value="">Select Type</option>
-            <option>Liquid</option>
-            <option>Granular</option>
-            <option>Water-Soluble</option>
-            <option>Powder</option>
-            <option>Slow-Release</option>
-          </select>
-        </div>
+        <select name="type" className="w-full border p-3 rounded-lg"
+          onChange={handleChange}>
+          <option value="">Type</option>
+          <option>Liquid</option>
+          <option>Granular</option>
+          <option>Powder</option>
+        </select>
 
-        <div>
-          <label className="font-semibold">District</label>
-          <select name="district" className="w-full border p-3 rounded-lg" onChange={handleChange}>
-            <option value="">Select District</option>
-            <option>Colombo</option>
-            <option>Gampaha</option>
-            <option>Kalutara</option>
-            <option>Kandy</option>
-            <option>Matale</option>
-            <option>Nuwara Eliya</option>
-            <option>Galle</option>
-            <option>Matara</option>
-            <option>Hambantota</option>
-            <option>Jaffna</option>
-            <option>Kilinochchi</option>
-            <option>Mannar</option>
-            <option>Vavuniya</option>
-            <option>Mullaitivu</option>
-            <option>Batticaloa</option>
-            <option>Ampara</option>
-            <option>Trincomalee</option>
-            <option>Kurunegala</option>
-            <option>Puttalam</option>
-            <option>Anuradhapura</option>
-            <option>Polonnaruwa</option>
-            <option>Badulla</option>
-            <option>Moneragala</option>
-            <option>Ratnapura</option>
-          </select>
-        </div>
+        <select name="district" className="w-full border p-3 rounded-lg"
+          onChange={handleChange}>
+          <option value="">District</option>
+          <option>Colombo</option>
+          <option>Kandy</option>
+          <option>Galle</option>
+          <option>Kurunegala</option>
+          <option>Jaffna</option>
+        </select>
 
-        <div>
-          <label className="font-semibold">Stock</label>
-          <input type="number" name="stock" className="w-full border p-3 rounded-lg" placeholder="Available stock" onChange={handleChange} min="0" step="1" />
-        </div>
+        <input type="number" name="stock"
+          placeholder="Stock"
+          className="w-full border p-3 rounded-lg"
+          onChange={handleChange} />
 
-        <div>
-          <label className="font-semibold">Image URL</label>
-          <input type="text" name="imageUrl" className="w-full border p-3 rounded-lg" placeholder="http://example.com/fert.png" onChange={handleChange} />
-        </div>
+        <input type="file" accept="image/*"
+          onChange={handleFileChange} />
 
-        <button type="submit" className="bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800 transition">Add Fertilizer</button>
+        <button type="submit"
+          className="bg-green-700 text-white px-6 py-3 rounded-lg">
+          Add Fertilizer
+        </button>
       </form>
     </div>
   );

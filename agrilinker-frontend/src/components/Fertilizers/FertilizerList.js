@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react"; 
 import axios from "axios";
 import { FiFilter } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
@@ -11,11 +11,12 @@ export default function FertilizerList() {
   const [sortOption, setSortOption] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
-  const [districtFilter, setDistrictFilter] = useState(""); // ✅ new filter
+  const [districtFilter, setDistrictFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const { addToCart } = useContext(CartContext);
 
+  // Fetch fertilizers from backend
   useEffect(() => {
     axios
       .get("http://localhost:8081/api/fertilizers")
@@ -26,22 +27,22 @@ export default function FertilizerList() {
       .catch((err) => console.error(err));
   }, []);
 
+  // Highlight search matches
   const highlightMatch = (text) => {
     if (!text) return "";
     if (!searchTerm) return text;
-
     const regex = new RegExp(`(${searchTerm})`, "gi");
     return text.replace(regex, "<mark>$1</mark>");
   };
 
+  // Apply search, filter, and sort
   useEffect(() => {
     let temp = [...fertilizers];
 
     if (searchTerm.trim() !== "") {
       const text = searchTerm.toLowerCase();
-
       temp = temp.filter((f) =>
-        (f.fertilizerCode && f.fertilizerCode.toLowerCase() === text) ||
+        (f.fertilizerCode && f.fertilizerCode.toLowerCase().includes(text)) ||
         (f.name && f.name.toLowerCase().includes(text)) ||
         (f.category && f.category.toLowerCase().includes(text)) ||
         (f.type && f.type.toLowerCase().includes(text)) ||
@@ -51,7 +52,7 @@ export default function FertilizerList() {
 
     if (categoryFilter) temp = temp.filter((f) => f.category === categoryFilter);
     if (typeFilter) temp = temp.filter((f) => f.type === typeFilter);
-    if (districtFilter) temp = temp.filter((f) => f.district === districtFilter); // ✅ filter by district
+    if (districtFilter) temp = temp.filter((f) => f.district === districtFilter);
 
     if (sortOption === "priceLow") temp.sort((a, b) => a.price - b.price);
     else if (sortOption === "priceHigh") temp.sort((a, b) => b.price - a.price);
@@ -63,10 +64,10 @@ export default function FertilizerList() {
   return (
     <div className="max-w-6xl mx-auto p-8">
       {/* Header + Search + Filters */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
         <h1 className="text-4xl font-extrabold text-green-800">Fertilizers</h1>
 
-        <div className="flex space-x-3 items-center">
+        <div className="flex flex-wrap gap-3 items-center">
           <input
             type="text"
             placeholder="Search by name, code, type, category, district..."
@@ -164,7 +165,7 @@ export default function FertilizerList() {
         </Link>
       </div>
 
-      {/* Grid */}
+      {/* Fertilizer Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredFertilizers.map((f) => (
           <div
@@ -211,7 +212,7 @@ export default function FertilizerList() {
 
             <div className="flex justify-between mt-4">
               <Link
-                to={`/fertilizers/update/${f.id || f._id}`}
+                to={`/fertilizers/edit/${f.id || f._id}`}
                 className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
               >
                 Edit
