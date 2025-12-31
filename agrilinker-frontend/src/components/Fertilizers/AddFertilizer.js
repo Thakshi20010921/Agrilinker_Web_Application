@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";  
+import { toast } from "react-toastify";
 
 export default function AddFertilizer() {
   const navigate = useNavigate();
@@ -9,21 +9,21 @@ export default function AddFertilizer() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    price: "",      
+    price: "",
     unit: "",
     category: "",
-    type: "",            
+    type: "",
     stock: "",
     imageUrl: "",
-    quantityInside: "" 
+    quantityInside: "",
+    district: "" // ✅ new district field
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // ✅ Ensure numeric-only input for price, stock, quantityInside
+    // Numeric-only input validation
     if (["price", "stock", "quantityInside"].includes(name)) {
-      // Allow only digits and decimal point for price, only digits for stock and quantityInside if needed
       if (name === "price") {
         if (!/^\d*\.?\d*$/.test(value)) return;
       } else {
@@ -37,8 +37,8 @@ export default function AddFertilizer() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Validate required fields
-    const requiredFields = ["name", "description", "price", "unit", "category", "type", "stock", "imageUrl"];
+    // Required fields
+    const requiredFields = ["name", "description", "price", "unit", "category", "type", "stock", "imageUrl", "district"];
     for (let field of requiredFields) {
       if (!form[field] || form[field].toString().trim() === "") {
         toast.error(`Please fill the ${field} field.`);
@@ -46,7 +46,7 @@ export default function AddFertilizer() {
       }
     }
 
-    // ✅ Validate numeric values
+    // Numeric validation
     if (isNaN(form.price) || Number(form.price) <= 0) {
       toast.error("Unit Price must be a positive number.");
       return;
@@ -66,7 +66,7 @@ export default function AddFertilizer() {
         price: Number(form.price),
         stock: Number(form.stock),
         quantityInside: form.quantityInside ? Number(form.quantityInside) : null
-      }) ;
+      });
 
       toast.success("Fertilizer added successfully!");
       setTimeout(() => navigate("/fertilizers"), 800);
@@ -79,12 +79,9 @@ export default function AddFertilizer() {
 
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white shadow rounded-xl">
-      <h1 className="text-3xl font-extrabold text-green-800 mb-6">
-        Add Fertilizer
-      </h1>
+      <h1 className="text-3xl font-extrabold text-green-800 mb-6">Add Fertilizer</h1>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
-
         <div>
           <label className="font-semibold">Fertilizer Name</label>
           <input type="text" name="name" className="w-full border p-3 rounded-lg" placeholder="Enter fertilizer name" onChange={handleChange} />
@@ -136,6 +133,37 @@ export default function AddFertilizer() {
             <option>Water-Soluble</option>
             <option>Powder</option>
             <option>Slow-Release</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="font-semibold">District</label>
+          <select name="district" className="w-full border p-3 rounded-lg" onChange={handleChange}>
+            <option value="">Select District</option>
+            <option>Colombo</option>
+            <option>Gampaha</option>
+            <option>Kalutara</option>
+            <option>Kandy</option>
+            <option>Matale</option>
+            <option>Nuwara Eliya</option>
+            <option>Galle</option>
+            <option>Matara</option>
+            <option>Hambantota</option>
+            <option>Jaffna</option>
+            <option>Kilinochchi</option>
+            <option>Mannar</option>
+            <option>Vavuniya</option>
+            <option>Mullaitivu</option>
+            <option>Batticaloa</option>
+            <option>Ampara</option>
+            <option>Trincomalee</option>
+            <option>Kurunegala</option>
+            <option>Puttalam</option>
+            <option>Anuradhapura</option>
+            <option>Polonnaruwa</option>
+            <option>Badulla</option>
+            <option>Moneragala</option>
+            <option>Ratnapura</option>
           </select>
         </div>
 

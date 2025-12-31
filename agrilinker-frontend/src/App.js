@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-
+import FertilizerRecommendation from "./components/Fertilizers/FertilizerRecommendation";
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import HowItWorks from "./components/HowItWorks";
@@ -78,6 +78,8 @@ function App() {
         <Route path="/fertilizers" element={<FertilizerList />} />
         <Route path="/fertilizers/add" element={<AddFertilizer />} />
         <Route path="/fertilizers/update/:id" element={<UpdateFertilizer />} />
+        {/* ✅ Fertilizer Recommendation */}
+        <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
 
         {/* ------------ FARMER PAGES ------------ */}
         <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
@@ -87,8 +89,7 @@ function App() {
         {/* ------------ CART & CHECKOUT ------------ */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/order-confirmation" element={<OrderConfirmation />} />
-
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
       </Routes>
 
       {!hideLayout && <Footer />}
