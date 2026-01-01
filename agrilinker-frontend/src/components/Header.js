@@ -2,14 +2,14 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { FaShoppingCart } from "react-icons/fa";
-import UserMenu from "./UserMenu"; // ✅ Import your new avatar menu
+import UserMenu from "./UserMenu";
 
 function Header() {
   const { cart } = useContext(CartContext);
 
   return (
-    <header className="bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
-
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
+      
       {/* Logo */}
       <div className="flex items-center space-x-3">
         <span className="rounded-full bg-white p-2 shadow-md">
@@ -22,9 +22,15 @@ function Header() {
 
       {/* Navigation */}
       <nav className="flex space-x-8">
-        <Link to="/home" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">Home</Link>
-        <Link to="/marketplace" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">Marketplace</Link>
-        <Link to="/fertilizers" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">Fertilizers</Link>
+        <Link to="/home" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">
+          Home
+        </Link>
+        <Link to="/marketplace" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">
+          Marketplace
+        </Link>
+        <Link to="/fertilizers" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">
+          Fertilizers
+        </Link>
       </nav>
 
       {/* Cart & Avatar */}
@@ -38,7 +44,6 @@ function Header() {
           )}
         </Link>
 
-        {/* ✅ Replace emoji with professional avatar menu */}
         <UserMenu />
       </div>
     </header>
