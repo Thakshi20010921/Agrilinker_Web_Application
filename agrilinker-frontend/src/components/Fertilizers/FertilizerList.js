@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react"; 
+import React, { useEffect, useState, useContext } from "react";  
 import axios from "axios";
 import { FiFilter } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
@@ -15,6 +15,11 @@ export default function FertilizerList() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { addToCart } = useContext(CartContext);
+
+  /* ===================== PAGINATION (NEW) ===================== */
+  const ITEMS_PER_PAGE = 10; // show 10 fertilizers per page
+  const [currentPage, setCurrentPage] = useState(1);
+  /* ============================================================ */
 
   // Fetch fertilizers from backend
   useEffect(() => {
@@ -59,7 +64,16 @@ export default function FertilizerList() {
     else if (sortOption === "nameAZ") temp.sort((a, b) => a.name.localeCompare(b.name));
 
     setFilteredFertilizers(temp);
+
+    /* 🔹 Reset to first page whenever search/filter/sort changes */
+    setCurrentPage(1);
   }, [fertilizers, searchTerm, sortOption, categoryFilter, typeFilter, districtFilter]);
+
+  /* ===================== PAGINATION LOGIC ===================== */
+  const totalPages = Math.ceil(filteredFertilizers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentItems = filteredFertilizers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  /* ============================================================ */
 
   return (
     <div className="max-w-6xl mx-auto p-8">
@@ -148,7 +162,7 @@ export default function FertilizerList() {
         </div>
       </div>
 
-      {/* Add & Recommendation Buttons */}
+      {/* Add & Recommendation Buttons (UNCHANGED) */}
       <div className="mb-6 flex gap-4">
         <Link
           to="/fertilizers/add"
@@ -165,9 +179,9 @@ export default function FertilizerList() {
         </Link>
       </div>
 
-      {/* Fertilizer Grid */}
+      {/* Fertilizer Grid (ONLY CHANGE: currentItems instead of all) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredFertilizers.map((f) => (
+        {currentItems.map((f) => (
           <div
             key={f.id || f._id}
             className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
@@ -228,6 +242,26 @@ export default function FertilizerList() {
           </div>
         ))}
       </div>
+
+      {/* ===================== PAGINATION UI ===================== */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-10 gap-2">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-4 py-2 border rounded-lg ${
+                currentPage === page
+                  ? "bg-green-700 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+      )}
+      {/* ===================================================== */}
     </div>
   );
 }
