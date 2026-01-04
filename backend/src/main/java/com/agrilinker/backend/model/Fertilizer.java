@@ -23,13 +23,16 @@ public class Fertilizer {
     private Integer stock;
     private Double quantityInside;
 
+    private String district; // ✅ new field
+
     public Fertilizer() {
     }
 
+    // ✅ Updated constructor including district
     public Fertilizer(String name, String description, double price, String unit,
-            ObjectId supplierId, String type, String category,
-            String fertilizerCode, String imageUrl, Integer stock,
-            Double quantityInside) {
+                      ObjectId supplierId, String type, String category,
+                      String fertilizerCode, String imageUrl, Integer stock,
+                      Double quantityInside, String district) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -41,102 +44,47 @@ public class Fertilizer {
         this.imageUrl = imageUrl;
         this.stock = stock;
         this.quantityInside = quantityInside;
+        this.district = district; // ✅ set new field
     }
 
     // Getters & Setters
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getDescription() {
-        return description;
-    }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getUnit() { return unit; }
+    public void setUnit(String unit) { this.unit = unit; }
 
-    public double getPrice() {
-        return price;
-    }
+    public ObjectId getSupplierId() { return supplierId; }
+    public void setSupplierId(ObjectId supplierId) { this.supplierId = supplierId; }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public String getUnit() {
-        return unit;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+    public String getFertilizerCode() { return fertilizerCode; }
+    public void setFertilizerCode(String fertilizerCode) { this.fertilizerCode = fertilizerCode; }
 
-    public ObjectId getSupplierId() {
-        return supplierId;
-    }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
-    public void setSupplierId(ObjectId supplierId) {
-        this.supplierId = supplierId;
-    }
+    public Integer getStock() { return stock; }
+    public void setStock(Integer stock) { this.stock = stock; }
 
-    public String getType() {
-        return type;
-    }
+    public Double getQuantityInside() { return quantityInside; }
+    public void setQuantityInside(Double quantityInside) { this.quantityInside = quantityInside; }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getFertilizerCode() {
-        return fertilizerCode;
-    }
-
-    public void setFertilizerCode(String fertilizerCode) {
-        this.fertilizerCode = fertilizerCode;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
-    public Double getQuantityInside() {
-        return quantityInside;
-    }
-
-    public void setQuantityInside(Double quantityInside) {
-        this.quantityInside = quantityInside;
-    }
+    public String getDistrict() { return district; }
+    public void setDistrict(String district) { this.district = district; } // ✅ getter & setter
 }
