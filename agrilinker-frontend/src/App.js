@@ -32,6 +32,7 @@ import { CartProvider } from "./context/CartContext";
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 
+import { AuthProvider } from "./context/AuthContext";
 function App() {
   const location = useLocation();
 
@@ -42,63 +43,63 @@ function App() {
     location.pathname === "/register";
 
   return (
-    <CartProvider>
-      {/* ✅ Toast system (GLOBAL) */}
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="colored"
-      />
-
-      {!hideLayout && <Header />}
-
-      <Routes>
-        {/* Auth */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* Home */}
-        <Route
-          path="/home"
-          element={
-            <>
-              <HeroSection />
-              <HowItWorks />
-              <Benefits />
-            </>
-          }
+    <AuthProvider>
+      <CartProvider>
+        {/* ✅ Toast system (GLOBAL) */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="colored"
         />
 
-        {/* Marketplace */}
-        <Route path="/marketplace" element={<Marketplace />} />
+        {!hideLayout && <Header />}
 
-        {/* Fertilizers */}
-        <Route path="/fertilizers" element={<FertilizerList />} />
-        <Route path="/fertilizers/add" element={<AddFertilizer />} />
-        {/* ✅ Updated route path to match Edit button */}
-        <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
-        <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
+        <Routes>
+          {/* Auth */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* ------------ FARMER PAGES ------------ */}
-        <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
-        <Route path="/farmer/add-product" element={<AddProduct />} />
+          {/* Home */}
+          <Route
+            path="/home"
+            element={
+              <>
+                <HeroSection />
+                <HowItWorks />
+                <Benefits />
+              </>
+            }
+          />
 
-        <Route path="/farmer/my-products" element={<MyProducts />} />
+          {/* Marketplace */}
+          <Route path="/marketplace" element={<Marketplace />} />
 
-        {/* ------------ CART & CHECKOUT ------------ */}
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/order-confirmation" element={<OrderConfirmation />} />
-      </Routes>
+          {/* Fertilizers */}
+          <Route path="/fertilizers" element={<FertilizerList />} />
+          <Route path="/fertilizers/add" element={<AddFertilizer />} />
+          <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
+          <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
 
-      {!hideLayout && <Footer />}
-    </CartProvider>
+          {/* FARMER PAGES */}
+          <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+          <Route path="/farmer/add-product" element={<AddProduct />} />
+          <Route path="/farmer/my-products" element={<MyProducts />} />
+
+          {/* CART & CHECKOUT */}
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        </Routes>
+
+        {!hideLayout && <Footer />}
+      </CartProvider>
+    </AuthProvider>
   );
 }
 
