@@ -12,8 +12,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
                 .addResourceHandler("/uploads/**")
-                .addResourceLocations(
-                        "file:E:/Downloads/Agrilinker_Web_Application/backend/uploads/");
+                .addResourceLocations("file:C:/Users/Dell/Downloads/New agri 2/Agrilinker_Web_Application/backend/uploads/");
+                //C:/Users/Dell/Downloads/New agri 2/Agrilinker_Web_Application/backend/uploads/
     }
 
     @Override
