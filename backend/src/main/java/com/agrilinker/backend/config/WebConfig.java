@@ -10,10 +10,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Get current backend folder dynamically
+    String uploadDir = System.getProperty("user.dir") + "/uploads/";
+
         registry
                 .addResourceHandler("/uploads/**")
-                .addResourceLocations("file:C:/Users/Dell/Downloads/New agri 2/Agrilinker_Web_Application/backend/uploads/");
-                //C:/Users/Dell/Downloads/New agri 2/Agrilinker_Web_Application/backend/uploads/
+                .addResourceLocations("file:" + uploadDir);
+                //C:/Users/Dell/Downloads/New agri 2/Agrilinker_Web_Application/backend/uploads/---------madhusha
+                //file:" + uploadDir-------Dynamicpath
     }
 
     @Override
