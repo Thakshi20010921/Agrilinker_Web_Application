@@ -31,6 +31,7 @@ import { CartProvider } from "./context/CartContext";
 //----farmer
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
+import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 
 import { AuthProvider } from "./context/AuthContext";
 function App() {
@@ -84,11 +85,15 @@ function App() {
           <Route path="/fertilizers" element={<FertilizerList />} />
           <Route path="/fertilizers/add" element={<AddFertilizer />} />
           <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
-          <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
+          <Route
+            path="/fertilizers/recommend"
+            element={<FertilizerRecommendation />}
+          />
 
           {/* FARMER PAGES */}
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
           <Route path="/farmer/add-product" element={<AddProduct />} />
+          <Route path="/farmer/add-product2" element={<AddProductPage />} />
           <Route path="/farmer/my-products" element={<MyProducts />} />
 
           {/* CART & CHECKOUT */}
