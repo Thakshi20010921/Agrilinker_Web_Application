@@ -1,0 +1,50 @@
+.add-product-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: whitesmoke;
+}
+
+/* Main content shifts right to avoid sidebar */
+.main-content {
+  margin-left: 300px; /* 🔥 SAME as sidebar width */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Keeps content centered */
+.scrollable-form-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Card no longer overlaps header */
+.form-card {
+  background: white;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin-top: 20px; /* ✅ normal spacing */
+}
+
+/* Footer buttons */
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-next {
+  background: #2d3436;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+}
