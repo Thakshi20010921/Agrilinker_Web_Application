@@ -1,0 +1,15 @@
+.sidebar-placeholder {
+  width: 250px;
+  height: 740px; /* full height */
+  position: fixed; /* 🔥 FIX */
+  top: 114px;
+  left: 30px;
+  background-color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
