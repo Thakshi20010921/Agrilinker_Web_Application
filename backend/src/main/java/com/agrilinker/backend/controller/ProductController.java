@@ -21,7 +21,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("/with-image")
-    public ResponseEntity<Product> createProductWithImage(s
+    public ResponseEntity<Product> createProductWithImage(
             @RequestPart("product") Product product,
             @RequestPart("image") MultipartFile imageFile) {
 
