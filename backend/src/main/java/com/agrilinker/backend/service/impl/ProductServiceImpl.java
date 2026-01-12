@@ -62,4 +62,9 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("Product not found with id: " + id);
         }
     }
+
+    @Override
+    public List<Product> getProductsByFarmer(String farmerId) {
+        return productRepository.findByFarmerId(farmerId);
+    }
 }
