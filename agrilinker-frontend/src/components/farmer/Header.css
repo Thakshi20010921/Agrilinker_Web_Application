@@ -1,0 +1,12 @@
+.header-placeholder {
+  height: 120px;
+  margin: 10px;
+  width: 1500px;
+  border-radius: 12px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
