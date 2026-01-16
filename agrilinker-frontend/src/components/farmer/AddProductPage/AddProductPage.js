@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import Header from "../Header";
+
 import Sidebar from "../Sidebar";
 import Step1Form from "./Step1Form";
 import Step2Form from "./Step2Form";
 import Step3Form from "./Step3Form";
-import ProgressBar from "./ProgressBar";
+
 import "./AddProductPage.css";
+import { useEffect } from "react";
 
 function AddProductPage() {
   const [step, setStep] = useState(1);
@@ -28,14 +29,11 @@ function AddProductPage() {
   };
 
   return (
-    <div className="add-product-container">
-      <Sidebar /> {/* This will be fixed on the left */}
+    <div className="add-product-layout">
+      <Sidebar />
       <main className="main-content">
-        <Header /> {/* Header at the top of the scrollable area */}
         <div className="scrollable-form-container">
           <div className="form-card">
-            <ProgressBar step={step} />
-
             <div className="step-content">
               {step === 1 && (
                 <Step1Form
