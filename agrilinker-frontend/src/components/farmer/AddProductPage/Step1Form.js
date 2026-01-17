@@ -7,7 +7,8 @@ function Step1Form({ productData, setProductData }) {
   };
 
   // Reusable Tailwind classes for consistent styling
-  const labelStyle = "block text-sm font-semibold text-emerald-900 mb-1.5 ml-1";
+  const labelStyle =
+    "block text-base font-semibold text-emerald-900 mb-1.5 ml-1";
   const inputStyle = `
     w-full bg-white/60 backdrop-blur-md border border-emerald-100 
     rounded-2xl px-4 py-3.5 text-emerald-950 placeholder:text-emerald-300
