@@ -41,7 +41,7 @@ function Step3Form({ productData, setProductData }) {
       <div className="space-y-6">
         {/* Pricing Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
+          {/*<div>
             <label className={labelStyle}>Cost Price (Your Cost)</label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 font-bold">
@@ -56,7 +56,7 @@ function Step3Form({ productData, setProductData }) {
                 onChange={handleChange}
               />
             </div>
-          </div>
+          </div> */}
 
           <div>
             <label className={labelStyle}>Selling Price (Buyer Sees)</label>
