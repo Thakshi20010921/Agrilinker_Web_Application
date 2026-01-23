@@ -3,9 +3,12 @@ import Sidebar from "../Sidebar";
 import Step1Form from "./Step1Form";
 import Step2Form from "./Step2Form";
 import Step3Form from "./Step3Form";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function AddProductPage() {
   const [step, setStep] = useState(1);
+  const navigate = useNavigate();
   const [productData, setProductData] = useState({
     name: "",
     category: "",
@@ -21,9 +24,58 @@ function AddProductPage() {
 
   const handleNext = () => setStep((prev) => Math.min(prev + 1, 3));
   const handlePrevious = () => setStep((prev) => Math.max(prev - 1, 1));
-  const handleSubmit = () => {
-    console.log("Final Product Data:", productData);
-    alert("Product Listed Successfully!");
+
+  //handel submit
+  const handleSubmit = async () => {
+    // 1. Create a FormData object
+    const formData = new FormData();
+
+    // 2. Prepare the product JSON (matching your Spring Boot Model)
+    const productBlob = new Blob(
+      [
+        JSON.stringify({
+          name: productData.name,
+          category: productData.category,
+          description: productData.description,
+          location: productData.location,
+          purchasePrice: productData.purchasePrice,
+          sellingPrice: productData.sellingPrice,
+          quantity: productData.quantity,
+          unit: productData.unit,
+          availability: productData.availability,
+          farmerId: localStorage.getItem("email"), // Crucial: Link it to the logged-in farmer
+        }),
+      ],
+      { type: "application/json" },
+    );
+
+    // 3. Append the parts (names must match @RequestPart in your Java Controller)
+    formData.append("product", productBlob);
+
+    // Append the first image from the array
+    if (productData.images && productData.images.length > 0) {
+      formData.append("image", productData.images[0]);
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8081/api/products/with-image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        alert("Success! Your harvest is now listed.");
+        navigate("/farmer-dashboard"); // Redirect back to dashboard
+      }
+    } catch (err) {
+      console.error("Submission Error:", err);
+      alert("Oops! Something went wrong while saving.");
+    }
   };
 
   return (
