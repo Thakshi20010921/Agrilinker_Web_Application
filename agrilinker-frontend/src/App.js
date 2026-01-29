@@ -32,6 +32,7 @@ import { CartProvider } from "./context/CartContext";
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
+import EditProductPage from "./components/farmer/EditProductPage";
 
 import { AuthProvider } from "./context/AuthContext";
 function App() {
@@ -95,6 +96,7 @@ function App() {
           <Route path="/farmer/add-product" element={<AddProduct />} />
           <Route path="/farmer/add-product2" element={<AddProductPage />} />
           <Route path="/farmer/my-products" element={<MyProducts />} />
+          <Route path="/edit-product/:id" element={<EditProductPage />} />
 
           {/* CART & CHECKOUT */}
           <Route path="/cart" element={<CartPage />} />
