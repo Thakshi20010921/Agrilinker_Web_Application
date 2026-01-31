@@ -46,6 +46,16 @@ const FarmerDashboard = () => {
           Add Products
         </h2>
       </button>
+
+      <button
+        type="button"
+        onClick={() => navigate("/farmer/my-products")}
+        className="w-[110px] h-[110px] bg-white p-6 rounded-full shadow-sm border border-emerald-100 mb-8 inline-block text-left"
+      >
+        <h2 className="text-sm font-bold text-emerald-800 uppercase tracking-wider">
+          My Products
+        </h2>
+      </button>
       <br></br>
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 mb-8 inline-block">
