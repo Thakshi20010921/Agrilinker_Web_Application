@@ -18,6 +18,8 @@ public class Product {
     private int quantity;
     private String unit;
     private String farmerId;
+    private String farmerEmail;
+    
     private String location;
     private String Product_image;
     private String status;
@@ -35,6 +37,7 @@ public class Product {
         this.quantity = quantity;
         this.unit = unit;
         this.farmerId = farmerId;
+
         this.location = location;
         this.Product_image = Product_image;
         this.status = status;
