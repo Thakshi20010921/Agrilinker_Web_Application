@@ -42,8 +42,9 @@ function AddProductPage() {
           sellingPrice: productData.sellingPrice,
           quantity: productData.quantity,
           unit: productData.unit,
-          availability: productData.availability,
-          farmerId: localStorage.getItem("email"), // Crucial: Link it to the logged-in farmer
+          //availability: productData.availability,
+          status: productData.availability ? "IN_STOCK" : "OUT_OF_STOCK",
+          farmerEmail: localStorage.getItem("email"), // Link it to the logged-in farmer
         }),
       ],
       { type: "application/json" },
