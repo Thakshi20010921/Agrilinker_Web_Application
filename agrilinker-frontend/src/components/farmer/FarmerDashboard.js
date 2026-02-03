@@ -5,14 +5,14 @@ import { useNavigate } from "react-router-dom"; // Import this for navigation
 
 const FarmerDashboard = () => {
   const [products, setProducts] = useState([]);
-  const farmerId = localStorage.getItem("email"); // or use stored farmerId
+  const farmerEmail = localStorage.getItem("email"); // or use stored farmerEmail
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8081/api/products/farmer/${farmerId}`,
+          `http://localhost:8081/api/products/farmer/${farmerEmail}`,
         );
         setProducts(res.data);
       } catch (err) {
@@ -21,7 +21,7 @@ const FarmerDashboard = () => {
     };
 
     fetchProducts();
-  }, [farmerId]);
+  }, [farmerEmail]);
 
   return (
     <div className="relative min-h-screen bg-slate-50 p-8">
