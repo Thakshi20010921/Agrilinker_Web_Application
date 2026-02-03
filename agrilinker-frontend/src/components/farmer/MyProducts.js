@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const farmerId = localStorage.getItem("email");
+  const farmerEmail = localStorage.getItem("email");
   const navigate = useNavigate();
 
   // 1. Fetch products from Backend
@@ -13,7 +13,7 @@ const MyProducts = () => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8081/api/products/farmer/${farmerId}`,
+          `http://localhost:8081/api/products/farmer/${farmerEmail}`,
         );
         setProducts(res.data);
         setLoading(false);
@@ -22,8 +22,8 @@ const MyProducts = () => {
         setLoading(false);
       }
     };
-    if (farmerId) fetchProducts();
-  }, [farmerId]);
+    if (farmerEmail) fetchProducts();
+  }, [farmerEmail]);
 
   // 2. Delete Product Function
   const handleDelete = async (id) => {
