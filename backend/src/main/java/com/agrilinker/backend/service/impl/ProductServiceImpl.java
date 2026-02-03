@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
             existingProduct.setPrice(updatedProduct.getPrice());
             existingProduct.setQuantity(updatedProduct.getQuantity());
             existingProduct.setUnit(updatedProduct.getUnit());
-            existingProduct.setFarmerId(updatedProduct.getFarmerId());
+            existingProduct.setfarmerEmail(updatedProduct.getfarmerEmail());
             existingProduct.setLocation(updatedProduct.getLocation());
             existingProduct.setProduct_image(updatedProduct.getProduct_image());
             existingProduct.setStatus(updatedProduct.getStatus());
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getProductsByFarmer(String farmerId) {
-        return productRepository.findByFarmerId(farmerId);
-    }
+    public List<Product> getProductsByFarmer(String farmerEmail) {
+    return productRepository.findByFarmerEmail(farmerEmail);
+}
 }
