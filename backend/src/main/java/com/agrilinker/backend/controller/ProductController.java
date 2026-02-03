@@ -57,9 +57,9 @@ public class ProductController {
     }
 
     // Get all products for a specific farmer
-@GetMapping("/farmer/{farmerId}")
-public ResponseEntity<List<Product>> getProductsByFarmer(@PathVariable String farmerId) {
-    List<Product> products = productService.getProductsByFarmer(farmerId);
+@GetMapping("/farmer/{email}")
+public ResponseEntity<List<Product>> getProductsByFarmer(@PathVariable String email) {
+    List<Product> products = productService.getProductsByFarmer(email);
     return ResponseEntity.ok(products);
 }
 
