@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "../Sidebar";
+//import Sidebar from "../Sidebar";
 import Step1Form from "./Step1Form";
 import Step2Form from "./Step2Form";
 import Step3Form from "./Step3Form";
@@ -82,7 +82,7 @@ function AddProductPage() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* 1. SIDEBAR */}
-      <Sidebar />
+      {/* <Sidebar />*/}
 
       {/* 2. MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
