@@ -11,7 +11,7 @@ function Step3Form({ productData, setProductData }) {
 
   const labelStyle = "block text-lg font-bold text-emerald-900 mb-1.5 ml-1";
   const inputStyle = `
-    w-full bg-white/60 backdrop-blur-md border border-emerald-100 
+    w-full bg-white backdrop-blur-md border border-emerald-100 
     rounded-2xl px-4 py-3.5 text-emerald-950 placeholder:text-emerald-300
     outline-none transition-all duration-300
     focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10
@@ -22,7 +22,7 @@ function Step3Form({ productData, setProductData }) {
   const profit = productData.sellingPrice - productData.purchasePrice;
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className="w-full max-w-xl mx-auto p-10 border rounded-2xl bg-[#E6F5EA]">
       {/* Form Header */}
       <div className="mb-10">
         <div className="flex items-center space-x-3 mb-2">
