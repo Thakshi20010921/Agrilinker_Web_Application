@@ -22,6 +22,7 @@ import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -90,6 +91,9 @@ function App() {
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
           <Route path="/farmer/add-product" element={<AddProduct />} />
           <Route path="/farmer/my-products" element={<MyProducts />} />
+
+          {/* ADMIN PAGES */}
+          <Route path="/admin" element={<AdminDashboard />} />
 
           {/* CART & CHECKOUT */}
           <Route path="/cart" element={<CartPage />} />

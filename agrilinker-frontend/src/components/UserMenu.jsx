@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function UserMenu() {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+    const roles = useMemo(() => {
+        const storedRoles = localStorage.getItem("roles");
+        return storedRoles ? JSON.parse(storedRoles) : [];
+    }, []);
+    const isAdmin = roles.includes("ADMIN");
 
     const logout = () => {
         localStorage.removeItem("token");
@@ -26,6 +31,11 @@ export default function UserMenu() {
             {/* Dropdown */}
             {open && (
                 <div className="user-dropdown">
+                    {isAdmin && (
+                        <button onClick={() => navigate("/admin")}>
+                            Admin Dashboard
+                        </button>
+                    )}
                     <button onClick={logout}>Logout</button>
                 </div>
             )}
