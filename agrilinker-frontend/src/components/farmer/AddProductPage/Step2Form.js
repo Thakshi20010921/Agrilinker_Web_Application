@@ -13,7 +13,7 @@ function Step2Form({ productData, setProductData }) {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className="w-full max-w-xl mx-auto border rounded-2xl p-10 bg-[#E6F5EA]">
       {/* Form Header */}
       <div className="mb-10">
         <div className="flex items-center space-x-3 mb-2">
