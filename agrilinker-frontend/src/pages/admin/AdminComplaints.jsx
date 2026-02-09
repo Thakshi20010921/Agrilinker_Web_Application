@@ -20,8 +20,6 @@ export default function AdminComplaints() {
   const [statusSelection, setStatusSelection] = useState("");
   const [messageText, setMessageText] = useState("");
   const [recipientRole, setRecipientRole] = useState("BUYER");
-  const [sellerId, setSellerId] = useState("");
-  const [sellerEmail, setSellerEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -57,8 +55,6 @@ export default function AdminComplaints() {
     if (selectedTicket?.status) {
       setStatusSelection(selectedTicket.status);
     }
-    setSellerId(selectedTicket?.sellerId || "");
-    setSellerEmail(selectedTicket?.sellerEmail || "");
   }, [selectedTicket]);
 
   const handleStatusUpdate = async () => {
@@ -100,27 +96,6 @@ export default function AdminComplaints() {
     } catch (messageError) {
       console.error(messageError);
       setError("Unable to send the message.");
-    }
-  };
-
-  const handleAssignSeller = async () => {
-    if (!selectedTicket || !sellerId.trim()) return;
-    try {
-      const response = await api.put(
-        `/api/support-tickets/${selectedTicket.id}/assign`,
-        {
-          sellerId: sellerId.trim(),
-          sellerEmail: sellerEmail.trim() || null,
-        },
-      );
-      setTickets((prev) =>
-        prev.map((ticket) =>
-          ticket.id === selectedTicket.id ? response.data : ticket,
-        ),
-      );
-    } catch (assignError) {
-      console.error(assignError);
-      setError("Unable to assign a seller.");
     }
   };
 
@@ -271,35 +246,6 @@ export default function AdminComplaints() {
                         className="rounded-full bg-green-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-800"
                       >
                         Save status
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium text-gray-700">
-                      Assign seller
-                    </label>
-                    <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-center">
-                      <input
-                        type="text"
-                        value={sellerId}
-                        onChange={(event) => setSellerId(event.target.value)}
-                        placeholder="Seller ID"
-                        className="w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm text-gray-700 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200"
-                      />
-                      <input
-                        type="email"
-                        value={sellerEmail}
-                        onChange={(event) => setSellerEmail(event.target.value)}
-                        placeholder="Seller email (optional)"
-                        className="w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm text-gray-700 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAssignSeller}
-                        className="rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
-                      >
-                        Assign
                       </button>
                     </div>
                   </div>
