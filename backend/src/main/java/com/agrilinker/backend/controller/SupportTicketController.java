@@ -1,8 +1,6 @@
 package com.agrilinker.backend.controller;
 
 import com.agrilinker.backend.model.SupportTicket;
-import com.agrilinker.backend.model.SupportTicketNotification;
-import com.agrilinker.backend.service.SupportTicketNotificationService;
 import com.agrilinker.backend.service.SupportTicketService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +23,6 @@ public class SupportTicketController {
     @Autowired
     private SupportTicketService supportTicketService;
 
-    @Autowired
-    private SupportTicketNotificationService notificationService;
-
     @PostMapping
     public ResponseEntity<SupportTicket> createTicket(@RequestBody SupportTicket ticket) {
         SupportTicket savedTicket = supportTicketService.createTicket(ticket);
@@ -45,16 +40,6 @@ public class SupportTicketController {
         return ticket != null ? ResponseEntity.ok(ticket) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/buyer/{buyerId}")
-    public ResponseEntity<List<SupportTicket>> getTicketsByBuyer(@PathVariable String buyerId) {
-        return ResponseEntity.ok(supportTicketService.getTicketsByBuyerId(buyerId));
-    }
-
-    @GetMapping("/seller/{sellerId}")
-    public ResponseEntity<List<SupportTicket>> getTicketsBySeller(@PathVariable String sellerId) {
-        return ResponseEntity.ok(supportTicketService.getTicketsBySellerId(sellerId));
-    }
-
     @PutMapping("/{id}/status")
     public ResponseEntity<SupportTicket> updateStatus(
             @PathVariable String id,
@@ -70,24 +55,6 @@ public class SupportTicketController {
             return ResponseEntity.badRequest().build();
         }
         SupportTicket updatedTicket = supportTicketService.updateStatus(id, status);
-        return updatedTicket != null
-                ? ResponseEntity.ok(updatedTicket)
-                : ResponseEntity.notFound().build();
-    }
-
-    @PutMapping("/{id}/assign")
-    public ResponseEntity<SupportTicket> assignSeller(
-            @PathVariable String id,
-            @RequestBody SupportTicketAssignRequest request
-    ) {
-        if (request == null || request.getSellerId() == null || request.getSellerId().isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-        SupportTicket updatedTicket = supportTicketService.assignSeller(
-                id,
-                request.getSellerId(),
-                request.getSellerEmail()
-        );
         return updatedTicket != null
                 ? ResponseEntity.ok(updatedTicket)
                 : ResponseEntity.notFound().build();
@@ -112,13 +79,6 @@ public class SupportTicketController {
         return updatedTicket != null
                 ? ResponseEntity.ok(updatedTicket)
                 : ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/{id}/notifications")
-    public ResponseEntity<List<SupportTicketNotification>> getNotifications(
-            @PathVariable String id
-    ) {
-        return ResponseEntity.ok(notificationService.getNotificationsByTicketId(id));
     }
 
     public static class SupportTicketStatusRequest {
@@ -160,27 +120,6 @@ public class SupportTicketController {
 
         public void setMessage(String message) {
             this.message = message;
-        }
-    }
-
-    public static class SupportTicketAssignRequest {
-        private String sellerId;
-        private String sellerEmail;
-
-        public String getSellerId() {
-            return sellerId;
-        }
-
-        public void setSellerId(String sellerId) {
-            this.sellerId = sellerId;
-        }
-
-        public String getSellerEmail() {
-            return sellerEmail;
-        }
-
-        public void setSellerEmail(String sellerEmail) {
-            this.sellerEmail = sellerEmail;
         }
     }
 }
