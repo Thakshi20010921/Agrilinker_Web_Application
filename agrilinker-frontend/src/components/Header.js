@@ -31,6 +31,29 @@ function Header() {
         <Link to="/fertilizers" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">
           Fertilizers
         </Link>
+        <div className="relative group">
+          <button
+            type="button"
+            className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150 inline-flex items-center gap-2"
+          >
+            Support
+            <span className="text-sm">▾</span>
+          </button>
+          <div className="absolute left-0 mt-2 hidden min-w-[200px] rounded-xl bg-white py-2 shadow-lg ring-1 ring-black/5 group-hover:block">
+            <Link
+              to="/support"
+              className="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:text-green-700"
+            >
+              Complaints
+            </Link>
+            <Link
+              to="/seller/disputes"
+              className="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:text-green-700"
+            >
+              Disputes
+            </Link>
+          </div>
+        </div>
       </nav>
 
       {/* Cart & Avatar */}
