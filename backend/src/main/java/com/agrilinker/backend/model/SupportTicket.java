@@ -24,11 +24,6 @@ public class SupportTicket {
     private String complaintType;
     private String resolutionPreference;
     private String contactMethod;
-    private String contactValue;
-    private String buyerId;
-    private String buyerEmail;
-    private String sellerId;
-    private String sellerEmail;
     private String description;
     private Status status;
     private LocalDateTime createdAt;
