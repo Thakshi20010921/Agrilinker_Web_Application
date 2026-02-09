@@ -9,7 +9,6 @@ import Footer from "./components/Footer";
 import Marketplace from "./components/Marketplace";
 import OrderConfirmation from "./components/OrderConfirmation";
 
-import MyProducts from "./components/farmer/MyProducts";
 import CartPage from "./components/CartPage";
 import CheckoutPage from "./components/CheckoutPage";
 
@@ -33,6 +32,7 @@ import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 import EditProductPage from "./components/farmer/EditProductPage";
+import MyProducts from "./components/farmer/MyProducts";
 
 import { AuthProvider } from "./context/AuthContext";
 function App() {
