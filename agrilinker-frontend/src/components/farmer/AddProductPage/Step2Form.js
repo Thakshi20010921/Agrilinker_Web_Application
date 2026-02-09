@@ -15,12 +15,12 @@ function Step2Form({ productData, setProductData }) {
   return (
     <div className="w-full max-w-xl mx-auto border rounded-2xl p-10 bg-[#E6F5EA]">
       {/* Form Header */}
-      <div className="mb-10">
-        <div className="flex items-center space-x-3 mb-2">
+      <div className="mb-10 ">
+        <div className="flex items-center space-x-3 mb-2 ">
           <span className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold">
             2
           </span>
-          <h3 className="text-2xl font-extrabold text-emerald-950 tracking-tight">
+          <h3 className="text-3xl font-extrabold text-emerald-950 tracking-tight">
             Product Images
           </h3>
         </div>
@@ -42,7 +42,7 @@ function Step2Form({ productData, setProductData }) {
           className={`
           border-2 border-dashed border-emerald-200 rounded-3xl p-10
           flex flex-col items-center justify-center transition-all duration-300
-          bg-emerald-50/30 group-hover:bg-emerald-50 group-hover:border-emerald-400
+          bg-white group-hover:bg-emerald-50 group-hover:border-emerald-400
           ${productData.images.length > 0 ? "border-emerald-500 bg-emerald-50/50" : ""}
         `}
         >
