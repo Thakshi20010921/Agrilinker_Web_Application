@@ -23,6 +23,12 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminComplaints from "./pages/admin/AdminComplaints";
+import AdminAnalysis from "./pages/admin/AdminAnalysis";
+import AdminSettings from "./pages/admin/AdminSettings";
+import SupportPage from "./pages/support/SupportPage";
+import SupportHistory from "./pages/support/SupportHistory";
+import SellerDisputes from "./pages/seller/SellerDisputes";
 
 
 import { ToastContainer } from "react-toastify";
@@ -95,7 +101,16 @@ function App() {
 
           {/* ADMIN PAGES */}
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/complaints" element={<AdminComplaints />} />
+          <Route path="/admin/analysis" element={<AdminAnalysis />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
 
+          {/* SUPPORT */}
+          <Route path="/support" element={<SupportPage />} />
+          <Route path="/support/history" element={<SupportHistory />} />
+
+          {/* SELLER */}
+          <Route path="/seller/disputes" element={<SellerDisputes />} />
 
           {/* CART & CHECKOUT */}
           <Route path="/cart" element={<CartPage />} />
