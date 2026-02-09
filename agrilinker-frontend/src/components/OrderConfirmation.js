@@ -1,11 +1,14 @@
-
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const OrderConfirmation = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const { order } = location.state || {};
+
+  const orderId = order?.id || order?._id || order?.orderId || "N/A";
+  const total = typeof order?.totalAmount === "number" ? order.totalAmount : null;
 
   return (
     <div className="max-w-2xl mx-auto p-6 text-center">
@@ -15,27 +18,46 @@ const OrderConfirmation = () => {
         <p className="text-gray-600 mt-2">Thank you for your purchase</p>
       </div>
 
-      {order && (
+      {order ? (
         <div className="bg-white shadow rounded-xl p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Order Details</h2>
           <div className="text-left space-y-2">
-            <p><span className="font-medium">Order ID:</span> {order.id}</p>
-            <p><span className="font-medium">Total:</span> ${order.totalAmount.toFixed(2)}</p>
-            <p><span className="font-medium">Payment Method:</span> {order.paymentMethod}</p>
-            <p><span className="font-medium">Estimated Delivery:</span> 3-5 business days</p>
+            <p>
+              <span className="font-medium">Order ID:</span> {orderId}
+            </p>
+            <p>
+              <span className="font-medium">Total:</span>{" "}
+              {total !== null ? `Rs. ${total.toFixed(2)}` : "Rs. N/A"}
+            </p>
+            <p>
+              <span className="font-medium">Payment Method:</span> {order.paymentMethod || "N/A"}
+            </p>
+            <p>
+              <span className="font-medium">Payment Status:</span> {order.paymentStatus || "N/A"}
+            </p>
+            <p>
+              <span className="font-medium">Estimated Delivery:</span> 3–5 business days
+            </p>
           </div>
+        </div>
+      ) : (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-6 text-left">
+          <p className="font-semibold text-yellow-800">Order created, but details were not passed to this page.</p>
+          <p className="text-yellow-700 text-sm mt-2">
+            Click “View My Orders” to see it.
+          </p>
         </div>
       )}
 
       <div className="flex gap-4 justify-center">
         <button
-          onClick={() => navigate('/products')}
+          onClick={() => navigate("/marketplace")}
           className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
         >
           Continue Shopping
         </button>
         <button
-          onClick={() => navigate('/orders')}
+          onClick={() => navigate("/orders")}
           className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300"
         >
           View My Orders
