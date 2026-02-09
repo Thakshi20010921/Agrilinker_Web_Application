@@ -40,11 +40,6 @@ public class SupportTicketController {
         return ticket != null ? ResponseEntity.ok(ticket) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/buyer/{buyerId}")
-    public ResponseEntity<List<SupportTicket>> getTicketsByBuyer(@PathVariable String buyerId) {
-        return ResponseEntity.ok(supportTicketService.getTicketsByBuyerId(buyerId));
-    }
-
     @PutMapping("/{id}/status")
     public ResponseEntity<SupportTicket> updateStatus(
             @PathVariable String id,
@@ -127,5 +122,4 @@ public class SupportTicketController {
             this.message = message;
         }
     }
-
 }

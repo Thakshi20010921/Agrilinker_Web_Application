@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SupportTicketRepository extends MongoRepository<SupportTicket, String> {
-    java.util.List<SupportTicket> findByBuyerId(String buyerId);
 }

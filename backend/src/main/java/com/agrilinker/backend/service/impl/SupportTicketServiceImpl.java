@@ -42,11 +42,6 @@ public class SupportTicketServiceImpl implements SupportTicketService {
     }
 
     @Override
-    public List<SupportTicket> getTicketsByBuyerId(String buyerId) {
-        return supportTicketRepository.findByBuyerId(buyerId);
-    }
-
-    @Override
     public SupportTicket updateStatus(String id, SupportTicket.Status status) {
         SupportTicket existingTicket = getTicketById(id);
         if (existingTicket == null) {
