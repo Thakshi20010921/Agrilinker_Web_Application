@@ -24,6 +24,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -94,6 +95,7 @@ function App() {
 
           {/* ADMIN PAGES */}
           <Route path="/admin" element={<AdminDashboard />} />
+
 
           {/* CART & CHECKOUT */}
           <Route path="/cart" element={<CartPage />} />
