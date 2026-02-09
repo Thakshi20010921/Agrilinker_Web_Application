@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -11,6 +13,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+const { loginUser } = useContext(AuthContext);
 
     const submit = async (e) => {
         e.preventDefault();
@@ -19,14 +22,15 @@ export default function Login() {
         try {
             const res = await login(email, password);
 
-            // Save auth data
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("roles", JSON.stringify(res.data.roles));
-            localStorage.setItem("email", res.data.email);
+localStorage.setItem("token", res.data.token);
+localStorage.setItem("roles", JSON.stringify(res.data.roles));
+localStorage.setItem("email", res.data.email);
 
-            toast.success("Login successful 🎉");
+loginUser({ email: res.data.email, roles: res.data.roles }, res.data.token);
 
-            navigate("/home");
+toast.success("Login successful 🎉");
+navigate("/home");
+
         } catch (err) {
             toast.error("Invalid email or password");
         } finally {

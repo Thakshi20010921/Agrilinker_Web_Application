@@ -8,6 +8,7 @@ import Benefits from "./components/Benefits";
 import Footer from "./components/Footer";
 import Marketplace from "./components/Marketplace";
 import OrderConfirmation from "./components/OrderConfirmation";
+import OrderHistory from "./components/OrderHistory";
 
 import MyProducts from "./components/farmer/MyProducts";
 import CartPage from "./components/CartPage";
@@ -95,6 +96,8 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        <Route path="/orders" element={<OrderHistory />} />
+
         </Routes>
 
         {!hideLayout && <Footer />}

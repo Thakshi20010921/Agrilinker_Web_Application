@@ -22,6 +22,8 @@ public class Product {
     private String Product_image;
     private String status;
     private LocalDateTime dateAdded;
+    private double ratingAvg = 0;
+    private int ratingCount = 0;
 
     public Product() {
     }
@@ -136,4 +138,21 @@ public class Product {
     public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
     }
+
+    public double getRatingAvg() {
+        return ratingAvg;
+    }
+
+    public void setRatingAvg(double ratingAvg) {
+        this.ratingAvg = ratingAvg;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
 }
