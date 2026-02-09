@@ -40,38 +40,8 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10 md:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row">
-        <section className="w-full rounded-3xl bg-white p-8 shadow-sm ring-1 ring-gray-100 lg:w-1/3">
-          <h2 className="text-xl font-semibold text-gray-900">Profile</h2>
-          <div className="mt-6 space-y-4 text-sm text-gray-600">
-            <div>
-              <p className="text-xs uppercase text-gray-400">Name</p>
-              <p className="mt-1 text-base font-semibold text-gray-900">
-                {user?.fullName || user?.name || "Not provided"}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase text-gray-400">Email</p>
-              <p className="mt-1 text-base font-semibold text-gray-900">
-                {user?.email || "Not provided"}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase text-gray-400">Phone</p>
-              <p className="mt-1 text-base font-semibold text-gray-900">
-                {user?.telephone || "Not provided"}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase text-gray-400">Address</p>
-              <p className="mt-1 text-base font-semibold text-gray-900">
-                {user?.address || "Not provided"}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="flex-1 rounded-3xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
+      <div className="mx-auto max-w-4xl">
+        <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
