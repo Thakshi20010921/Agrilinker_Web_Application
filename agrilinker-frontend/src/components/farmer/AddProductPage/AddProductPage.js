@@ -16,10 +16,10 @@ function AddProductPage() {
     location: "",
     images: [],
     purchasePrice: "",
-    sellingPrice: "", // Added to match previous step
+    price: "", // Added to match previous step
     quantity: "",
     unit: "kg",
-    availability: true,
+    status: "available",
   });
 
   const handleNext = () => setStep((prev) => Math.min(prev + 1, 3));
@@ -39,11 +39,11 @@ function AddProductPage() {
           description: productData.description,
           location: productData.location,
           purchasePrice: productData.purchasePrice,
-          sellingPrice: productData.sellingPrice,
+          price: productData.price,
+
           quantity: productData.quantity,
           unit: productData.unit,
-          //availability: productData.availability,
-          status: productData.availability ? "IN_STOCK" : "OUT_OF_STOCK",
+          status: productData.status,
           farmerEmail: localStorage.getItem("email"), // Link it to the logged-in farmer
         }),
       ],
@@ -71,7 +71,7 @@ function AddProductPage() {
 
       if (response.status === 200 || response.status === 201) {
         alert("Success! Your harvest is now listed.");
-        navigate("/farmer-dashboard"); // Redirect back to dashboard
+        navigate("/farmer/my-products"); // Redirect back to dashboard
       }
     } catch (err) {
       console.error("Submission Error:", err);
@@ -86,7 +86,7 @@ function AddProductPage() {
       {/* 1. SIDEBAR  bg-slate-50*/}
       {/* <Sidebar />*/}
       {/* 2. MAIN CONTENT AREA */}
-      <main className=" flex flex-col min-w-0 overflow-hidden">
+      <main className=" flex flex-col min-w-0 overflow-hidden p-8">
         {/* Top Header / Progress Bar */}
         <header className="bg-white border-none border-emerald-100 px-8 py-8">
           <div className=" flex items-center justify-between">
@@ -95,11 +95,11 @@ function AddProductPage() {
             </h2>
 
             {/* Visual Stepper */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               {[1, 2, 3].map((num) => (
                 <div key={num} className="flex items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
                       step >= num
                         ? "bg-emerald-600 text-white"
                         : "bg-emerald-100 text-emerald-400"
@@ -109,7 +109,7 @@ function AddProductPage() {
                   </div>
                   {num < 3 && (
                     <div
-                      className={`w-8 h-1 mx-2 rounded ${step > num ? "bg-emerald-600" : "bg-emerald-100"}`}
+                      className={`w-48 h-1 mx-2 rounded ${step > num ? "bg-emerald-600" : "bg-emerald-100"}`}
                     />
                   )}
                 </div>
@@ -122,7 +122,7 @@ function AddProductPage() {
         </header>
 
         {/* 3. SCROLLABLE FORM CONTAINER */}
-        <div className="flex-1 overflow-y-auto p-8 md:pt-0 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-8 md:pt-8 custom-scrollbar bg-slate-100 rounded-[20px] p-5">
           {/*<div className="max-w-3xl mx-auto">*/}
           <div className="max-w-full ml-0 flex flex-col lg:flex-row gap-12">
             {/* --- NEW LEFT INFO CARD --- */}
@@ -191,7 +191,7 @@ function AddProductPage() {
               </div>
             </div>{" "}
             {/* Form Card */}
-            <div className="w-full bg-white  rounded-[2rem]   overflow-hidden">
+            <div className="w-full  rounded-[2rem]   overflow-hidden">
               <div className="p-0 w-full md:p-0">
                 {/* Step Content */}
                 <div className="min-h-[400px] w-full transition-all duration-500 ease-in-out  ">
@@ -216,7 +216,7 @@ function AddProductPage() {
                 </div>
 
                 {/* Form Footer / Navigation */}
-                <div className="mt-12 pt-0 border-t border-emerald-50 flex items-center gap-x-6">
+                <div className="mt-12 pt-0 border-t border-emerald-50 flex items-center justify-center gap-x-6">
                   <div>
                     {step > 1 && (
                       <button
@@ -249,17 +249,21 @@ function AddProductPage() {
             </div>
             {/* --- NEW RIGHT NAVIGATION CARD --- */}
             <div className="lg:w-1/4 h-fit space-y-4">
-              <div className="bg-white rounded-[0.5rem] pb-6 pt-0 ">
+              <div className=" rounded-[0.5rem] pb-6 pt-0 ">
                 <div className="flex flex-col space-y-[50px]">
                   {[
                     {
                       name: "Dashboard",
                       icon: "",
-                      path: "/farmer-dashboard",
+                      path: "/farmer/dashboard",
                     },
                     { name: "Analytics", icon: "", path: "/analytics" },
                     { name: "My Orders", icon: "", path: "/orders" },
-                    { name: "My Products", icon: "", path: "/products" },
+                    {
+                      name: "My Products",
+                      icon: "",
+                      path: "/farmer/my-products",
+                    },
                   ].map((item) => (
                     <button
                       key={item.name}
