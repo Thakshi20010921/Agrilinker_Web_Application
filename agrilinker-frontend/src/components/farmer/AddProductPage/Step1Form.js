@@ -7,12 +7,12 @@ function Step1Form({ productData, setProductData }) {
   };
 
   // Reusable Tailwind classes for consistent styling
-  const labelStyle = "block text-lg font-semibold text-emerald-600 mb-1.5 ml-1";
+  const labelStyle = "block text-xl font-semibold text-emerald-600 mb-1.5 ml-1";
   const inputStyle = `
     w-full bg-white backdrop-blur-md border border-emerald-100 
     rounded-2xl px-4 py-3.5 text-emerald-950 text-lg placeholder:text-slate-900
     outline-none transition-all duration-300
-    focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10
+    focus:bg-white focus:border-emerald-50 focus:ring-4 focus:ring-emerald-500/10
     shadow-sm hover:border-emerald-200
   `;
 
@@ -32,7 +32,6 @@ function Step1Form({ productData, setProductData }) {
           Tell us what you're harvesting today.
         </p>
       </div>
-
       {/* Form Fields */}
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
