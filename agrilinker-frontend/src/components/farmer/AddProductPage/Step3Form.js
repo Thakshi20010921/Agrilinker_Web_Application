@@ -9,7 +9,7 @@ function Step3Form({ productData, setProductData }) {
     });
   };
 
-  const labelStyle = "block text-lg font-bold text-emerald-900 mb-1.5 ml-1";
+  const labelStyle = "block text-xl font-bold text-emerald-900 mb-1.5 ml-1";
   const inputStyle = `
     w-full bg-white backdrop-blur-md border border-emerald-100 
     rounded-2xl px-4 py-3.5 text-emerald-950 placeholder:text-emerald-300
@@ -29,7 +29,7 @@ function Step3Form({ productData, setProductData }) {
           <span className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold">
             3
           </span>
-          <h3 className="text-2xl font-extrabold text-emerald-950 tracking-tight">
+          <h3 className="text-3xl font-extrabold text-emerald-950 tracking-tight">
             Pricing & Availability
           </h3>
         </div>
@@ -66,10 +66,10 @@ function Step3Form({ productData, setProductData }) {
               </span>
               <input
                 type="number"
-                name="sellingPrice"
+                name="price"
                 placeholder="0.00"
                 className={`${inputStyle} pl-8`}
-                value={productData.sellingPrice}
+                value={productData.price}
                 onChange={handleChange}
               />
             </div>
@@ -80,12 +80,12 @@ function Step3Form({ productData, setProductData }) {
         {productData.sellingPrice > 0 && (
           <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex items-center justify-between">
             <span className="text-emerald-800 text-sm font-medium">
-              Estimated Profit per Unit:
+              Selling price per Unit:
             </span>
             <span
               className={`font-bold ${profit >= 0 ? "text-emerald-600" : "text-red-500"}`}
             >
-              {profit >= 0 ? `+$${profit}` : `-$${Math.abs(profit)}`}
+              {profit >= 0 ? `+Rs.${profit}` : `-$${Math.abs(profit)}`}
             </span>
           </div>
         )}
@@ -127,18 +127,31 @@ function Step3Form({ productData, setProductData }) {
             <div className="relative">
               <input
                 type="checkbox"
-                name="availability"
                 className="sr-only"
-                checked={productData.availability}
-                onChange={handleChange}
+                checked={productData.status === "available"}
+                onChange={(e) =>
+                  setProductData({
+                    ...productData,
+                    status: e.target.checked ? "available" : "unavailable",
+                  })
+                }
               />
+
               <div
-                className={`block w-14 h-8 rounded-full transition-colors ${productData.availability ? "bg-emerald-500" : "bg-gray-300"}`}
+                className={`block w-14 h-8 rounded-full transition-colors ${
+                  productData.status === "available"
+                    ? "bg-emerald-500"
+                    : "bg-gray-300"
+                }`}
               ></div>
+
               <div
-                className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${productData.availability ? "translate-x-6" : ""}`}
+                className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
+                  productData.status === "available" ? "translate-x-6" : ""
+                }`}
               ></div>
             </div>
+
             <div className="ml-4">
               <span className="text-emerald-950 font-bold block">
                 Currently Available
