@@ -1,13 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { loginUser } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,39 +19,25 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // expected: res.data = { token, roles, email, id/userId? }
-      const token = res?.data?.token;
-      const roles = res?.data?.roles || [];
-      const userEmail = res?.data?.email || email;
-      const userId = res?.data?.id || res?.data?.userId || null;
-
-      if (!token) throw new Error("Token not found in response");
-
-      // ✅ localStorage (optional, but useful after refresh)
-      localStorage.setItem("token", token);
-      localStorage.setItem("roles", JSON.stringify(roles));
-      localStorage.setItem("email", userEmail);
-
-      // ✅ AuthContext (recommended for app state)
-      loginUser(
-        {
-          email: userEmail,
-          roles,
-          id: userId,
-        },
-        token
-      );
+      // Save auth data
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("roles", JSON.stringify(res.data.roles));
+      localStorage.setItem("email", res.data.email);
 
       toast.success("Login successful 🎉");
 
-      // ✅ role-based navigation (your logic)
+      //navigate("/home");
+      const roles = res.data.roles;
+
       if (roles.includes("FARMER")) {
         navigate("/farmer/dashboard");
-      } else if (roles.includes("BUYER") || roles.includes("FERTILIZER_SUPPLIER")) {
+      } else if (
+        roles.includes("BUYER") ||
+        roles.includes("FERTILIZER_SUPPLIER")
+      ) {
         navigate("/marketplace");
       } else {
         toast.error("Access denied");
-        navigate("/");
       }
     } catch (err) {
       toast.error("Invalid email or password");
@@ -89,8 +73,6 @@ export default function Login() {
             <span
               className="password-toggle"
               onClick={() => setShowPassword(!showPassword)}
-              role="button"
-              tabIndex={0}
             >
               {showPassword ? <FiEyeOff /> : <FiEye />}
             </span>
