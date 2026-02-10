@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const ReviewModal = ({ item, itemType = "product", onClose }) => {
+const ReviewModal = ({ item, onClose, onSubmitted }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,26 +15,31 @@ const ReviewModal = ({ item, itemType = "product", onClose }) => {
 
     const id = item?.id || item?._id;
     if (!id) {
-      toast.error("Item ID not found");
+      toast.error("Product ID not found");
       return;
     }
 
     setLoading(true);
     try {
-      const payload =
-        itemType === "fertilizer"
-          ? { fertilizerId: id, rating, comment }
-          : { productId: id, rating, comment };
+      // ✅ IMPORTANT: send userId (needed by your backend duplicate-check)
+      const payload = {
+        productId: id,
+        userId: "demoUser", // TODO: replace with real logged-in user id
+        rating,
+        comment,
+      };
 
       await axios.post("http://localhost:8081/api/reviews", payload);
 
       toast.success("Review submitted!");
+      onSubmitted?.(); // ✅ tell Marketplace to refresh sentiment
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to submit review. Try again.");
+      toast.error(err?.response?.data?.message || "Failed to submit review. Try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -47,9 +52,7 @@ const ReviewModal = ({ item, itemType = "product", onClose }) => {
           ✕
         </button>
 
-        <h2 className="text-xl font-semibold mb-4">
-          Review: {item?.name}
-        </h2>
+        <h2 className="text-xl font-semibold mb-4">Review: {item?.name}</h2>
 
         <div className="mb-4">
           <label className="block mb-1 font-medium">Rating:</label>
