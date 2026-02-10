@@ -2,24 +2,31 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const ReviewModal = ({ product, onClose }) => {
+const ReviewModal = ({ item, itemType = "product", onClose }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!comment) {
+    if (!comment.trim()) {
       toast.error("Please enter a comment!");
+      return;
+    }
+
+    const id = item?.id || item?._id;
+    if (!id) {
+      toast.error("Item ID not found");
       return;
     }
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:8081/api/reviews", {
-  productId: product.id,
-  rating,
-  comment
-});
+      const payload =
+        itemType === "fertilizer"
+          ? { fertilizerId: id, rating, comment }
+          : { productId: id, rating, comment };
+
+      await axios.post("http://localhost:8081/api/reviews", payload);
 
       toast.success("Review submitted!");
       onClose();
@@ -40,7 +47,9 @@ const ReviewModal = ({ product, onClose }) => {
           ✕
         </button>
 
-        <h2 className="text-xl font-semibold mb-4">Review: {product.name}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Review: {item?.name}
+        </h2>
 
         <div className="mb-4">
           <label className="block mb-1 font-medium">Rating:</label>
@@ -65,7 +74,7 @@ const ReviewModal = ({ product, onClose }) => {
             rows={4}
             className="w-full border border-gray-300 rounded-lg p-2"
             placeholder="Write your review here..."
-          ></textarea>
+          />
         </div>
 
         <button

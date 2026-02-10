@@ -9,12 +9,15 @@ import java.time.LocalDateTime;
 @Data
 @Document(collection = "reviews")
 public class Review {
+
     @Id
     private String id;
 
-    private String productId; // STRING (matches Product _id)
-    private String userId; // ObjectId stored as String
-    private int rating; // 1–5
+    private String productId; // for marketplace
+    private String fertilizerId; // ✅ for fertilizers
+
+    private String userId;
+    private int rating;
     private String comment;
 
     private LocalDateTime createdAt = LocalDateTime.now();
