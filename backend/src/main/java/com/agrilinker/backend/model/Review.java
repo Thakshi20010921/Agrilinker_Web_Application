@@ -13,12 +13,16 @@ public class Review {
     @Id
     private String id;
 
-    private String productId; // for marketplace
-    private String fertilizerId; // ✅ for fertilizers
+    private String productId; // marketplace item id
+    private String fertilizerId; // fertilizer item id
 
     private String userId;
     private int rating;
     private String comment;
+
+    // ✅ AI fields (add these)
+    private String sentimentLabel; // POSITIVE / NEGATIVE / NEUTRAL
+    private Double sentimentScore; // 0.0 - 1.0
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }
