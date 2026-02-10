@@ -1,7 +1,7 @@
 // src/pages/LoginFertilizer.jsx
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/auth"; // your API function
+import { login } from "../api/auth"; // API call to login
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
@@ -20,7 +20,7 @@ export default function LoginFertilizer() {
     setLoading(true);
 
     try {
-      const res = await login(email, password);
+      const res = await login(email, password); // API call
 
       const token = res?.data?.token;
       const roles = res?.data?.roles || [];
@@ -29,33 +29,29 @@ export default function LoginFertilizer() {
 
       if (!token) throw new Error("Token not found in response");
 
-      // Save token/roles/email
+      // Save token & roles to localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("roles", JSON.stringify(roles));
       localStorage.setItem("email", userEmail);
 
-      // Update AuthContext
+      // Update global AuthContext
       loginUser({ email: userEmail, roles, id: userId }, token);
 
-      toast.success("Login successful 🎉");
-
-      // Check Fertilizer Supplier role combinations
+      // Check Fertilizer Supplier role
       const hasSupplier = roles.includes("FERTILIZERSUPPLIER");
-      const hasFarmer = roles.includes("FARMER");
-      const hasBuyer = roles.includes("BUYER");
-
       if (!hasSupplier) {
         toast.error(
-          "You are not registered as a Fertilizer Supplier. Please edit your account."
+          "You are not registered as a Fertilizer Supplier. Please update your account roles."
         );
-        navigate("/"); // redirect to homepage or account edit page
+        navigate("/"); // redirect to home or account edit page
         return;
       }
 
-      // ✅ Allowed combinations: supplier alone or supplier + farmer/buyer
+      // ✅ User is a Fertilizer Supplier (alone or with other roles)
       navigate("/fertilizer-dashboard");
+      toast.success("Login successful! Redirecting to Fertilizer Dashboard 🎉");
     } catch (err) {
-      // If login fails → maybe user not registered
+      // If login fails (user not registered or invalid credentials)
       toast.error(
         "Invalid email or password. If you are not registered, please register first."
       );
