@@ -8,21 +8,18 @@ export const CartProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [cart, setCart] = useState([]);
 
-  // ✅ Build a stable userId from whatever your backend returns
-  // (works even if your user object is {email: "..."} )
-const USER_ID = user?.id || user?.userId || user?.email || localStorage.getItem("email") || null;
+  // ✅ Use ONLY the logged-in user from AuthContext
+  const USER_ID = user?.id || user?.userId || user?.email || null;
 
-
-  // ✅ load cart from backend
   const loadCart = async () => {
     if (!USER_ID) {
-      setCart([]); // not logged in
+      setCart([]); // ✅ not logged in -> empty cart
       return;
     }
+
     try {
       const res = await api.get(`/cart/${USER_ID}`);
 
-      // normalize cart item id (handles id/_id/cartItemId)
       const data = Array.isArray(res.data) ? res.data : [];
       const normalized = data.map((x) => ({
         ...x,
@@ -32,6 +29,7 @@ const USER_ID = user?.id || user?.userId || user?.email || localStorage.getItem(
       setCart(normalized);
     } catch (err) {
       console.error("Load cart error:", err);
+      setCart([]);
     }
   };
 
@@ -41,14 +39,13 @@ const USER_ID = user?.id || user?.userId || user?.email || localStorage.getItem(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [USER_ID]);
 
-  // ✅ add to cart
   const addToCart = async (item) => {
     if (!USER_ID) return;
 
     const itemId = item.id || item._id;
 
     const payload = {
-      productId: itemId,
+      productId: item.productId || item.itemId || itemId, // supports normalized items too
       name: item.name,
       price: item.price,
       unit: item.unit || "unit",
@@ -66,7 +63,6 @@ const USER_ID = user?.id || user?.userId || user?.email || localStorage.getItem(
     }
   };
 
-  // ✅ increase
   const increaseQty = async (cartItemId) => {
     if (!cartItemId) return;
 
@@ -78,7 +74,6 @@ const USER_ID = user?.id || user?.userId || user?.email || localStorage.getItem(
     }
   };
 
-  // ✅ decrease
   const decreaseQty = async (cartItemId) => {
     if (!cartItemId) return;
 
@@ -90,7 +85,6 @@ const USER_ID = user?.id || user?.userId || user?.email || localStorage.getItem(
     }
   };
 
-  // ✅ remove one item
   const removeFromCart = async (cartItemId) => {
     if (!cartItemId) return;
 
@@ -102,11 +96,12 @@ const USER_ID = user?.id || user?.userId || user?.email || localStorage.getItem(
     }
   };
 
-  // ✅ clear cart locally (used after checkout)
   const clearCart = () => setCart([]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, increaseQty, decreaseQty, removeFromCart, clearCart, loadCart }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, increaseQty, decreaseQty, removeFromCart, clearCart, loadCart }}
+    >
       {children}
     </CartContext.Provider>
   );
