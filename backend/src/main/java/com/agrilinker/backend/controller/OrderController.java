@@ -1,17 +1,24 @@
 package com.agrilinker.backend.controller;
 
 import com.agrilinker.backend.model.Order;
+import com.agrilinker.backend.service.InvoiceService;
 import com.agrilinker.backend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
+import com.agrilinker.backend.repository.OrderRepository;
 
 @RestController
 @RequestMapping("/api/orders")
 @CrossOrigin(origins = "http://localhost:3000")
 public class OrderController {
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private InvoiceService invoiceService;
 
     @Autowired
     private OrderService orderService;
@@ -45,4 +52,21 @@ public class OrderController {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{orderNumber}/invoice")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable String orderNumber) {
+
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + orderNumber));
+
+        byte[] pdf = invoiceService.generateInvoicePdf(order);
+
+        String filename = "invoice-" + orderNumber + ".pdf";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
 }
