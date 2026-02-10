@@ -21,6 +21,7 @@ const EditProductPage = () => {
 
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [errors, setErrors] = useState({});
 
   // 1. පරණ දත්ත ලබා ගැනීම (Fetch existing data)
   useEffect(() => {
@@ -37,6 +38,57 @@ const EditProductPage = () => {
     };
     fetchProduct();
   }, [id]);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Product name
+    if (!productData.name.trim()) {
+      newErrors.name = "Product name is required";
+    }
+
+    // Category
+    if (!productData.category) {
+      newErrors.category = "Category is required";
+    }
+
+    // Description
+    if (!productData.description.trim()) {
+      newErrors.description = "Description is required";
+    }
+
+    // Location
+    if (!productData.location.trim()) {
+      newErrors.location = "Location is required";
+    }
+
+    // Price validation
+    const price = Number(productData.price);
+    if (productData.price === "") {
+      newErrors.price = "Price is required";
+    } else if (isNaN(price)) {
+      newErrors.price = "Price must be a number";
+    } else if (price < 0) {
+      newErrors.price = "Price cannot be negative";
+    } else if (price > 1_000_000) {
+      newErrors.price = "Price cannot exceed 1,000,000";
+    }
+
+    // Quantity validation
+    const quantity = Number(productData.quantity);
+    if (productData.quantity === "") {
+      newErrors.quantity = "Quantity is required";
+    } else if (isNaN(quantity)) {
+      newErrors.quantity = "Quantity must be a number";
+    } else if (quantity < 0) {
+      newErrors.quantity = "Quantity cannot be negative";
+    } else if (quantity > 1_000_000) {
+      newErrors.quantity = "Quantity cannot exceed 1,000,000";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -57,6 +109,9 @@ const EditProductPage = () => {
   // 2. දත්ත Update කිරීම
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return; // ❌ stop submit if validation fails
+    }
     try {
       // මෙතනදී අපි JSON දත්ත පමණක් යැවීමට Put request එක පාවිච්චි කරමු
       // (පින්තූරය වෙනස් කරන්නේ නැතිනම්)
@@ -78,10 +133,10 @@ const EditProductPage = () => {
     );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFB] p-6 md:p-10">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-white p-6 md:p-10">
+      <div className="">
         {/* TOPIC / HEADER */}
-        <div className="mb-8">
+        <div className=" max-w-6xl mx-auto mb-10">
           <h1 className="text-5xl font-black text-emerald-950 tracking-tight">
             Edit Your Product Details
           </h1>
@@ -90,10 +145,10 @@ const EditProductPage = () => {
           </p>
         </div>
         {/* PAGE LAYOUT GRID */}
-        <div className="flex flex-col lg:flex-row gap-40 bg-slate-100 p-10 rounded-[10px]">
+        <div className="flex flex-col lg:flex-row gap-40 bg-slate-100 p-10 rounded-[10px] max-w-8xl mx-auto">
           {/* LEFT SIDE: FORM SECTION (75% width) */}
           <div className="lg:w-3/4">
-            <div className="flex min-h-screen bg-slate-50">
+            <div className="flex min-h-screen   rounded-[2.5rem]">
               <main className="flex-1 p-4 md:p-10 overflow-y-auto">
                 <div className="max-w-4xl mx-auto bg-white rounded-[2.5rem] shadow-xl shadow-emerald-900/5 border border-emerald-50 overflow-hidden">
                   {/* Header */}
@@ -113,7 +168,7 @@ const EditProductPage = () => {
                     {/* Row 1: Name and Category */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold text-emerald-900 ml-1">
+                        <label className="text-xl font-bold text-emerald-900 ml-1">
                           Product Name
                         </label>
                         <input
@@ -121,11 +176,19 @@ const EditProductPage = () => {
                           name="name"
                           value={productData.name}
                           onChange={handleChange}
-                          className="w-full px-5 py-3 rounded-2xl border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                          required
+                          className={`w-full bg-emerald-50/50 px-5 py-3 rounded-2xl border 
+      ${errors.name ? "border-red-500" : "border-emerald-100"} 
+      focus:ring-2 focus:ring-emerald-500 outline-none transition-all`}
                         />
+                        {errors.name && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.name}
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold text-emerald-900 ml-1">
+                        <label className="text-xl font-bold text-emerald-900 ml-1">
                           Category
                         </label>
                         <select
@@ -143,7 +206,7 @@ const EditProductPage = () => {
 
                     {/* Row 2: Description */}
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold text-emerald-900 ml-1">
+                      <label className="text-xl font-bold text-emerald-900 ml-1">
                         Description
                       </label>
                       <textarea
@@ -151,13 +214,14 @@ const EditProductPage = () => {
                         value={productData.description}
                         onChange={handleChange}
                         rows="3"
+                        required
                         className="w-full px-5 py-3 rounded-2xl border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                       />
                     </div>
 
-                    {/* Row 2-3: Description */}
+                    {/* Row 2-3: locationn */}
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold text-emerald-900 ml-1">
+                      <label className="text-xl font-bold text-emerald-900 ml-1">
                         Location
                       </label>
                       <textarea
@@ -165,6 +229,7 @@ const EditProductPage = () => {
                         value={productData.location}
                         onChange={handleChange}
                         rows="3"
+                        required
                         className="w-full px-5 py-3 rounded-2xl border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                       />
                     </div>
@@ -193,31 +258,49 @@ const EditProductPage = () => {
                     {/* Row 4: Pricing and Quantity */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold text-emerald-900 ml-1">
+                        <label className="text-xl font-bold text-emerald-900 ml-1">
                           Price (LKR)
                         </label>
                         <input
                           type="number"
                           name="price"
+                          min="0"
+                          max="100000"
                           value={productData.price}
                           onChange={handleChange}
-                          className="w-full px-5 py-3 rounded-2xl border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                          className={`w-full bg-emerald-50/50 px-5 py-3 rounded-2xl border
+  ${errors.price ? "border-red-500" : "border-emerald-100"}
+  focus:ring-2 focus:ring-emerald-500 outline-none transition-all`}
                         />
+                        {errors.price && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.price}
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold text-emerald-900 ml-1">
+                        <label className="text-xl font-bold text-emerald-900 ml-1">
                           Quantity
                         </label>
                         <input
                           type="number"
                           name="quantity"
+                          min="0"
+                          max="1000000"
                           value={productData.quantity}
                           onChange={handleChange}
-                          className="w-full px-5 py-3 rounded-2xl border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                          className='w-full bg-emerald-50/50 px-5 py-3 rounded-2xl border
+  ${errors.quantity ? "border-red-500" : "border-emerald-100"}
+  focus:ring-2 focus:ring-emerald-500 outline-none transition-all'
                         />
+                        {errors.quantity && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.quantity}
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold text-emerald-900 ml-1">
+                        <label className="text-xl font-bold text-emerald-900 ml-1">
                           Unit
                         </label>
                         <select
@@ -302,10 +385,10 @@ const EditProductPage = () => {
               </main>
             </div>
           </div>
-          <div className="lg:w-1/4 mt-[160px]">
-            <div className="sticky top-10 space-y-4  ">
+          <div className="lg:w-1/4 mt-[160px]  ">
+            <div className="sticky top-10 space-y-4   ">
               {/* --- NEW RIGHT NAVIGATION CARD --- */}
-              <div className="lg:w-1/4 h-fit pt-0 pr-0 p-8 space-y-4 ">
+              <div className="lg:w-1/4 h-fit pt-0 pr-0 p-8 space-y-4  ">
                 <div className=" rounded-[0.5rem] pb-6 pt-0 ">
                   <div className="flex flex-col items-center space-y-[50px]">
                     {[
