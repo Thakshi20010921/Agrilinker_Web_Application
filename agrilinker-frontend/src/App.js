@@ -18,6 +18,7 @@ import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierDashboard";
+import LoginFertilizer from "./pages/Loginfertilizer"; // ✅ Correct import (match filename)
 
 // Auth Pages
 import Landing from "./pages/Landing";
@@ -37,6 +38,7 @@ import EditProductPage from "./components/farmer/EditProductPage";
 import MyProducts from "./components/farmer/MyProducts";
 
 import { AuthProvider } from "./context/AuthContext";
+
 function App() {
   const location = useLocation();
 
@@ -44,7 +46,8 @@ function App() {
   const hideLayout =
     location.pathname === "/" ||
     location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/register" ||
+    location.pathname === "/loginfertilizer"; // ✅ Added fertilizer login page
 
   return (
     <AuthProvider>
@@ -67,6 +70,7 @@ function App() {
           {/* Auth */}
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/loginfertilizer" element={<LoginFertilizer />} /> {/* ✅ Fertilizer login */}
           <Route path="/register" element={<Register />} />
 
           {/* Home */}
@@ -90,10 +94,6 @@ function App() {
           <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
           <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
           <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
-          <Route
-            path="/fertilizers/recommend"
-            element={<FertilizerRecommendation />}
-          />
 
           {/* FARMER PAGES */}
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
@@ -106,8 +106,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
-        <Route path="/orders" element={<OrderHistory />} />
-
+          <Route path="/orders" element={<OrderHistory />} />
         </Routes>
 
         {!hideLayout && <Footer />}
