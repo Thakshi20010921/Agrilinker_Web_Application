@@ -169,84 +169,94 @@ export default function FertilizerList() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {currentItems.map((f) => {
-          const id = f.id || f._id;
+  {currentItems.map((f) => {
+    const id = f.id || f._id;
 
-          return (
-            <div key={id} className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between">
-              <div>
-                <img
-                  src={f.imageUrl || "https://via.placeholder.com/300x200"}
-                  alt="Fertilizer"
-                  className="rounded-lg mb-4 w-full h-48 object-cover"
-                />
+    return (
+      <div
+        key={id}
+        className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
+      >
+        <div>
+          <img
+            src={f.imageUrl || "https://via.placeholder.com/300x200"}
+            alt="Fertilizer"
+            className="rounded-lg mb-4 w-full h-48 object-cover"
+          />
 
-                <h2 className="text-2xl font-bold text-green-700" dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }} />
+          <h2
+            className="text-2xl font-bold text-green-700"
+            dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
+          />
 
-                {/* ✅ Review Link like marketplace */}
-                <button
-                  onClick={() => {
-                    setSelectedItem(f);
-                    setReviewType("fertilizer");
-                  }}
-                  className="text-green-700 underline text-sm mt-2"
-                >
-                  Write a review
-                </button>
+          {/* Review */}
+          <button
+            onClick={() => {
+              setSelectedItem(f);
+              setReviewType("fertilizer");
+            }}
+            className="text-green-700 underline text-sm mt-2"
+          >
+            Write a review
+          </button>
 
-                <p className="text-sm text-gray-500 mb-1 mt-2">
-                  Code:{" "}
-                  <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }} />
-                </p>
+          <p className="text-sm text-gray-500 mb-1 mt-2">
+            Code:{" "}
+            <span
+              className="font-semibold"
+              dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}
+            />
+          </p>
 
-                <p className="text-sm text-gray-600 mb-1">
-                  Type:{" "}
-                  <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }} />
-                </p>
+          <p className="text-sm text-gray-600 mb-1">
+            Type:{" "}
+            <span
+              className="font-semibold"
+              dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}
+            />
+          </p>
 
-                <p className="text-sm text-gray-600 mb-1">
-                  Category:{" "}
-                  <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }} />
-                </p>
+          <p className="text-sm text-gray-600 mb-1">
+            Category:{" "}
+            <span
+              className="font-semibold"
+              dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}
+            />
+          </p>
 
-                <p className="text-sm text-gray-600 mb-2">
-                  District: <span className="font-semibold">{f.district}</span>
-                </p>
+          <p className="text-sm text-gray-600 mb-2">
+            District: <span className="font-semibold">{f.district}</span>
+          </p>
 
-                <p className="text-gray-600 mb-2 line-clamp-2">{f.description}</p>
+          <p className="text-gray-600 mb-2 line-clamp-2">{f.description}</p>
 
-                <p className="text-lg font-semibold">
-                  Rs. {f.price} / {f.unit}
-                  {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
-                    ? ` (${f.quantityInside} ${f.unit === "bag" ? "kg" : "L"})`
-                    : ""}
-                </p>
-              </div>
+          <p className="text-lg font-semibold">
+            Rs. {f.price} / {f.unit}
+            {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
+              ? ` (${f.quantityInside} ${f.unit === "bag" ? "kg" : "L"})`
+              : ""}
+          </p>
+        </div>
 
-              <div className="flex justify-between mt-4">
-                <Link to={`/fertilizers/edit/${id}`} className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition">
-                  Edit
-                </Link>
+        <div className="flex justify-between mt-4">
+          <Link
+            to={`/fertilizers/edit/${id}`}
+            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
+          >
+            Edit
+          </Link>
 
-                <button onClick={() => handleBuy(f)} className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition">
-                  Buy
-                </button>
-              </div>
-            </div>
-
-            <div className="flex justify-between mt-4">
-              
-
-              <button
-                onClick={() => handleBuy(f)}
-                className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
-              >
-                Buy
-              </button>
-            </div>
-          </div>
-        ))}
+          <button
+            onClick={() => handleBuy(f)}
+            className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
+          >
+            Buy
+          </button>
+        </div>
       </div>
+    );
+  })}
+</div>
 
       {totalPages > 1 && (
         <div className="flex justify-center mt-10 gap-2">
