@@ -18,6 +18,7 @@ import CheckoutPage from "./components/CheckoutPage";
 import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
+import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierDashboard";
 
 // Auth Pages
 import Landing from "./pages/Landing";
@@ -86,6 +87,7 @@ function App() {
           <Route path="/fertilizers/add" element={<AddFertilizer />} />
           <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
           <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
+          <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
 
           {/* FARMER PAGES */}
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
