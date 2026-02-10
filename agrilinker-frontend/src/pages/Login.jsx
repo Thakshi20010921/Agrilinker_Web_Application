@@ -48,19 +48,17 @@ export default function Login() {
 
       // ✅ role-based navigation (your logic)
       if (roles.includes("FARMER")) {
-      navigate("/farmer/dashboard");
-    } else if (roles.includes("FERTILIZERSUPPLIER")) {
-      navigate("/fertilizer-dashboard");
-    } else if (roles.includes("BUYER")) {
-      navigate("/marketplace");
-    } else {
-      toast.error("Access denied");
-      navigate("/");
-    }
-  } catch (err) {
-    toast.error("Invalid email or password");
-  } finally {
-    setLoading(false);
+        navigate("/farmer/dashboard");
+      } else if (roles.includes("BUYER") || roles.includes("FERTILIZER_SUPPLIER")) {
+        navigate("/marketplace");
+      } else {
+        toast.error("Access denied");
+        navigate("/");
+      }
+    } catch (err) {
+      toast.error("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,43 +1,28 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import React from "react";
+import { Link } from "react-router-dom";
 
-const FertilizerSupplierDashboard = () => {
-  const { user, token } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // 1️⃣ Redirect to login if not logged in
-    if (!user || !token) {
-      navigate("/login");
-      return;
-    }
-
-    // 2️⃣ Check if user has supplier role
-    const roles = Array.from(user.roles || []);
-    const isSupplier =
-      roles.includes("FERTILIZERSUPPLIER") ||
-      (roles.includes("FERTILIZERSUPPLIER") && roles.includes("BUYER")) ||
-      (roles.includes("FERTILIZERSUPPLIER") && roles.includes("FARMER")) ||
-      (roles.includes("FERTILIZERSUPPLIER") &&
-        roles.includes("FARMER") &&
-        roles.includes("BUYER"));
-
-    if (!isSupplier) {
-      alert(
-        "You are not registered as a Fertilizer Supplier. Please go to your account and update your roles."
-      );
-      navigate("/"); // Redirect to landing or account page
-    }
-  }, [user, token, navigate]);
-
+export default function FertilizerSupplierDashboard() {
   return (
-    <div>
-      <h1>Fertilizer Supplier Dashboard</h1>
-      <p>Welcome, {user?.fullName}</p>
-      {/* Dashboard content here */}
+    <div className="max-w-6xl mx-auto p-8">
+      <h1 className="text-4xl font-bold text-green-800 mb-6">
+        Fertilizer Supplier Dashboard
+      </h1>
+
+      <div className="flex flex-col gap-4">
+        <Link
+          to="/fertilizers/add"
+          className="bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800 transition"
+        >
+          Add Fertilizer
+        </Link>
+
+        <Link
+          to="/fertilizers"
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+        >
+          View Fertilizers....
+        </Link>
+      </div>
     </div>
   );
-};
-
-export default FertilizerSupplierDashboard;
+}
