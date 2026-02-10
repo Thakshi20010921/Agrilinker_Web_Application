@@ -22,10 +22,7 @@ export default function FertilizerList() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [reviewType, setReviewType] = useState("fertilizer");
 
-  /* ===================== PAGINATION ===================== */
-  const ITEMS_PER_PAGE = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  /* ====================================================== */
+ 
 
   useEffect(() => {
     axios
@@ -158,15 +155,17 @@ export default function FertilizerList() {
         </div>
       </div>
 
-      <div className="mb-6 flex gap-4">
-        <Link to="/fertilizers/add" className="bg-green-700 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-green-800 transition">
-          + Add Fertilizer
-        </Link>
+     <div className="mb-6 flex gap-4">
+  <FertilizerButton /> {/* ✅ Enforces login for Add/Update */}
 
-        <Link to="/fertilizers/recommend" className="bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition">
-          Get Fertilizer Recommendation
-        </Link>
-      </div>
+  <Link
+    to="/fertilizers/recommend"
+    className="bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
+  >
+    Get Fertilizer Recommendation
+  </Link>
+</div>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
   {currentItems.map((f) => {
