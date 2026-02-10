@@ -10,7 +10,6 @@ import Marketplace from "./components/Marketplace";
 import OrderConfirmation from "./components/OrderConfirmation";
 import OrderHistory from "./components/OrderHistory";
 
-import MyProducts from "./components/farmer/MyProducts";
 import CartPage from "./components/CartPage";
 import CheckoutPage from "./components/CheckoutPage";
 
@@ -33,6 +32,9 @@ import { CartProvider } from "./context/CartContext";
 //----farmer
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
+import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
+import EditProductPage from "./components/farmer/EditProductPage";
+import MyProducts from "./components/farmer/MyProducts";
 
 import { AuthProvider } from "./context/AuthContext";
 function App() {
@@ -88,11 +90,17 @@ function App() {
           <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
           <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
           <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
+          <Route
+            path="/fertilizers/recommend"
+            element={<FertilizerRecommendation />}
+          />
 
           {/* FARMER PAGES */}
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
           <Route path="/farmer/add-product" element={<AddProduct />} />
+          <Route path="/farmer/add-product2" element={<AddProductPage />} />
           <Route path="/farmer/my-products" element={<MyProducts />} />
+          <Route path="/edit-product/:id" element={<EditProductPage />} />
 
           {/* CART & CHECKOUT */}
           <Route path="/cart" element={<CartPage />} />

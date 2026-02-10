@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useContext } from "react";  
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { FiFilter } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function FertilizerList() {
   const [fertilizers, setFertilizers] = useState([]);
@@ -38,6 +39,26 @@ export default function FertilizerList() {
     if (!searchTerm) return text;
     const regex = new RegExp(`(${searchTerm})`, "gi");
     return text.replace(regex, "<mark>$1</mark>");
+  };
+
+  // ✅ BUY -> ADD TO SAME CART (normalize fertilizer to cart shape)
+  const handleBuy = (f) => {
+    // Optional login check
+    // if (!localStorage.getItem("token")) {
+    //   toast.error("Please login to buy");
+    //   return;
+    // }
+
+    addToCart({
+      id: f.id || f._id, // IMPORTANT: CartContext uses id/_id to set productId
+      name: f.name,
+      price: Number(f.price || 0),
+      unit: f.unit || "unit",
+      imageUrl: f.imageUrl || "https://via.placeholder.com/300x200",
+      type: "fertilizer", // optional
+    });
+
+    toast.success(`${f.name} added to cart!`);
   };
 
   // Apply search, filter, and sort
@@ -180,7 +201,7 @@ export default function FertilizerList() {
         </Link>
       </div>
 
-      {/* Fertilizer Grid (ONLY CHANGE: currentItems instead of all) */}
+      {/* Fertilizer Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {currentItems.map((f) => (
           <div
@@ -200,15 +221,27 @@ export default function FertilizerList() {
               />
 
               <p className="text-sm text-gray-500 mb-1">
-                Code: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}></span>
+                Code:{" "}
+                <span
+                  className="font-semibold"
+                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}
+                ></span>
               </p>
 
               <p className="text-sm text-gray-600 mb-1">
-                Type: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}></span>
+                Type:{" "}
+                <span
+                  className="font-semibold"
+                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}
+                ></span>
               </p>
 
               <p className="text-sm text-gray-600 mb-1">
-                Category: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}></span>
+                Category:{" "}
+                <span
+                  className="font-semibold"
+                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}
+                ></span>
               </p>
 
               <p className="text-sm text-gray-600 mb-2">
@@ -229,7 +262,7 @@ export default function FertilizerList() {
               
 
               <button
-                onClick={() => addToCart(f)}
+                onClick={() => handleBuy(f)}
                 className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
               >
                 Buy
@@ -239,7 +272,7 @@ export default function FertilizerList() {
         ))}
       </div>
 
-      {/* ===================== PAGINATION UI ===================== */}
+      {/* Pagination UI */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-10 gap-2">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -257,7 +290,6 @@ export default function FertilizerList() {
           ))}
         </div>
       )}
-      {/* ===================================================== */}
     </div>
   );
 }

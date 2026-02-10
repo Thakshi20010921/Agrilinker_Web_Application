@@ -3,13 +3,20 @@ package com.agrilinker.backend.service.impl;
 import com.agrilinker.backend.model.Order;
 import com.agrilinker.backend.repository.OrderRepository;
 import com.agrilinker.backend.service.OrderService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.agrilinker.backend.util.OrderNumberGenerator;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -17,6 +24,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(Order order) {
+
+        // ✅ If already has one (rare), keep it, else generate
+        if (order.getOrderNumber() == null || order.getOrderNumber().isBlank()) {
+            while (true) {
+                try {
+                    order.setOrderNumber(OrderNumberGenerator.generate());
+                    return orderRepository.save(order);
+                } catch (DuplicateKeyException e) {
+                    // very rare collision → generate again
+                }
+            }
+        }
+
         return orderRepository.save(order);
     }
 
@@ -49,4 +69,10 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(String id) {
         orderRepository.deleteById(id);
     }
+
+    @Override
+    public List<Order> getOrdersByUserEmail(String email) {
+        return orderRepository.findByCustomerEmail(email);
+    }
+
 }
