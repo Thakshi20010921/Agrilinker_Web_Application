@@ -191,7 +191,25 @@ function AddProductPage() {
               </div>
             </div>{" "}
             {/* Form Card */}
-            <div className="w-full  rounded-[2rem]   overflow-hidden">
+            <form
+              className="w-full"
+              onSubmit={(e) => {
+                if (!e.currentTarget.checkValidity()) {
+                  // ❌ Invalid → show browser validation messages
+                  e.preventDefault();
+                  e.currentTarget.reportValidity();
+                  return;
+                }
+
+                e.preventDefault(); // stop refresh
+
+                if (step < 3) {
+                  setStep(step + 1);
+                } else {
+                  handleSubmit();
+                }
+              }}
+            >
               <div className="p-0 w-full md:p-0">
                 {/* Step Content */}
                 <div className="min-h-[400px] w-full transition-all duration-500 ease-in-out  ">
@@ -220,8 +238,9 @@ function AddProductPage() {
                   <div>
                     {step > 1 && (
                       <button
-                        className="  justify-center w-[200px] h-[54px] rounded-xl font-bold bg-emerald-100 text-emerald-600 hover:bg-emerald-50 transition-colors"
+                        type="button"
                         onClick={handlePrevious}
+                        className="w-[200px] h-[54px] rounded-xl bg-emerald-100 text-emerald-600 font-bold hover:bg-emerald-200"
                       >
                         Back
                       </button>
@@ -229,12 +248,8 @@ function AddProductPage() {
                   </div>
 
                   <button
-                    className={`px-10 py-3.5  w-[200px] rounded-0 font-bold text-white transition-all shadow-lg active:scale-95 ${
-                      step === 3
-                        ? "bg-emerald-900 hover:bg-emerald-900 shadow-emerald-200"
-                        : "bg-emerald-900 hover:bg-emerald-500 shadow-slate-200"
-                    }`}
-                    onClick={step === 3 ? handleSubmit : handleNext}
+                    type="submit"
+                    className="w-[200px] h-[54px] rounded-xl bg-emerald-900 text-white font-bold hover:bg-emerald-700"
                   >
                     {step === 3 ? "List Product" : "Continue"}
                   </button>
@@ -246,7 +261,7 @@ function AddProductPage() {
                   </span>
                 </p>
               </div>
-            </div>
+            </form>
             {/* --- NEW RIGHT NAVIGATION CARD --- */}
             <div className="lg:w-1/4 h-fit space-y-4">
               <div className=" rounded-[0.5rem] pb-6 pt-0 ">
@@ -257,7 +272,11 @@ function AddProductPage() {
                       icon: "",
                       path: "/farmer/dashboard",
                     },
-                    { name: "Analytics", icon: "", path: "/analytics" },
+                    {
+                      name: "Add product",
+                      icon: "",
+                      path: "/farmer/add-product2",
+                    },
                     { name: "My Orders", icon: "", path: "/orders" },
                     {
                       name: "My Products",

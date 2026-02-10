@@ -239,7 +239,7 @@ const MyProducts = () => {
                   icon: "",
                   path: "/farmer/dashboard",
                 },
-                { name: "Analytics", icon: "", path: "/analytics" },
+                { name: "Add Prodct", icon: "", path: "/farmer/add-product2" },
                 { name: "My Orders", icon: "", path: "/orders" },
                 { name: "My Products", icon: "", path: "/farmer/my-products" },
               ].map((item) => (
