@@ -69,4 +69,10 @@ public class OrderController {
                 .body(pdf);
     }
 
+    @GetMapping("/user/{email}")
+    public ResponseEntity<List<Order>> getOrdersByUserEmail(@PathVariable String email) {
+        List<Order> orders = orderService.getOrdersByUserEmail(email);
+        return ResponseEntity.ok(orders);
+    }
+
 }

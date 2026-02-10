@@ -21,25 +21,39 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // Save auth data
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("roles", JSON.stringify(res.data.roles));
-      localStorage.setItem("email", res.data.email);
+      // expected: res.data = { token, roles, email, id/userId? }
+      const token = res?.data?.token;
+      const roles = res?.data?.roles || [];
+      const userEmail = res?.data?.email || email;
+      const userId = res?.data?.id || res?.data?.userId || null;
+
+      if (!token) throw new Error("Token not found in response");
+
+      // ✅ localStorage (optional, but useful after refresh)
+      localStorage.setItem("token", token);
+      localStorage.setItem("roles", JSON.stringify(roles));
+      localStorage.setItem("email", userEmail);
+
+      // ✅ AuthContext (recommended for app state)
+      loginUser(
+        {
+          email: userEmail,
+          roles,
+          id: userId,
+        },
+        token
+      );
 
       toast.success("Login successful 🎉");
 
-      //navigate("/home");
-      const roles = res.data.roles;
-
+      // ✅ role-based navigation (your logic)
       if (roles.includes("FARMER")) {
         navigate("/farmer/dashboard");
-      } else if (
-        roles.includes("BUYER") ||
-        roles.includes("FERTILIZER_SUPPLIER")
-      ) {
+      } else if (roles.includes("BUYER") || roles.includes("FERTILIZER_SUPPLIER")) {
         navigate("/marketplace");
       } else {
         toast.error("Access denied");
+        navigate("/");
       }
     } catch (err) {
       toast.error("Invalid email or password");
@@ -75,58 +89,8 @@ export default function Login() {
             <span
               className="password-toggle"
               onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <FiEyeOff /> : <FiEye />}
-            </span>
-          )}
-        </div>
-
-      // ✅ store user + token using AuthContext only
-      loginUser(
-        {
-          email: res.data.email,
-          roles: res.data.roles,
-          id: res.data.id || res.data.userId || null, // optional
-        },
-        res.data.token
-      );
-
-      toast.success("Login successful 🎉");
-      navigate("/home");
-    } catch (err) {
-      toast.error("Invalid email or password");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="screen">
-      <form className="card" onSubmit={submit}>
-        <h2>Login</h2>
-
-        <input
-          type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        {/* Password with eye toggle */}
-        <div className="password-field">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          {password && (
-            <span
-              className="password-toggle"
-              onClick={() => setShowPassword(!showPassword)}
+              role="button"
+              tabIndex={0}
             >
               {showPassword ? <FiEyeOff /> : <FiEye />}
             </span>
@@ -142,7 +106,6 @@ export default function Login() {
           className="btn-light"
           onClick={() => navigate("/")}
         >
-        <button type="button" className="btn-light" onClick={() => navigate("/")}>
           Back
         </button>
       </form>

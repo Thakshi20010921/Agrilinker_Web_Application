@@ -9,6 +9,8 @@ public interface OrderService {
 
     List<Order> getAllOrders();
 
+    List<Order> getOrdersByUserEmail(String email); // ✅ ADD THIS
+
     Order getOrderById(String id);
 
     Order updateOrder(String id, Order order);
