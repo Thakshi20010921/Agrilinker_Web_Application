@@ -67,6 +67,8 @@ function Step3Form({ productData, setProductData }) {
               <input
                 type="number"
                 name="price"
+                min="0"
+                max="10000"
                 placeholder="0.00"
                 className={`${inputStyle} pl-8`}
                 value={productData.price}
@@ -97,6 +99,8 @@ function Step3Form({ productData, setProductData }) {
             <input
               type="number"
               name="quantity"
+              min="0"
+              max="100000"
               placeholder="e.g. 100"
               className={inputStyle}
               value={productData.quantity}
@@ -109,6 +113,7 @@ function Step3Form({ productData, setProductData }) {
             <select
               name="unit"
               className={`${inputStyle} cursor-pointer`}
+              required
               value={productData.unit}
               onChange={handleChange}
             >
