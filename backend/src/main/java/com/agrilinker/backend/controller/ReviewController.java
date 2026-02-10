@@ -26,4 +26,10 @@ public class ReviewController {
     public List<Review> getReviews(@PathVariable String productId) {
         return reviewService.getReviewsByProduct(productId);
     }
+
+    @GetMapping("/fertilizer/{fertilizerId}")
+    public List<Review> getFertilizerReviews(@PathVariable String fertilizerId) {
+        return reviewService.getReviewsByFertilizer(fertilizerId);
+    }
+
 }
