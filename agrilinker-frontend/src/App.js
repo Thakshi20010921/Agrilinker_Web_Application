@@ -19,6 +19,9 @@ import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierDashboard";
 
+// ✅ ADD THIS (match your filename exactly)
+import Loginfertilizer from "./pages/Loginfertilizer";
+
 // Auth Pages
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -37,6 +40,7 @@ import EditProductPage from "./components/farmer/EditProductPage";
 import MyProducts from "./components/farmer/MyProducts";
 
 import { AuthProvider } from "./context/AuthContext";
+
 function App() {
   const location = useLocation();
 
@@ -44,7 +48,8 @@ function App() {
   const hideLayout =
     location.pathname === "/" ||
     location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/register" ||
+    location.pathname === "/loginfertilizer"; // ✅ ADD THIS
 
   return (
     <AuthProvider>
@@ -67,6 +72,10 @@ function App() {
           {/* Auth */}
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+
+          {/* ✅ Fertilizer Supplier Login */}
+          <Route path="/loginfertilizer" element={<Loginfertilizer />} />
+
           <Route path="/register" element={<Register />} />
 
           {/* Home */}
@@ -88,11 +97,13 @@ function App() {
           <Route path="/fertilizers" element={<FertilizerList />} />
           <Route path="/fertilizers/add" element={<AddFertilizer />} />
           <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
-          <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
-          <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
           <Route
             path="/fertilizers/recommend"
             element={<FertilizerRecommendation />}
+          />
+          <Route
+            path="/fertilizer-dashboard"
+            element={<FertilizerSupplierDashboard />}
           />
 
           {/* FARMER PAGES */}
@@ -106,8 +117,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
-        <Route path="/orders" element={<OrderHistory />} />
-
+          <Route path="/orders" element={<OrderHistory />} />
         </Routes>
 
         {!hideLayout && <Footer />}

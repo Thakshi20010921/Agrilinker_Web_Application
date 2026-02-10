@@ -6,7 +6,7 @@ export default function FertilizerButton() {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    // Always redirect to Fertilizer Supplier login page
+    // ✅ Always show login page (ignore already logged-in user)
     navigate("/loginfertilizer");
   };
 
