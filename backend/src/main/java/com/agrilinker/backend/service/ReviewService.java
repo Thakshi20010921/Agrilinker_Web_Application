@@ -16,14 +16,18 @@ public class ReviewService {
     private final ReviewRepository reviewRepo;
     private final ProductRepository productRepo;
     private final FertilizerRepository fertilizerRepo;
+    private final SentimentService sentimentService; // ✅ add
 
     public ReviewService(
             ReviewRepository reviewRepo,
             ProductRepository productRepo,
-            FertilizerRepository fertilizerRepo) {
+            FertilizerRepository fertilizerRepo,
+            SentimentService sentimentService // ✅ add
+    ) {
         this.reviewRepo = reviewRepo;
         this.productRepo = productRepo;
         this.fertilizerRepo = fertilizerRepo;
+        this.sentimentService = sentimentService; // ✅ add
     }
 
     public Review addReview(Review review) {
@@ -50,7 +54,9 @@ public class ReviewService {
                         throw new RuntimeException("User already reviewed this fertilizer");
                     });
         }
-
+        var s = sentimentService.analyze(review.getComment());
+        review.setSentimentLabel(s.label());
+        review.setSentimentScore(s.score());
         Review saved = reviewRepo.save(review);
 
         // ✅ Update rating summary on Product or Fertilizer
