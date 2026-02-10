@@ -17,7 +17,9 @@ public class Product {
     private double price;
     private int quantity;
     private String unit;
-    private String farmerId;
+    //private String farmerId;
+    private String farmerEmail;
+    
     private String location;
     private String Product_image;
     private String status;
@@ -29,14 +31,15 @@ public class Product {
     }
 
     public Product(String name, String category, String description, double price, int quantity,
-            String unit, String farmerId, String location, String Product_image, String status) {
+            String unit, String farmerEmail, String location, String Product_image, String status) {
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
         this.unit = unit;
-        this.farmerId = farmerId;
+        this.farmerEmail = farmerEmail;
+
         this.location = location;
         this.Product_image = Product_image;
         this.status = status;
@@ -99,12 +102,12 @@ public class Product {
         this.unit = unit;
     }
 
-    public String getFarmerId() {
-        return farmerId;
+    public String getfarmerEmail() {
+        return farmerEmail;
     }
 
-    public void setFarmerId(String farmerId) {
-        this.farmerId = farmerId;
+    public void setfarmerEmail(String farmerEmail) {
+        this.farmerEmail = farmerEmail;
     }
 
     public String getLocation() {

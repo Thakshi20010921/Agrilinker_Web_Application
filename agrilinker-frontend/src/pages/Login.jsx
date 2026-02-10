@@ -21,6 +21,66 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
+      // Save auth data
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("roles", JSON.stringify(res.data.roles));
+      localStorage.setItem("email", res.data.email);
+
+      toast.success("Login successful 🎉");
+
+      //navigate("/home");
+      const roles = res.data.roles;
+
+      if (roles.includes("FARMER")) {
+        navigate("/farmer/dashboard");
+      } else if (
+        roles.includes("BUYER") ||
+        roles.includes("FERTILIZER_SUPPLIER")
+      ) {
+        navigate("/marketplace");
+      } else {
+        toast.error("Access denied");
+      }
+    } catch (err) {
+      toast.error("Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="screen">
+      <form className="card" onSubmit={submit}>
+        <h2>Login</h2>
+
+        <input
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        {/* Password with eye toggle */}
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          {password && (
+            <span
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEyeOff /> : <FiEye />}
+            </span>
+          )}
+        </div>
+
       // ✅ store user + token using AuthContext only
       loginUser(
         {
@@ -77,6 +137,11 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
+        <button
+          type="button"
+          className="btn-light"
+          onClick={() => navigate("/")}
+        >
         <button type="button" className="btn-light" onClick={() => navigate("/")}>
           Back
         </button>

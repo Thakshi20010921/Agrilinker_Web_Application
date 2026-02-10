@@ -12,7 +12,6 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
-      
       {/* Logo */}
       <div className="flex items-center space-x-3">
         <span className="rounded-full bg-white p-2 shadow-md">

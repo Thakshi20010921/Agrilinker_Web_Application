@@ -31,7 +31,9 @@ function HeroSection() {
             </Link>
 
             <Link
-              to="/farmer/dashboard"
+              /* to="/farmer/dashboard"
+              className="bg-white text-green-700 font-bold px-6 py-3 rounded-xl shadow-xl border-2 border-green-400 hover:bg-green-50 hover:border-green-600 transition"*/
+              to="/login"
               className="bg-white text-green-700 font-bold px-6 py-3 rounded-xl shadow-xl border-2 border-green-400 hover:bg-green-50 hover:border-green-600 transition"
             >
               Sell Products
