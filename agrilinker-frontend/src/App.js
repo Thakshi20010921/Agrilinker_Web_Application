@@ -84,7 +84,10 @@ function App() {
           <Route path="/fertilizers" element={<FertilizerList />} />
           <Route path="/fertilizers/add" element={<AddFertilizer />} />
           <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
-          <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
+          <Route
+            path="/fertilizers/recommend"
+            element={<FertilizerRecommendation />}
+          />
 
           {/* FARMER PAGES */}
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
