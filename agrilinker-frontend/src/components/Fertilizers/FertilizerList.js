@@ -233,8 +233,19 @@ export default function FertilizerList() {
                 </button>
               </div>
             </div>
-          );
-        })}
+
+            <div className="flex justify-between mt-4">
+              
+
+              <button
+                onClick={() => handleBuy(f)}
+                className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
+              >
+                Buy
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       {totalPages > 1 && (

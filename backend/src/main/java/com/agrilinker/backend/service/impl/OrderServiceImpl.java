@@ -69,4 +69,10 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(String id) {
         orderRepository.deleteById(id);
     }
+
+    @Override
+    public List<Order> getOrdersByUserEmail(String email) {
+        return orderRepository.findByCustomerEmail(email);
+    }
+
 }

@@ -21,18 +21,40 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // ✅ store user + token using AuthContext only
+      // expected: res.data = { token, roles, email, id/userId? }
+      const token = res?.data?.token;
+      const roles = res?.data?.roles || [];
+      const userEmail = res?.data?.email || email;
+      const userId = res?.data?.id || res?.data?.userId || null;
+
+      if (!token) throw new Error("Token not found in response");
+
+      // ✅ localStorage (optional, but useful after refresh)
+      localStorage.setItem("token", token);
+      localStorage.setItem("roles", JSON.stringify(roles));
+      localStorage.setItem("email", userEmail);
+
+      // ✅ AuthContext (recommended for app state)
       loginUser(
         {
-          email: res.data.email,
-          roles: res.data.roles,
-          id: res.data.id || res.data.userId || null, // optional
+          email: userEmail,
+          roles,
+          id: userId,
         },
-        res.data.token
+        token
       );
 
       toast.success("Login successful 🎉");
-      navigate("/home");
+
+      // ✅ role-based navigation (your logic)
+      if (roles.includes("FARMER")) {
+        navigate("/farmer/dashboard");
+      } else if (roles.includes("BUYER") || roles.includes("FERTILIZER_SUPPLIER")) {
+        navigate("/marketplace");
+      } else {
+        toast.error("Access denied");
+        navigate("/");
+      }
     } catch (err) {
       toast.error("Invalid email or password");
     } finally {
@@ -67,6 +89,8 @@ export default function Login() {
             <span
               className="password-toggle"
               onClick={() => setShowPassword(!showPassword)}
+              role="button"
+              tabIndex={0}
             >
               {showPassword ? <FiEyeOff /> : <FiEye />}
             </span>
@@ -77,7 +101,11 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <button type="button" className="btn-light" onClick={() => navigate("/")}>
+        <button
+          type="button"
+          className="btn-light"
+          onClick={() => navigate("/")}
+        >
           Back
         </button>
       </form>

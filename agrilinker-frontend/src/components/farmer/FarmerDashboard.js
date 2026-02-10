@@ -1,69 +1,69 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const MOCK_FARMER_ID = "FARMER_001"; // temporary mock for presentation
+import { useNavigate } from "react-router-dom"; // Import this for navigation
 
 const FarmerDashboard = () => {
+  const [products, setProducts] = useState([]);
+  const farmerEmail = localStorage.getItem("email"); // or use stored farmerEmail
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8081/api/products/farmer/${farmerEmail}`,
+        );
+        setProducts(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProducts();
+  }, [farmerEmail]);
+
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <h1 className="text-3xl font-bold mb-6">Farmer Dashboard 🌾</h1>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 shadow rounded">
-          <p className="text-gray-500">Total Products</p>
-          <p className="text-2xl font-semibold">--</p>
-        </div>
-
-        <div className="bg-white p-4 shadow rounded">
-          <p className="text-gray-500">New Orders</p>
-          <p className="text-2xl font-semibold">--</p>
-        </div>
-
-        <div className="bg-white p-4 shadow rounded">
-          <p className="text-gray-500">Order Status</p>
-          <p className="text-sm">Pending / Accepted</p>
-        </div>
-
-        <div className="bg-white p-4 shadow rounded">
-          <p className="text-gray-500">Top Selling Product</p>
-          <p className="font-medium">--</p>
-        </div>
-      </div>
-
-      {/* Notifications */}
-      <div className="bg-white p-4 shadow rounded mb-6">
-        <h2 className="font-semibold mb-2">Notifications</h2>
-        <p className="text-gray-500 text-sm">No new notifications</p>
-      </div>
-
-      {/* Shortcut Buttons */}
-      <div className="flex gap-4">
-        <button
-          onClick={() => navigate("/farmer/add-product")}
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-        >
-          Add Product
-        </button>
-
-        <button
-          onClick={() => navigate("/farmer/my-products")}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-        >
-          View My Products
-        </button>
-      </div>
-
-      {/* Mock Farmer Info (for presentation) */}
-      <div className="mt-6 bg-gray-100 p-4 rounded">
-        <p>
-          <span className="font-semibold">Farmer ID:</span> {MOCK_FARMER_ID}
+    <div className="relative min-h-screen bg-slate-50 p-8">
+      {/* --- HEADER SECTION --- */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-extrabold text-emerald-950">
+          Farmer Dashboard
+        </h1>
+        <p className="text-emerald-600 font-medium">
+          Manage your harvests and listings
         </p>
-        <p>
-          <span className="font-semibold">Farmer Name:</span> Demo Farmer
+      </div>
+
+      {/* --- STATS CARD --- */}
+
+      <button
+        type="button"
+        onClick={() => navigate("/farmer/add-product2")}
+        className="w-[110px] h-[110px] bg-white p-6 rounded-full shadow-sm border border-emerald-100 mb-8 inline-block text-left"
+      >
+        <h2 className="text-sm font-bold text-emerald-800 uppercase tracking-wider">
+          Add Products
+        </h2>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => navigate("/farmer/my-products")}
+        className="w-[110px] h-[110px] bg-white p-6 rounded-full shadow-sm border border-emerald-100 mb-8 inline-block text-left"
+      >
+        <h2 className="text-sm font-bold text-emerald-800 uppercase tracking-wider">
+          My Products
+        </h2>
+      </button>
+      <br></br>
+
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 mb-8 inline-block">
+        <h2 className="text-sm font-bold text-emerald-800 uppercase tracking-wider">
+          Total Products
+        </h2>
+        <p className="text-4xl font-black text-emerald-600">
+          {products.length}
         </p>
       </div>
     </div>
