@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useContext } from "react"; 
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { FiFilter } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import FertilizerButton from "./FertilizerButton"; // ✅ updated import
 import ReviewModal from "../../components/ReviewModal"; // ✅ adjust path if needed
 
 export default function FertilizerList() {
@@ -19,8 +18,6 @@ export default function FertilizerList() {
 
   const { addToCart } = useContext(CartContext);
 
-  const ITEMS_PER_PAGE = 10;
-  const [currentPage, setCurrentPage] = useState(1);
   // ✅ Review modal state
   const [selectedItem, setSelectedItem] = useState(null);
   const [reviewType, setReviewType] = useState("fertilizer");
