@@ -7,6 +7,9 @@ import UserMenu from "./UserMenu";
 function Header() {
   const { cart } = useContext(CartContext);
 
+  // ✅ total quantity (not number of rows)
+  const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
       {/* Logo */}
@@ -51,9 +54,11 @@ function Header() {
           className="relative text-white text-3xl hover:text-green-300 hover:scale-110 transition"
         >
           <FaShoppingCart />
-          {cart.length > 0 && (
+
+          {/* ✅ show badge only if items exist */}
+          {cartCount > 0 && (
             <span className="absolute -top-2 -right-3 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {cart.length}
+              {cartCount}
             </span>
           )}
         </Link>

@@ -1,35 +1,43 @@
 import { createContext, useState, useContext, useEffect } from "react";
 
-// Create AuthContext
 export const AuthContext = createContext();
 
-// AuthProvider to wrap your app
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-  // Load user from localStorage if logged in
+  // Load user + token from localStorage on refresh
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) setUser(storedUser);
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedToken) setToken(storedToken);
   }, []);
 
-  // Save user to localStorage when login
-  const loginUser = (userData) => {
+  // ✅ login: save both user + token
+  const loginUser = (userData, jwtToken) => {
     setUser(userData);
+    setToken(jwtToken);
+
     localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", jwtToken);
   };
 
+  // ✅ logout: clear everything
   const logoutUser = () => {
     setUser(null);
+    setToken(null);
+
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loginUser, logoutUser }}>
+    <AuthContext.Provider value={{ user, token, loginUser, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook
 export const useAuth = () => useContext(AuthContext);

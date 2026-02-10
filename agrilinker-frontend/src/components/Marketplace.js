@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { CartContext } from "../context/CartContext";
 import { toast } from "react-toastify";
+import ReviewModal from "./ReviewModal";
 
 const Marketplace = () => {
   const [products, setProducts] = useState([]);
@@ -10,6 +11,7 @@ const Marketplace = () => {
   const [sortBy, setSortBy] = useState("name");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reviewProduct, setReviewProduct] = useState(null);
 
   const { addToCart } = useContext(CartContext);
 
@@ -17,23 +19,18 @@ const Marketplace = () => {
     const loadProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8081/api/products");
-        
-        console.log("Backend Response:", response.data); 
-        // Adjust stock depending on your backend: 1/0
         const productsWithStock = response.data.map((p) => ({
           ...p,
           inStock: p.quantity > 0 && p.status === "available",
-
         }));
         setProducts(productsWithStock);
         setLoading(false);
       } catch (err) {
-        console.error("Error loading products:", err);
+        console.error(err);
         setError("Failed to load products. Please try again.");
         setLoading(false);
       }
     };
-
     loadProducts();
   }, []);
 
@@ -50,7 +47,7 @@ const Marketplace = () => {
         case "price-high":
           return b.price - a.price;
         case "rating":
-          return b.rating - a.rating;
+          return b.ratingAvg - a.ratingAvg;
         default:
           return a.name.localeCompare(b.name);
       }
@@ -61,28 +58,28 @@ const Marketplace = () => {
     toast.success(`${product.name} added to cart!`);
   };
 
-  if (loading) {
+  if (loading)
     return (
       <div className="p-6 max-w-7xl mx-auto flex justify-center items-center h-64">
-        <div className="text-lg">Loading fresh products...</div>
+        <div className="text-lg animate-pulse text-green-600">
+          Loading fresh products...
+        </div>
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="p-6 max-w-7xl mx-auto flex justify-center items-center h-64">
         <div className="text-red-500 text-lg">{error}</div>
       </div>
     );
-  }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      
+    <div className="p-6 max-w-7xl mx-auto relative">
+      {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-green-900">Fresh Marketplace</h1>
+          <h1 className="text-4xl font-bold text-green-900">🌿 Fresh Marketplace</h1>
           <p className="text-gray-600 mt-2">Direct from farmers to your table</p>
         </div>
         <div className="mt-4 lg:mt-0 text-sm text-gray-500">
@@ -90,20 +87,19 @@ const Marketplace = () => {
         </div>
       </div>
 
-      
+      {/* Filters */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search products..."
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
         />
-
         <select
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
         >
           <option value="All">All Categories</option>
           <option value="Fruits">Fruits</option>
@@ -111,11 +107,10 @@ const Marketplace = () => {
           <option value="Dairy">Dairy</option>
           <option value="Grains">Grains</option>
         </select>
-
         <select
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
         >
           <option value="name">Sort by Name</option>
           <option value="price-low">Price: Low to High</option>
@@ -124,7 +119,7 @@ const Marketplace = () => {
         </select>
       </div>
 
-     
+      {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filtered.map((product) => {
           const imageUrl = product.product_image
@@ -134,60 +129,61 @@ const Marketplace = () => {
           return (
             <div
               key={product.id}
-              className="border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden bg-white"
+              className="bg-white border border-gray-200 rounded-2xl shadow hover:shadow-xl transition-transform transform hover:-translate-y-1 duration-300 overflow-hidden flex flex-col"
             >
+              {/* Image */}
               <div className="relative">
                 <img
                   src={imageUrl}
                   alt={product.name}
-                  className="h-48 w-full object-cover"
+                  className="h-52 w-full object-cover"
                 />
-
                 {!product.inStock && (
-                  <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                  <div className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                     Out of Stock
                   </div>
                 )}
-
-                <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                <div className="absolute top-2 left-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                   {product.category}
                 </div>
               </div>
 
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h2 className="font-semibold text-lg text-gray-800">
+              {/* Product Details */}
+              <div className="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h2 className="font-semibold text-lg text-gray-800 hover:text-green-600 transition-colors">
                     {product.name}
                   </h2>
-                  <span className="text-green-600 font-bold text-lg">
-                    ${product.price}
-                  </span>
+                  <p className="text-gray-600 text-sm">{product.farmer}</p>
+                  <p className="text-gray-500 text-sm">{product.location}</p>
                 </div>
 
-                <p className="text-sm text-gray-600 mb-2">{product.farmer}</p>
-                <p className="text-sm text-gray-500 mb-3">{product.location}</p>
-
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">⭐</span>
-                    <span className="text-sm font-medium ml-1">
-                      {product.rating}
-                    </span>
-                    <span className="text-sm text-gray-500 ml-1">
-                      ({product.reviews})
-                    </span>
+                {/* Ratings and review */}
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-yellow-400">⭐</span>
+                    <span className="font-medium">{product.ratingAvg || 0}</span>
+                    <span className="text-gray-400 text-sm">({product.ratingCount || 0})</span>
+                    <button
+                      type="button"
+                      onClick={() => setReviewProduct(product)}
+                      className="text-sm text-green-600 underline hover:text-green-800"
+                    >
+                      Write a review
+                    </button>
                   </div>
-                  <span className="text-sm text-gray-500">/ kg</span>
+                  <span className="text-gray-500 text-sm">/ kg</span>
                 </div>
 
+                {/* Add to cart */}
                 <button
-                  className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-                    product.inStock
-                      ? "bg-green-600 hover:bg-green-700 text-white"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                  disabled={!product.inStock}
                   onClick={() => handleAddToCart(product)}
+                  disabled={!product.inStock}
+                  className={`mt-4 w-full py-3 rounded-lg font-semibold text-white transition-colors ${
+                    product.inStock
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-gray-300 cursor-not-allowed"
+                  }`}
                 >
                   {product.inStock ? "Add to Cart" : "Out of Stock"}
                 </button>
@@ -197,14 +193,21 @@ const Marketplace = () => {
         })}
       </div>
 
+      {/* No Products */}
       {filtered.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-gray-400 text-6xl mb-4">🍃</div>
-          <h3 className="text-xl font-semibold text-gray-600">
-            No products found
-          </h3>
+          <div className="text-gray-300 text-6xl mb-4 animate-pulse">🍃</div>
+          <h3 className="text-xl font-semibold text-gray-600">No products found</h3>
           <p className="text-gray-500">Try adjusting your search or filters</p>
         </div>
+      )}
+
+      {/* Review Modal */}
+      {reviewProduct && (
+        <ReviewModal
+          product={reviewProduct}
+          onClose={() => setReviewProduct(null)}
+        />
       )}
     </div>
   );
