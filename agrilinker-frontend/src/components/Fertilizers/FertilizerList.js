@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react"; 
 import axios from "axios";
 import { FiFilter } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import FertilizerButton from "./FertilizerButton"; // ✅ updated import
 
 export default function FertilizerList() {
   const [fertilizers, setFertilizers] = useState([]);
@@ -17,12 +18,9 @@ export default function FertilizerList() {
 
   const { addToCart } = useContext(CartContext);
 
-  /* ===================== PAGINATION (NEW) ===================== */
-  const ITEMS_PER_PAGE = 10; // show 10 fertilizers per page
+  const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  /* ============================================================ */
 
-  // Fetch fertilizers from backend
   useEffect(() => {
     axios
       .get("http://localhost:8081/api/fertilizers")
@@ -33,7 +31,6 @@ export default function FertilizerList() {
       .catch((err) => console.error(err));
   }, []);
 
-  // Highlight search matches
   const highlightMatch = (text) => {
     if (!text) return "";
     if (!searchTerm) return text;
@@ -41,27 +38,19 @@ export default function FertilizerList() {
     return text.replace(regex, "<mark>$1</mark>");
   };
 
-  // ✅ BUY -> ADD TO SAME CART (normalize fertilizer to cart shape)
   const handleBuy = (f) => {
-    // Optional login check
-    // if (!localStorage.getItem("token")) {
-    //   toast.error("Please login to buy");
-    //   return;
-    // }
-
     addToCart({
-      id: f.id || f._id, // IMPORTANT: CartContext uses id/_id to set productId
+      id: f.id || f._id,
       name: f.name,
       price: Number(f.price || 0),
       unit: f.unit || "unit",
       imageUrl: f.imageUrl || "https://via.placeholder.com/300x200",
-      type: "fertilizer", // optional
+      type: "fertilizer",
     });
 
     toast.success(`${f.name} added to cart!`);
   };
 
-  // Apply search, filter, and sort
   useEffect(() => {
     let temp = [...fertilizers];
 
@@ -85,20 +74,15 @@ export default function FertilizerList() {
     else if (sortOption === "nameAZ") temp.sort((a, b) => a.name.localeCompare(b.name));
 
     setFilteredFertilizers(temp);
-
-    /* 🔹 Reset to first page whenever search/filter/sort changes */
     setCurrentPage(1);
   }, [fertilizers, searchTerm, sortOption, categoryFilter, typeFilter, districtFilter]);
 
-  /* ===================== PAGINATION LOGIC ===================== */
   const totalPages = Math.ceil(filteredFertilizers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredFertilizers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  /* ============================================================ */
 
   return (
     <div className="max-w-6xl mx-auto p-8">
-      {/* Header + Search + Filters */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
         <h1 className="text-4xl font-extrabold text-green-800">Fertilizers</h1>
 
@@ -183,15 +167,9 @@ export default function FertilizerList() {
         </div>
       </div>
 
-      {/* Add & Recommendation Buttons (UNCHANGED) */}
+      {/* ✅ Updated button usage */}
       <div className="mb-6 flex gap-4">
-        <Link
-  to="/fertilizer-dashboard"
-  className="bg-green-700 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-green-800 transition"
->
-  Fertilizers (Add/Update)
-</Link>
-
+        <FertilizerButton /> {/* replaces old + Fertilizers link */}
 
         <Link
           to="/fertilizers/recommend"
@@ -201,7 +179,6 @@ export default function FertilizerList() {
         </Link>
       </div>
 
-      {/* Fertilizer Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {currentItems.map((f) => (
           <div
@@ -259,8 +236,6 @@ export default function FertilizerList() {
             </div>
 
             <div className="flex justify-between mt-4">
-              
-
               <button
                 onClick={() => handleBuy(f)}
                 className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
@@ -272,7 +247,6 @@ export default function FertilizerList() {
         ))}
       </div>
 
-      {/* Pagination UI */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-10 gap-2">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (

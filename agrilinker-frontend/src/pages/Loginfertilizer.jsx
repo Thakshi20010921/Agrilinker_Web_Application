@@ -1,11 +1,12 @@
+// src/pages/LoginFertilizer.jsx
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/auth";
+import { login } from "../api/auth"; // your API function
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 
-export default function Login() {
+export default function LoginFertilizer() {
   const navigate = useNavigate();
   const { loginUser } = useContext(AuthContext);
 
@@ -21,7 +22,6 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // expected: res.data = { token, roles, email, id/userId? }
       const token = res?.data?.token;
       const roles = res?.data?.roles || [];
       const userEmail = res?.data?.email || email;
@@ -29,45 +29,46 @@ export default function Login() {
 
       if (!token) throw new Error("Token not found in response");
 
-      // ✅ localStorage (optional, but useful after refresh)
+      // Save token/roles/email
       localStorage.setItem("token", token);
       localStorage.setItem("roles", JSON.stringify(roles));
       localStorage.setItem("email", userEmail);
 
-      // ✅ AuthContext (recommended for app state)
-      loginUser(
-        {
-          email: userEmail,
-          roles,
-          id: userId,
-        },
-        token
-      );
+      // Update AuthContext
+      loginUser({ email: userEmail, roles, id: userId }, token);
 
       toast.success("Login successful 🎉");
 
-      // ✅ role-based navigation (your logic)
-      if (roles.includes("FARMER")) {
-      navigate("/farmer/dashboard");
-    } else if (roles.includes("FERTILIZERSUPPLIER")) {
+      // Check Fertilizer Supplier role combinations
+      const hasSupplier = roles.includes("FERTILIZERSUPPLIER");
+      const hasFarmer = roles.includes("FARMER");
+      const hasBuyer = roles.includes("BUYER");
+
+      if (!hasSupplier) {
+        toast.error(
+          "You are not registered as a Fertilizer Supplier. Please edit your account."
+        );
+        navigate("/"); // redirect to homepage or account edit page
+        return;
+      }
+
+      // ✅ Allowed combinations: supplier alone or supplier + farmer/buyer
       navigate("/fertilizer-dashboard");
-    } else if (roles.includes("BUYER")) {
-      navigate("/marketplace");
-    } else {
-      toast.error("Access denied");
-      navigate("/");
-    }
-  } catch (err) {
-    toast.error("Invalid email or password");
-  } finally {
-    setLoading(false);
+    } catch (err) {
+      // If login fails → maybe user not registered
+      toast.error(
+        "Invalid email or password. If you are not registered, please register first."
+      );
+      navigate("/register");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="screen">
       <form className="card" onSubmit={submit}>
-        <h2>Login</h2>
+        <h2>Fertilizer Supplier Login</h2>
 
         <input
           type="email"
@@ -77,7 +78,6 @@ export default function Login() {
           required
         />
 
-        {/* Password with eye toggle */}
         <div className="password-field">
           <input
             type={showPassword ? "text" : "password"}
@@ -86,7 +86,6 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-
           {password && (
             <span
               className="password-toggle"
@@ -106,9 +105,9 @@ export default function Login() {
         <button
           type="button"
           className="btn-light"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/register")}
         >
-          Back
+          Register
         </button>
       </form>
     </div>
