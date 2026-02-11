@@ -9,6 +9,15 @@ export default function UserMenu() {
   const email = localStorage.getItem("email");
   const roles = JSON.parse(localStorage.getItem("roles") || "[]");
 
+  const hasRole = (targetRole) =>
+    roles.some((r) => {
+      const role = String(r).toUpperCase();
+      const t = String(targetRole).toUpperCase();
+      return role === t || role === `ROLE_${t}`;
+    });
+
+  const isAdmin = hasRole("ADMIN");
+
   // close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -30,6 +39,11 @@ export default function UserMenu() {
   const goProfile = () => {
     setOpen(false);
     navigate("/profile");
+  };
+
+  const goAdmin = () => {
+    setOpen(false);
+    navigate("/admin");
   };
 
   return (
@@ -54,12 +68,21 @@ export default function UserMenu() {
 
             {roles.length > 0 && (
               <span className="inline-block mt-2 text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                {roles[0]}
+                {String(roles[0]).toUpperCase()}
               </span>
             )}
           </div>
 
           <div className="py-2">
+            {isAdmin && (
+              <button
+                onClick={goAdmin}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Admin Dashboard
+              </button>
+            )}
+
             <button
               onClick={goProfile}
               className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
