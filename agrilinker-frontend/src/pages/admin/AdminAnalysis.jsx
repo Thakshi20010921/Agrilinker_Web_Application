@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { jsPDF } from "jspdf";
 import api from "../../api/api";
 import AdminSidebar from "./AdminSidebar";
 
@@ -16,6 +17,104 @@ const lkrFormatter = new Intl.NumberFormat("en-LK", {
   currency: "LKR",
   maximumFractionDigits: 0,
 });
+
+function escapeCsv(value) {
+  const normalized = String(value ?? "");
+  if (/[",\n]/.test(normalized)) {
+    return `"${normalized.replace(/"/g, '""')}"`;
+  }
+  return normalized;
+}
+
+function toCsv(rows, lineEnding = "\r\n") {
+  return rows
+    .map((row) => row.map((cell) => escapeCsv(cell)).join(","))
+    .join(lineEnding);
+}
+
+function formatDateTime(dateInput) {
+  return new Intl.DateTimeFormat("en-LK", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(dateInput);
+}
+
+function addPdfSectionTitle(doc, title, y) {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text(title, 14, y);
+  return y + 8;
+}
+
+function addPdfRows(doc, rows, y, options = {}) {
+  const {
+    columnGap = 95,
+    lineHeight = 6,
+    leftX = 14,
+    rightX = 14 + columnGap,
+  } = options;
+
+  rows.forEach(([label, value]) => {
+    if (y > 276) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.setFont("helvetica", "bold");
+    doc.text(String(label), leftX, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(String(value), rightX, y);
+    y += lineHeight;
+  });
+
+  return y;
+}
+
+function addPdfTable(doc, title, headers, rows, y) {
+  y = addPdfSectionTitle(doc, title, y);
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const startX = 14;
+  const endX = pageWidth - 14;
+  const tableWidth = endX - startX;
+  const colWidth = tableWidth / headers.length;
+
+  doc.setFillColor(242, 247, 242);
+  doc.rect(startX, y - 5, tableWidth, 7, "F");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  headers.forEach((header, index) => {
+    doc.text(String(header), startX + 1 + colWidth * index, y);
+  });
+
+  y += 6;
+  doc.setFont("helvetica", "normal");
+
+  rows.forEach((row) => {
+    if (y > 276) {
+      doc.addPage();
+      y = 20;
+      doc.setFont("helvetica", "bold");
+      headers.forEach((header, index) => {
+        doc.text(String(header), startX + 1 + colWidth * index, y);
+      });
+      y += 6;
+      doc.setFont("helvetica", "normal");
+    }
+
+    row.forEach((value, index) => {
+      const valueText = String(value ?? "");
+      const trimmed = valueText.length > 20 ? `${valueText.slice(0, 19)}…` : valueText;
+      doc.text(trimmed, startX + 1 + colWidth * index, y);
+    });
+    y += 6;
+  });
+
+  return y + 4;
+}
 
 function normalizeRole(role) {
   return String(role || "").replace("ROLE_", "").toUpperCase();
@@ -431,6 +530,134 @@ export default function AdminAnalysis() {
     return monthBuckets;
   }, [orders]);
 
+  const downloadAnalysisReport = () => {
+    const generatedAt = new Date();
+
+    const reportRows = [
+      ["sep=,"],
+      ["Admin Analysis Report"],
+      ["Generated At", formatDateTime(generatedAt)],
+      [],
+      ["Summary"],
+      ["Metric", "Value"],
+      ["Total Users", users.length],
+      ["Total Orders", orders.length],
+      ["Total Products", products.length],
+      ["Total Complaints", tickets.length],
+      [],
+      ["Weekly Activity"],
+      ["Week", "Registrations", "Weekly Active", "Buyers", "Farmers", "Suppliers"],
+      ...weeklyData.map((week) => [
+        week.label,
+        week.registrations,
+        week.weeklyActive,
+        week.buyers,
+        week.farmers,
+        week.suppliers,
+      ]),
+      [],
+      ["Complaint Summary"],
+      ["Status", "Count"],
+      ...complaintStatusData.map((entry) => [entry.label, entry.value]),
+      [],
+      ["Top Products"],
+      ["Rank", "Product", "Purchased Quantity"],
+      ...(topProducts.length
+        ? topProducts.map((product, index) => [index + 1, product.name, product.quantity])
+        : [["-", "No product purchase data", 0]]),
+      [],
+      ["Monthly Sales"],
+      ["Month", "Sales (LKR)", "Formatted"],
+      ...monthlySales.map((month) => [month.key, month.totalSales, lkrFormatter.format(month.totalSales)]),
+    ];
+
+    const csvContent = `﻿${toCsv(reportRows)}`;
+    const fileSafeDate = generatedAt.toISOString().slice(0, 10);
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `admin-analysis-report-${fileSafeDate}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadAnalysisPdf = () => {
+    const generatedAt = new Date();
+    const fileSafeDate = generatedAt.toISOString().slice(0, 10);
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    let y = 16;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Admin Analysis Report", 14, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(`Generated At: ${formatDateTime(generatedAt)}`, 14, y);
+    y += 10;
+
+    y = addPdfSectionTitle(doc, "Summary", y);
+    y = addPdfRows(
+      doc,
+      [
+        ["Total Users", users.length],
+        ["Total Orders", orders.length],
+        ["Total Products", products.length],
+        ["Total Complaints", tickets.length],
+      ],
+      y,
+      { columnGap: 70 },
+    );
+
+    y += 3;
+    y = addPdfTable(
+      doc,
+      "Complaint Summary",
+      ["Status", "Count"],
+      complaintStatusData.map((entry) => [entry.label, entry.value]),
+      y,
+    );
+
+    y = addPdfTable(
+      doc,
+      "Top Products",
+      ["#", "Product", "Qty"],
+      topProducts.length
+        ? topProducts.map((product, index) => [index + 1, product.name, product.quantity])
+        : [["-", "No product purchase data", 0]],
+      y,
+    );
+
+    y = addPdfTable(
+      doc,
+      "Monthly Sales",
+      ["Month", "Sales", "Formatted"],
+      monthlySales.map((month) => [month.key, month.totalSales, lkrFormatter.format(month.totalSales)]),
+      y,
+    );
+
+    addPdfTable(
+      doc,
+      "Weekly Activity",
+      ["Week", "Reg.", "Active", "Buyers", "Farmers", "Suppliers"],
+      weeklyData.map((week) => [
+        week.label,
+        week.registrations,
+        week.weeklyActive,
+        week.buyers,
+        week.farmers,
+        week.suppliers,
+      ]),
+      y,
+    );
+
+    doc.save(`admin-analysis-report-${fileSafeDate}.pdf`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 md:px-6 lg:flex-row lg:gap-10 lg:px-8 lg:py-10">
@@ -441,14 +668,34 @@ export default function AdminAnalysis() {
 
         <div className="flex-1 space-y-8">
           <header className="rounded-3xl bg-gradient-to-r from-green-900 via-green-700 to-green-600 p-8 text-white shadow-lg">
-            <p className="text-sm uppercase tracking-[0.3em] text-green-100">
-              ADMIN ANALYSIS
-            </p>
-            <h1 className="mt-3 text-3xl font-bold md:text-4xl">Growth and Activity Insights</h1>
-            <p className="mt-2 max-w-3xl text-green-100">
-              Comprehensive analytics on user registrations, activity trends,
-              complaint statuses, top products, and sales performance.
-            </p>
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-green-100">
+                  ADMIN ANALYSIS
+                </p>
+                <h1 className="mt-3 text-3xl font-bold md:text-4xl">Growth and Activity Insights</h1>
+                <p className="mt-2 max-w-3xl text-green-100">
+                  Comprehensive analytics on user registrations, activity trends,
+                  complaint statuses, top products, and sales performance.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={downloadAnalysisReport}
+                className="inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-green-800 shadow-sm transition hover:bg-green-50"
+              >
+                Download report (CSV)
+              </button>
+
+              <button
+                type="button"
+                onClick={downloadAnalysisPdf}
+                className="inline-flex items-center rounded-full bg-green-100 px-5 py-2.5 text-sm font-semibold text-green-900 shadow-sm transition hover:bg-green-200"
+              >
+                Download report (PDF)
+              </button>
+            </div>
           </header>
 
           {error ? (
