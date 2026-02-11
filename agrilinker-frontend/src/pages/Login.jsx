@@ -33,18 +33,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const hasRole = (roles, targetRole) => {
-    const normalizedTarget = String(targetRole).toUpperCase();
-    return roles.some((role) => {
-      const normalizedRole = String(role || "")
-        .toUpperCase()
-        .replace("ROLE_", "")
-        .replace("_", "");
-
-      return normalizedRole === normalizedTarget.replace("_", "");
-    });
-  };
-
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -74,13 +62,13 @@ export default function Login() {
 
       toast.success("Login successful 🎉");
 
-      // ✅ role-based navigation (your logic)
       if (hasRole(roles, "ADMIN")) {
         navigate("/admin");
       } else if (hasRole(roles, "FARMER")) {
         navigate("/farmer/dashboard");
       } else if (
         hasRole(roles, "BUYER") ||
+        hasRole(roles, "FERTILIZER_SUPPLIER") ||
         hasRole(roles, "FERTILIZERSUPPLIER")
       ) {
         navigate("/marketplace");
