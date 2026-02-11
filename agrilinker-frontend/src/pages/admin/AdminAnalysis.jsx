@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { jsPDF } from "jspdf";
 import api from "../../api/api";
 import AdminSidebar from "./AdminSidebar";
 
@@ -39,6 +40,80 @@ function formatDateTime(dateInput) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(dateInput);
+}
+
+function addPdfSectionTitle(doc, title, y) {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text(title, 14, y);
+  return y + 8;
+}
+
+function addPdfRows(doc, rows, y, options = {}) {
+  const {
+    columnGap = 95,
+    lineHeight = 6,
+    leftX = 14,
+    rightX = 14 + columnGap,
+  } = options;
+
+  rows.forEach(([label, value]) => {
+    if (y > 276) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.setFont("helvetica", "bold");
+    doc.text(String(label), leftX, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(String(value), rightX, y);
+    y += lineHeight;
+  });
+
+  return y;
+}
+
+function addPdfTable(doc, title, headers, rows, y) {
+  y = addPdfSectionTitle(doc, title, y);
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const startX = 14;
+  const endX = pageWidth - 14;
+  const tableWidth = endX - startX;
+  const colWidth = tableWidth / headers.length;
+
+  doc.setFillColor(242, 247, 242);
+  doc.rect(startX, y - 5, tableWidth, 7, "F");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  headers.forEach((header, index) => {
+    doc.text(String(header), startX + 1 + colWidth * index, y);
+  });
+
+  y += 6;
+  doc.setFont("helvetica", "normal");
+
+  rows.forEach((row) => {
+    if (y > 276) {
+      doc.addPage();
+      y = 20;
+      doc.setFont("helvetica", "bold");
+      headers.forEach((header, index) => {
+        doc.text(String(header), startX + 1 + colWidth * index, y);
+      });
+      y += 6;
+      doc.setFont("helvetica", "normal");
+    }
+
+    row.forEach((value, index) => {
+      const valueText = String(value ?? "");
+      const trimmed = valueText.length > 20 ? `${valueText.slice(0, 19)}…` : valueText;
+      doc.text(trimmed, startX + 1 + colWidth * index, y);
+    });
+    y += 6;
+  });
+
+  return y + 4;
 }
 
 function normalizeRole(role) {
@@ -512,121 +587,75 @@ export default function AdminAnalysis() {
   const downloadAnalysisPdf = () => {
     const generatedAt = new Date();
     const fileSafeDate = generatedAt.toISOString().slice(0, 10);
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    let y = 16;
 
-    const summaryRows = [
-      ["Total Users", users.length],
-      ["Total Orders", orders.length],
-      ["Total Products", products.length],
-      ["Total Complaints", tickets.length],
-    ];
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Admin Analysis Report", 14, y);
+    y += 8;
 
-    const weeklyRows = weeklyData
-      .map(
-        (week) => `
-          <tr>
-            <td>${week.label}</td>
-            <td>${week.registrations}</td>
-            <td>${week.weeklyActive}</td>
-            <td>${week.buyers}</td>
-            <td>${week.farmers}</td>
-            <td>${week.suppliers}</td>
-          </tr>`,
-      )
-      .join("");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(`Generated At: ${formatDateTime(generatedAt)}`, 14, y);
+    y += 10;
 
-    const complaintRows = complaintStatusData
-      .map((entry) => `<tr><td>${entry.label}</td><td>${entry.value}</td></tr>`)
-      .join("");
+    y = addPdfSectionTitle(doc, "Summary", y);
+    y = addPdfRows(
+      doc,
+      [
+        ["Total Users", users.length],
+        ["Total Orders", orders.length],
+        ["Total Products", products.length],
+        ["Total Complaints", tickets.length],
+      ],
+      y,
+      { columnGap: 70 },
+    );
 
-    const topProductRows = (topProducts.length
-      ? topProducts.map((product, index) => [index + 1, product.name, product.quantity])
-      : [["-", "No product purchase data", 0]])
-      .map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`)
-      .join("");
+    y += 3;
+    y = addPdfTable(
+      doc,
+      "Complaint Summary",
+      ["Status", "Count"],
+      complaintStatusData.map((entry) => [entry.label, entry.value]),
+      y,
+    );
 
-    const monthlyRows = monthlySales
-      .map(
-        (month) => `<tr><td>${month.key}</td><td>${month.totalSales}</td><td>${lkrFormatter.format(month.totalSales)}</td></tr>`,
-      )
-      .join("");
+    y = addPdfTable(
+      doc,
+      "Top Products",
+      ["#", "Product", "Qty"],
+      topProducts.length
+        ? topProducts.map((product, index) => [index + 1, product.name, product.quantity])
+        : [["-", "No product purchase data", 0]],
+      y,
+    );
 
-    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=1024,height=900");
-    if (!printWindow) {
-      return;
-    }
+    y = addPdfTable(
+      doc,
+      "Monthly Sales",
+      ["Month", "Sales", "Formatted"],
+      monthlySales.map((month) => [month.key, month.totalSales, lkrFormatter.format(month.totalSales)]),
+      y,
+    );
 
-    const html = `
-      <!doctype html>
-      <html>
-        <head>
-          <meta charset="utf-8" />
-          <title>Admin Analysis Report</title>
-          <style>
-            body { font-family: Arial, sans-serif; color: #1f2937; padding: 24px; }
-            h1 { margin: 0 0 8px; }
-            h2 { margin: 24px 0 8px; color: #14532d; }
-            p { margin: 0 0 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
-            th, td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; }
-            th { background: #f3f4f6; }
-            .summary { max-width: 480px; }
-            @media print {
-              body { padding: 0; }
-              .page-break { page-break-before: always; }
-            }
-          </style>
-        </head>
-        <body>
-          <h1>Admin Analysis Report</h1>
-          <p><strong>Generated At:</strong> ${formatDateTime(generatedAt)}</p>
+    addPdfTable(
+      doc,
+      "Weekly Activity",
+      ["Week", "Reg.", "Active", "Buyers", "Farmers", "Suppliers"],
+      weeklyData.map((week) => [
+        week.label,
+        week.registrations,
+        week.weeklyActive,
+        week.buyers,
+        week.farmers,
+        week.suppliers,
+      ]),
+      y,
+    );
 
-          <h2>Summary</h2>
-          <table class="summary">
-            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
-            <tbody>
-              ${summaryRows.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("")}
-            </tbody>
-          </table>
-
-          <h2>Complaint Summary</h2>
-          <table>
-            <thead><tr><th>Status</th><th>Count</th></tr></thead>
-            <tbody>${complaintRows}</tbody>
-          </table>
-
-          <h2>Top Products</h2>
-          <table>
-            <thead><tr><th>Rank</th><th>Product</th><th>Purchased Quantity</th></tr></thead>
-            <tbody>${topProductRows}</tbody>
-          </table>
-
-          <h2>Monthly Sales</h2>
-          <table>
-            <thead><tr><th>Month</th><th>Sales (LKR)</th><th>Formatted</th></tr></thead>
-            <tbody>${monthlyRows}</tbody>
-          </table>
-
-          <h2 class="page-break">Weekly Activity</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Week</th><th>Registrations</th><th>Weekly Active</th><th>Buyers</th><th>Farmers</th><th>Suppliers</th>
-              </tr>
-            </thead>
-            <tbody>${weeklyRows}</tbody>
-          </table>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.open();
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-
-    console.info(`Use "Save as PDF" to download admin-analysis-report-${fileSafeDate}.pdf`);
+    doc.save(`admin-analysis-report-${fileSafeDate}.pdf`);
   };
 
   return (
