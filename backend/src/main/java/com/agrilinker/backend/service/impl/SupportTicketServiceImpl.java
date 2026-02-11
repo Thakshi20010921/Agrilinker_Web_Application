@@ -1,12 +1,17 @@
+// =======================
+// 4) SupportTicketServiceImpl.java
+// =======================
 package com.agrilinker.backend.service.impl;
 
 import com.agrilinker.backend.model.SupportTicket;
 import com.agrilinker.backend.repository.SupportTicketRepository;
 import com.agrilinker.backend.service.SupportTicketService;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,20 +24,30 @@ public class SupportTicketServiceImpl implements SupportTicketService {
     @Override
     public SupportTicket createTicket(SupportTicket ticket) {
         SupportTicket ticketToSave = ticket;
+
         if (ticketToSave.getStatus() == null) {
             ticketToSave.setStatus(SupportTicket.Status.OPEN);
         }
+
         ticketToSave.setCreatedAt(LocalDateTime.now());
         ticketToSave.setUpdatedAt(LocalDateTime.now());
+
         if (ticketToSave.getMessages() == null) {
             ticketToSave.setMessages(new java.util.ArrayList<>());
         }
+
         return supportTicketRepository.save(ticketToSave);
     }
 
     @Override
     public List<SupportTicket> getAllTickets() {
         return supportTicketRepository.findAll();
+    }
+
+    // ✅ NEW
+    @Override
+    public List<SupportTicket> getTicketsByBuyerEmail(String buyerEmail) {
+        return supportTicketRepository.findByBuyerEmail(buyerEmail);
     }
 
     @Override
@@ -58,11 +73,18 @@ public class SupportTicketServiceImpl implements SupportTicketService {
         if (existingTicket == null) {
             return null;
         }
+
         SupportTicket.SupportMessage newMessage = message;
         newMessage.setId(UUID.randomUUID().toString());
         newMessage.setCreatedAt(LocalDateTime.now());
+
+        if (existingTicket.getMessages() == null) {
+            existingTicket.setMessages(new java.util.ArrayList<>());
+        }
+
         existingTicket.getMessages().add(newMessage);
         existingTicket.setUpdatedAt(LocalDateTime.now());
+
         return supportTicketRepository.save(existingTicket);
     }
 }
