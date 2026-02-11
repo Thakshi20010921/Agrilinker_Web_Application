@@ -11,11 +11,7 @@ const Marketplace = () => {
   const [sortBy, setSortBy] = useState("name");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [reviewProduct, setReviewProduct] = useState(null);
-
-  // ✅ Sentiment summary per productId
-  const [sentimentMap, setSentimentMap] = useState({});
 
   const { addToCart } = useContext(CartContext);
 
@@ -37,17 +33,6 @@ const Marketplace = () => {
     };
     loadProducts();
   }, []);
-  const refreshSummaryForProduct = async (productId) => {
-  try {
-    const res = await axios.get("http://localhost:8081/api/reviews/summary", {
-      params: { productId },
-    });
-    setSentimentMap((prev) => ({ ...prev, [productId]: res.data }));
-  } catch (e) {
-    console.error(e);
-  }
-};
-
 
   const filtered = products
     .filter(
@@ -62,34 +47,11 @@ const Marketplace = () => {
         case "price-high":
           return b.price - a.price;
         case "rating":
-          return (b.ratingAvg || 0) - (a.ratingAvg || 0);
+          return b.ratingAvg - a.ratingAvg;
         default:
           return a.name.localeCompare(b.name);
       }
     });
-
-  // ✅ Fetch sentiment summaries for visible products (limit to first 20)
-  useEffect(() => {
-    const fetchSummaries = async () => {
-      try {
-        const results = await Promise.all(
-          filtered.slice(0, 20).map(async (p) => {
-            const id = p.id || p._id;
-            const res = await axios.get("http://localhost:8081/api/reviews/summary", {
-              params: { productId: id },
-            });
-            return [id, res.data];
-          })
-        );
-
-        setSentimentMap(Object.fromEntries(results));
-      } catch (err) {
-        console.error("Error loading product sentiment summaries:", err);
-      }
-    };
-
-    if (filtered.length > 0) fetchSummaries();
-  }, [filtered]);
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -160,21 +122,22 @@ const Marketplace = () => {
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filtered.map((product) => {
-          const id = product.id || product._id;
-          const summary = sentimentMap[id];
-
           const imageUrl = product.product_image
             ? `http://localhost:8081${product.product_image}`
             : "/placeholder.jpg";
 
           return (
             <div
-              key={id}
+              key={product.id}
               className="bg-white border border-gray-200 rounded-2xl shadow hover:shadow-xl transition-transform transform hover:-translate-y-1 duration-300 overflow-hidden flex flex-col"
             >
               {/* Image */}
               <div className="relative">
-                <img src={imageUrl} alt={product.name} className="h-52 w-full object-cover" />
+                <img
+                  src={imageUrl}
+                  alt={product.name}
+                  className="h-52 w-full object-cover"
+                />
                 {!product.inStock && (
                   <div className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                     Out of Stock
@@ -196,32 +159,20 @@ const Marketplace = () => {
                 </div>
 
                 {/* Ratings and review */}
-                <div className="mt-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-yellow-400">⭐</span>
-                      <span className="font-medium">{product.ratingAvg || 0}</span>
-                      <span className="text-gray-400 text-sm">({product.ratingCount || 0})</span>
-                      <button
-                        type="button"
-                        onClick={() => setReviewProduct(product)}
-                        className="text-sm text-green-600 underline hover:text-green-800"
-                      >
-                        Write a review
-                      </button>
-                    </div>
-                    <span className="text-gray-500 text-sm">/ kg</span>
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-yellow-400">⭐</span>
+                    <span className="font-medium">{product.ratingAvg || 0}</span>
+                    <span className="text-gray-400 text-sm">({product.ratingCount || 0})</span>
+                    <button
+                      type="button"
+                      onClick={() => setReviewProduct(product)}
+                      className="text-sm text-green-600 underline hover:text-green-800"
+                    >
+                      Write a review
+                    </button>
                   </div>
-
-                  {/* ✅ Sentiment Summary */}
-                  {summary && summary.totalReviews > 0 && (
-                    <div className="mt-1 text-xs">
-                      <div className="font-semibold text-green-700">
-                        {summary.positivePercent}% positive
-                      </div>
-                      <div className="text-gray-500">{summary.topComment}</div>
-                    </div>
-                  )}
+                  <span className="text-gray-500 text-sm">/ kg</span>
                 </div>
 
                 {/* Add to cart */}
@@ -229,7 +180,9 @@ const Marketplace = () => {
                   onClick={() => handleAddToCart(product)}
                   disabled={!product.inStock}
                   className={`mt-4 w-full py-3 rounded-lg font-semibold text-white transition-colors ${
-                    product.inStock ? "bg-green-600 hover:bg-green-700" : "bg-gray-300 cursor-not-allowed"
+                    product.inStock
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-gray-300 cursor-not-allowed"
                   }`}
                 >
                   {product.inStock ? "Add to Cart" : "Out of Stock"}
@@ -251,13 +204,11 @@ const Marketplace = () => {
 
       {/* Review Modal */}
       {reviewProduct && (
-  <ReviewModal
-    item={reviewProduct}
-    onClose={() => setReviewProduct(null)}
-    onSubmitted={() => refreshSummaryForProduct(reviewProduct.id || reviewProduct._id)}
-  />
-)}
-
+        <ReviewModal
+          product={reviewProduct}
+          onClose={() => setReviewProduct(null)}
+        />
+      )}
     </div>
   );
 };
