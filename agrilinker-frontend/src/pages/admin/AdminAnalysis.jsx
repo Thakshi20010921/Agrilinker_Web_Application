@@ -17,6 +17,30 @@ const lkrFormatter = new Intl.NumberFormat("en-LK", {
   maximumFractionDigits: 0,
 });
 
+function escapeCsv(value) {
+  const normalized = String(value ?? "");
+  if (/[",\n]/.test(normalized)) {
+    return `"${normalized.replace(/"/g, '""')}"`;
+  }
+  return normalized;
+}
+
+function toCsv(rows, lineEnding = "\r\n") {
+  return rows
+    .map((row) => row.map((cell) => escapeCsv(cell)).join(","))
+    .join(lineEnding);
+}
+
+function formatDateTime(dateInput) {
+  return new Intl.DateTimeFormat("en-LK", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(dateInput);
+}
+
 function normalizeRole(role) {
   return String(role || "").replace("ROLE_", "").toUpperCase();
 }
@@ -431,6 +455,180 @@ export default function AdminAnalysis() {
     return monthBuckets;
   }, [orders]);
 
+  const downloadAnalysisReport = () => {
+    const generatedAt = new Date();
+
+    const reportRows = [
+      ["sep=,"],
+      ["Admin Analysis Report"],
+      ["Generated At", formatDateTime(generatedAt)],
+      [],
+      ["Summary"],
+      ["Metric", "Value"],
+      ["Total Users", users.length],
+      ["Total Orders", orders.length],
+      ["Total Products", products.length],
+      ["Total Complaints", tickets.length],
+      [],
+      ["Weekly Activity"],
+      ["Week", "Registrations", "Weekly Active", "Buyers", "Farmers", "Suppliers"],
+      ...weeklyData.map((week) => [
+        week.label,
+        week.registrations,
+        week.weeklyActive,
+        week.buyers,
+        week.farmers,
+        week.suppliers,
+      ]),
+      [],
+      ["Complaint Summary"],
+      ["Status", "Count"],
+      ...complaintStatusData.map((entry) => [entry.label, entry.value]),
+      [],
+      ["Top Products"],
+      ["Rank", "Product", "Purchased Quantity"],
+      ...(topProducts.length
+        ? topProducts.map((product, index) => [index + 1, product.name, product.quantity])
+        : [["-", "No product purchase data", 0]]),
+      [],
+      ["Monthly Sales"],
+      ["Month", "Sales (LKR)", "Formatted"],
+      ...monthlySales.map((month) => [month.key, month.totalSales, lkrFormatter.format(month.totalSales)]),
+    ];
+
+    const csvContent = `﻿${toCsv(reportRows)}`;
+    const fileSafeDate = generatedAt.toISOString().slice(0, 10);
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `admin-analysis-report-${fileSafeDate}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadAnalysisPdf = () => {
+    const generatedAt = new Date();
+    const fileSafeDate = generatedAt.toISOString().slice(0, 10);
+
+    const summaryRows = [
+      ["Total Users", users.length],
+      ["Total Orders", orders.length],
+      ["Total Products", products.length],
+      ["Total Complaints", tickets.length],
+    ];
+
+    const weeklyRows = weeklyData
+      .map(
+        (week) => `
+          <tr>
+            <td>${week.label}</td>
+            <td>${week.registrations}</td>
+            <td>${week.weeklyActive}</td>
+            <td>${week.buyers}</td>
+            <td>${week.farmers}</td>
+            <td>${week.suppliers}</td>
+          </tr>`,
+      )
+      .join("");
+
+    const complaintRows = complaintStatusData
+      .map((entry) => `<tr><td>${entry.label}</td><td>${entry.value}</td></tr>`)
+      .join("");
+
+    const topProductRows = (topProducts.length
+      ? topProducts.map((product, index) => [index + 1, product.name, product.quantity])
+      : [["-", "No product purchase data", 0]])
+      .map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`)
+      .join("");
+
+    const monthlyRows = monthlySales
+      .map(
+        (month) => `<tr><td>${month.key}</td><td>${month.totalSales}</td><td>${lkrFormatter.format(month.totalSales)}</td></tr>`,
+      )
+      .join("");
+
+    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=1024,height=900");
+    if (!printWindow) {
+      return;
+    }
+
+    const html = `
+      <!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Admin Analysis Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #1f2937; padding: 24px; }
+            h1 { margin: 0 0 8px; }
+            h2 { margin: 24px 0 8px; color: #14532d; }
+            p { margin: 0 0 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+            th, td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; }
+            th { background: #f3f4f6; }
+            .summary { max-width: 480px; }
+            @media print {
+              body { padding: 0; }
+              .page-break { page-break-before: always; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Admin Analysis Report</h1>
+          <p><strong>Generated At:</strong> ${formatDateTime(generatedAt)}</p>
+
+          <h2>Summary</h2>
+          <table class="summary">
+            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+            <tbody>
+              ${summaryRows.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("")}
+            </tbody>
+          </table>
+
+          <h2>Complaint Summary</h2>
+          <table>
+            <thead><tr><th>Status</th><th>Count</th></tr></thead>
+            <tbody>${complaintRows}</tbody>
+          </table>
+
+          <h2>Top Products</h2>
+          <table>
+            <thead><tr><th>Rank</th><th>Product</th><th>Purchased Quantity</th></tr></thead>
+            <tbody>${topProductRows}</tbody>
+          </table>
+
+          <h2>Monthly Sales</h2>
+          <table>
+            <thead><tr><th>Month</th><th>Sales (LKR)</th><th>Formatted</th></tr></thead>
+            <tbody>${monthlyRows}</tbody>
+          </table>
+
+          <h2 class="page-break">Weekly Activity</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Week</th><th>Registrations</th><th>Weekly Active</th><th>Buyers</th><th>Farmers</th><th>Suppliers</th>
+              </tr>
+            </thead>
+            <tbody>${weeklyRows}</tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+
+    console.info(`Use "Save as PDF" to download admin-analysis-report-${fileSafeDate}.pdf`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 md:px-6 lg:flex-row lg:gap-10 lg:px-8 lg:py-10">
@@ -441,14 +639,34 @@ export default function AdminAnalysis() {
 
         <div className="flex-1 space-y-8">
           <header className="rounded-3xl bg-gradient-to-r from-green-900 via-green-700 to-green-600 p-8 text-white shadow-lg">
-            <p className="text-sm uppercase tracking-[0.3em] text-green-100">
-              ADMIN ANALYSIS
-            </p>
-            <h1 className="mt-3 text-3xl font-bold md:text-4xl">Growth and Activity Insights</h1>
-            <p className="mt-2 max-w-3xl text-green-100">
-              Comprehensive analytics on user registrations, activity trends,
-              complaint statuses, top products, and sales performance.
-            </p>
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-green-100">
+                  ADMIN ANALYSIS
+                </p>
+                <h1 className="mt-3 text-3xl font-bold md:text-4xl">Growth and Activity Insights</h1>
+                <p className="mt-2 max-w-3xl text-green-100">
+                  Comprehensive analytics on user registrations, activity trends,
+                  complaint statuses, top products, and sales performance.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={downloadAnalysisReport}
+                className="inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-green-800 shadow-sm transition hover:bg-green-50"
+              >
+                Download report (CSV)
+              </button>
+
+              <button
+                type="button"
+                onClick={downloadAnalysisPdf}
+                className="inline-flex items-center rounded-full bg-green-100 px-5 py-2.5 text-sm font-semibold text-green-900 shadow-sm transition hover:bg-green-200"
+              >
+                Download report (PDF)
+              </button>
+            </div>
           </header>
 
           {error ? (
