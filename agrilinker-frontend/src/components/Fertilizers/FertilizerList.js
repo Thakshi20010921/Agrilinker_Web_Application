@@ -312,14 +312,19 @@ export default function FertilizerList() {
         </div>
       )}
 
-      {/* Review Modal */}
-      {selectedItem && (
-        <ReviewModal
-          item={selectedItem}
-          itemType={reviewType}
-          onClose={() => setSelectedItem(null)}
-        />
-      )}
+      {/* ✅ Review Modal */}
+     {selectedItem && (
+  <ReviewModal
+    item={selectedItem}
+    type={reviewType}                 // ✅ correct prop name
+    userId={localStorage.getItem("email")} // ✅ or pass your real USER_ID
+    onClose={() => setSelectedItem(null)}
+    onSubmitted={() => {
+      // optional: refresh list or reviews
+    }}
+  />
+)}
+
     </div>
   );
 }

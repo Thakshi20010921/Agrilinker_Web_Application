@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const ReviewModal = ({ item, onClose, onSubmitted }) => {
+const ReviewModal = ({ item, type = "auto", userId, onClose, onSubmitted }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,30 +13,69 @@ const ReviewModal = ({ item, onClose, onSubmitted }) => {
       return;
     }
 
-    const id = item?.id || item?._id;
-    if (!id) {
-      toast.error("Product ID not found");
+    // ✅ Detect IDs safely from many possible field names
+    const detectedProductId = item?.productId || item?._id || item?.id || null;
+    const detectedFertilizerId = item?.fertilizerId || item?.fid || item?.fertId || null;
+
+    // ✅ Resolve type:
+    // - if parent passes "product" or "fertilizer", use it
+    // - otherwise auto-detect using fertilizerId presence
+    const resolvedType =
+      type === "product" || type === "fertilizer"
+        ? type
+        : detectedFertilizerId
+        ? "fertilizer"
+        : "product";
+
+    // ✅ Resolve correct target id for payload
+    const targetId =
+      resolvedType === "fertilizer"
+        ? (detectedFertilizerId || detectedProductId) // fallback if fertilizer uses _id
+        : detectedProductId;
+
+    if (!targetId) {
+      toast.error("Item ID not found");
+      console.log("Item received by ReviewModal:", item);
       return;
     }
 
+    // ✅ Use real user id/email (you store email in localStorage)
+    const uid =
+      userId ||
+      localStorage.getItem("userId") ||
+      localStorage.getItem("email") ||
+      "demoUser";
+
+    const payload = {
+      userId: uid,
+      rating,
+      comment,
+      ...(resolvedType === "fertilizer"
+        ? { fertilizerId: targetId }
+        : { productId: targetId }),
+    };
+
     setLoading(true);
     try {
-      // ✅ IMPORTANT: send userId (needed by your backend duplicate-check)
-      const payload = {
-        productId: id,
-        userId: "demoUser", // TODO: replace with real logged-in user id
-        rating,
-        comment,
-      };
+      // optional debug:
+      // console.log("Submitting review:", payload);
 
       await axios.post("http://localhost:8081/api/reviews", payload);
 
       toast.success("Review submitted!");
-      onSubmitted?.(); // ✅ tell Marketplace to refresh sentiment
-      onClose();
+      onSubmitted?.();
+      onClose?.();
     } catch (err) {
+      const status = err?.response?.status;
+      const msg =
+        err?.response?.data?.message || err?.message || "Failed to submit review.";
+
+      if (status === 409) return toast.error(msg); // already reviewed
+      if (status === 404) return toast.error(msg); // product/fertilizer not found
+      if (status === 400) return toast.error(msg); // bad request
+
+      toast.error("Server error. Try again.");
       console.error(err);
-      toast.error(err?.response?.data?.message || "Failed to submit review. Try again.");
     } finally {
       setLoading(false);
     }
@@ -52,7 +91,9 @@ const ReviewModal = ({ item, onClose, onSubmitted }) => {
           ✕
         </button>
 
-        <h2 className="text-xl font-semibold mb-4">Review: {item?.name}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Review: {item?.name || item?.title || "Item"}
+        </h2>
 
         <div className="mb-4">
           <label className="block mb-1 font-medium">Rating:</label>
