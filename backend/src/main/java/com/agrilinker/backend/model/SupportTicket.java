@@ -1,3 +1,6 @@
+// =======================
+// 1) SupportTicket.java
+// =======================
 package com.agrilinker.backend.model;
 
 import java.time.LocalDateTime;
@@ -19,6 +22,9 @@ public class SupportTicket {
 
     @Id
     private String id;
+
+    // ✅ NEW: owner of the ticket (buyer)
+    private String buyerEmail;
 
     private String orderId;
     private String complaintType;
