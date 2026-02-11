@@ -3,6 +3,9 @@ import axios from "axios";
 import { CartContext } from "../context/CartContext";
 import { toast } from "react-toastify";
 import ReviewModal from "./ReviewModal";
+import { useNavigate } from "react-router-dom";
+//madhusha
+import InquiryModal from "./InquiryModal";
 
 const Marketplace = () => {
   const [products, setProducts] = useState([]);
@@ -16,6 +19,12 @@ const Marketplace = () => {
 
   // ✅ Sentiment summary per productId
   const [sentimentMap, setSentimentMap] = useState({});
+
+  //just to testinf
+  const navigate = useNavigate();
+
+  //madhusha
+  const [inquiryProduct, setInquiryProduct] = useState(null);
 
   const { addToCart } = useContext(CartContext);
 
@@ -38,22 +47,21 @@ const Marketplace = () => {
     loadProducts();
   }, []);
   const refreshSummaryForProduct = async (productId) => {
-  try {
-    const res = await axios.get("http://localhost:8081/api/reviews/summary", {
-      params: { productId },
-    });
-    setSentimentMap((prev) => ({ ...prev, [productId]: res.data }));
-  } catch (e) {
-    console.error(e);
-  }
-};
-
+    try {
+      const res = await axios.get("http://localhost:8081/api/reviews/summary", {
+        params: { productId },
+      });
+      setSentimentMap((prev) => ({ ...prev, [productId]: res.data }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const filtered = products
     .filter(
       (p) =>
         p.name.toLowerCase().includes(search.toLowerCase()) &&
-        (category === "All" || p.category === category)
+        (category === "All" || p.category === category),
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -75,11 +83,14 @@ const Marketplace = () => {
         const results = await Promise.all(
           filtered.slice(0, 20).map(async (p) => {
             const id = p.id || p._id;
-            const res = await axios.get("http://localhost:8081/api/reviews/summary", {
-              params: { productId: id },
-            });
+            const res = await axios.get(
+              "http://localhost:8081/api/reviews/summary",
+              {
+                params: { productId: id },
+              },
+            );
             return [id, res.data];
-          })
+          }),
         );
 
         setSentimentMap(Object.fromEntries(results));
@@ -117,8 +128,12 @@ const Marketplace = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-green-900">🌿 Fresh Marketplace</h1>
-          <p className="text-gray-600 mt-2">Direct from farmers to your table</p>
+          <h1 className="text-4xl font-bold text-green-900">
+            🌿 Fresh Marketplace
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Direct from farmers to your table
+          </p>
         </div>
         <div className="mt-4 lg:mt-0 text-sm text-gray-500">
           Showing {filtered.length} of {products.length} products
@@ -174,7 +189,11 @@ const Marketplace = () => {
             >
               {/* Image */}
               <div className="relative">
-                <img src={imageUrl} alt={product.name} className="h-52 w-full object-cover" />
+                <img
+                  src={imageUrl}
+                  alt={product.name}
+                  className="h-52 w-full object-cover"
+                />
                 {!product.inStock && (
                   <div className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                     Out of Stock
@@ -200,8 +219,12 @@ const Marketplace = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-yellow-400">⭐</span>
-                      <span className="font-medium">{product.ratingAvg || 0}</span>
-                      <span className="text-gray-400 text-sm">({product.ratingCount || 0})</span>
+                      <span className="font-medium">
+                        {product.ratingAvg || 0}
+                      </span>
+                      <span className="text-gray-400 text-sm">
+                        ({product.ratingCount || 0})
+                      </span>
                       <button
                         type="button"
                         onClick={() => setReviewProduct(product)}
@@ -229,35 +252,53 @@ const Marketplace = () => {
                   onClick={() => handleAddToCart(product)}
                   disabled={!product.inStock}
                   className={`mt-4 w-full py-3 rounded-lg font-semibold text-white transition-colors ${
-                    product.inStock ? "bg-green-600 hover:bg-green-700" : "bg-gray-300 cursor-not-allowed"
+                    product.inStock
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-gray-300 cursor-not-allowed"
                   }`}
                 >
                   {product.inStock ? "Add to Cart" : "Out of Stock"}
+                </button>
+
+                <button
+                  onClick={() => setInquiryProduct(product)}
+                  className="mt-2 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-emerald-50 hover:text-emerald-700 transition"
+                >
+                  Ask Farmer
                 </button>
               </div>
             </div>
           );
         })}
+        {inquiryProduct && (
+          <InquiryModal
+            product={inquiryProduct}
+            onClose={() => setInquiryProduct(null)}
+          />
+        )}
       </div>
 
       {/* No Products */}
       {filtered.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-300 text-6xl mb-4 animate-pulse">🍃</div>
-          <h3 className="text-xl font-semibold text-gray-600">No products found</h3>
+          <h3 className="text-xl font-semibold text-gray-600">
+            No products found
+          </h3>
           <p className="text-gray-500">Try adjusting your search or filters</p>
         </div>
       )}
 
       {/* Review Modal */}
       {reviewProduct && (
-  <ReviewModal
-    item={reviewProduct}
-    onClose={() => setReviewProduct(null)}
-    onSubmitted={() => refreshSummaryForProduct(reviewProduct.id || reviewProduct._id)}
-  />
-)}
-
+        <ReviewModal
+          item={reviewProduct}
+          onClose={() => setReviewProduct(null)}
+          onSubmitted={() =>
+            refreshSummaryForProduct(reviewProduct.id || reviewProduct._id)
+          }
+        />
+      )}
     </div>
   );
 };
