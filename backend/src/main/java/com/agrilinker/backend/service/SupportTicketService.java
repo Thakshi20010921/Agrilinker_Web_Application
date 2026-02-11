@@ -1,3 +1,6 @@
+// =======================
+// 3) SupportTicketService.java
+// =======================
 package com.agrilinker.backend.service;
 
 import com.agrilinker.backend.model.SupportTicket;
@@ -5,8 +8,15 @@ import java.util.List;
 
 public interface SupportTicketService {
     SupportTicket createTicket(SupportTicket ticket);
+
     List<SupportTicket> getAllTickets();
+
+    // ✅ NEW
+    List<SupportTicket> getTicketsByBuyerEmail(String buyerEmail);
+
     SupportTicket getTicketById(String id);
+
     SupportTicket updateStatus(String id, SupportTicket.Status status);
+
     SupportTicket addMessage(String id, SupportTicket.SupportMessage message);
 }
