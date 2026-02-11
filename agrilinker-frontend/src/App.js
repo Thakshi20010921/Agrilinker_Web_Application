@@ -12,6 +12,7 @@ import OrderHistory from "./components/OrderHistory";
 
 import CartPage from "./components/CartPage";
 import CheckoutPage from "./components/CheckoutPage";
+import Profile from "./components/Profile";
 
 // Fertilizer Pages
 import FertilizerList from "./components/Fertilizers/FertilizerList";
@@ -77,6 +78,7 @@ function App() {
           <Route path="/loginfertilizer" element={<Loginfertilizer />} />
 
           <Route path="/register" element={<Register />} />
+<Route path="/profile" element={<Profile />} />
 
           {/* Home */}
           <Route
