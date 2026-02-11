@@ -23,11 +23,15 @@ export default function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("roles", JSON.stringify(res.data.roles));
       localStorage.setItem("email", res.data.email);
+      //masgusha
+      localStorage.setItem("name", res.data.name);
 
       toast.success("Login successful 🎉");
 
       //navigate("/home");
       const roles = res.data.roles;
+      //madhusha
+      const userName = res.data.name;
 
       if (roles.includes("FARMER")) {
         navigate("/farmer/dashboard");
