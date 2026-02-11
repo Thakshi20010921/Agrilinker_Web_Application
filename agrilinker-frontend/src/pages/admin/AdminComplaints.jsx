@@ -3,10 +3,6 @@ import api from "../../api/api";
 import AdminSidebar from "./AdminSidebar";
 
 const statusOptions = ["OPEN", "IN_PROGRESS", "RESOLVED"];
-const recipientOptions = [
-  { label: "Buyer", value: "BUYER" },
-  { label: "Seller", value: "SELLER" },
-];
 
 const statusStyles = {
   OPEN: "bg-amber-100 text-amber-700",
@@ -19,7 +15,6 @@ export default function AdminComplaints() {
   const [selectedTicketId, setSelectedTicketId] = useState("");
   const [statusSelection, setStatusSelection] = useState("");
   const [messageText, setMessageText] = useState("");
-  const [recipientRole, setRecipientRole] = useState("BUYER");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -78,15 +73,17 @@ export default function AdminComplaints() {
   const handleMessageSend = async (event) => {
     event.preventDefault();
     if (!selectedTicket || !messageText.trim()) return;
+
     try {
       const response = await api.post(
         `/api/support-tickets/${selectedTicket.id}/messages`,
         {
           senderRole: "ADMIN",
-          recipientRole,
+          recipientRole: "BUYER", // ✅ only send to BUYER
           message: messageText.trim(),
         },
       );
+
       setTickets((prev) =>
         prev.map((ticket) =>
           ticket.id === selectedTicket.id ? response.data : ticket,
@@ -116,8 +113,8 @@ export default function AdminComplaints() {
               Complaint management
             </h1>
             <p className="mt-2 max-w-2xl text-green-100">
-              Review buyer reports, assign a status, and communicate with both
-              parties to resolve disputes.
+              Review buyer reports, assign a status, and communicate to resolve
+              disputes.
             </p>
           </header>
 
@@ -137,17 +134,17 @@ export default function AdminComplaints() {
                   {loading ? "Loading..." : `${tickets.length} total`}
                 </span>
               </div>
+
               <div className="mt-5 space-y-4">
                 {tickets.map((ticket) => (
                   <button
                     key={ticket.id}
                     type="button"
                     onClick={() => setSelectedTicketId(ticket.id)}
-                    className={`w-full rounded-2xl border px-4 py-4 text-left transition ${
-                      selectedTicketId === ticket.id
+                    className={`w-full rounded-2xl border px-4 py-4 text-left transition ${selectedTicketId === ticket.id
                         ? "border-green-300 bg-green-50"
                         : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div>
@@ -158,20 +155,22 @@ export default function AdminComplaints() {
                           {ticket.complaintType}
                         </p>
                       </div>
+
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          statusStyles[ticket.status] ||
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[ticket.status] ||
                           "bg-gray-100 text-gray-600"
-                        }`}
+                          }`}
                       >
                         {ticket.status?.replace("_", " ") || "Pending"}
                       </span>
                     </div>
+
                     <p className="mt-3 text-sm text-gray-600 line-clamp-2">
                       {ticket.description}
                     </p>
                   </button>
                 ))}
+
                 {!loading && tickets.length === 0 ? (
                   <p className="text-sm text-gray-500">
                     No complaints submitted yet.
@@ -184,6 +183,7 @@ export default function AdminComplaints() {
               <h2 className="text-lg font-semibold text-gray-900">
                 Ticket details
               </h2>
+
               {selectedTicket ? (
                 <div className="mt-5 space-y-6">
                   <div className="space-y-2 text-sm text-gray-600">
@@ -216,9 +216,7 @@ export default function AdminComplaints() {
                   </div>
 
                   <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-sm text-gray-700">
-                    <p className="font-medium text-gray-900">
-                      Buyer message
-                    </p>
+                    <p className="font-medium text-gray-900">Buyer message</p>
                     <p className="mt-2">{selectedTicket.description}</p>
                   </div>
 
@@ -226,6 +224,7 @@ export default function AdminComplaints() {
                     <label className="text-sm font-medium text-gray-700">
                       Update status
                     </label>
+
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                       <select
                         value={statusSelection}
@@ -240,6 +239,7 @@ export default function AdminComplaints() {
                           </option>
                         ))}
                       </select>
+
                       <button
                         type="button"
                         onClick={handleStatusUpdate}
@@ -254,6 +254,7 @@ export default function AdminComplaints() {
                     <p className="text-sm font-medium text-gray-700">
                       Message history
                     </p>
+
                     <div className="mt-3 space-y-3">
                       {(selectedTicket.messages || []).length ? (
                         selectedTicket.messages.map((message) => (
@@ -273,38 +274,25 @@ export default function AdminComplaints() {
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm text-gray-500">
-                          No messages yet.
-                        </p>
+                        <p className="text-sm text-gray-500">No messages yet.</p>
                       )}
                     </div>
                   </div>
 
                   <form onSubmit={handleMessageSend} className="space-y-3">
                     <label className="text-sm font-medium text-gray-700">
-                      Send a message
+                      Send a message to Buyer
                     </label>
+
                     <div className="flex flex-col gap-3">
-                      <select
-                        value={recipientRole}
-                        onChange={(event) =>
-                          setRecipientRole(event.target.value)
-                        }
-                        className="w-full rounded-2xl border border-gray-200 px-4 py-2 text-sm text-gray-700 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200"
-                      >
-                        {recipientOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
                       <textarea
                         value={messageText}
                         onChange={(event) => setMessageText(event.target.value)}
                         rows={3}
-                        placeholder="Write a response to the buyer or seller."
+                        placeholder="Write a response to the buyer."
                         className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200"
                       />
+
                       <button
                         type="submit"
                         className="self-start rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
