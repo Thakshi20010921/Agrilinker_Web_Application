@@ -1,88 +1,114 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { loginUser } = useContext(AuthContext);
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const submit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        try {
-            const res = await login(email, password);
+    try {
+      const res = await login(email, password);
 
-            // Save auth data
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("roles", JSON.stringify(res.data.roles));
-            localStorage.setItem("email", res.data.email);
+      // expected: res.data = { token, roles, email, id/userId? }
+      const token = res?.data?.token;
+      const roles = res?.data?.roles || [];
+      const userEmail = res?.data?.email || email;
+      const userId = res?.data?.id || res?.data?.userId || null;
 
-            toast.success("Login successful 🎉");
+      if (!token) throw new Error("Token not found in response");
 
-            navigate("/home");
-        } catch (err) {
-            toast.error("Invalid email or password");
-        } finally {
-            setLoading(false);
-        }
-    };
+      // ✅ localStorage (optional, but useful after refresh)
+      localStorage.setItem("token", token);
+      localStorage.setItem("roles", JSON.stringify(roles));
+      localStorage.setItem("email", userEmail);
 
-    return (
-        <div className="screen">
-            <form className="card" onSubmit={submit}>
-                <h2>Login</h2>
+      // ✅ AuthContext (recommended for app state)
+      loginUser(
+        {
+          email: userEmail,
+          roles,
+          id: userId,
+        },
+        token
+      );
 
-                <input
-                    type="email"
-                    placeholder="Email Address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
+      toast.success("Login successful 🎉");
 
-                {/* Password with eye toggle */}
-                <div className="password-field">
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+      // ✅ role-based navigation (your logic)
+      if (roles.includes("FARMER")) {
+        navigate("/farmer/dashboard");
+      } else if (roles.includes("BUYER") || roles.includes("FERTILIZER_SUPPLIER")) {
+        navigate("/marketplace");
+      } else {
+        toast.error("Access denied");
+        navigate("/");
+      }
+    } catch (err) {
+      toast.error("Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    {password && (
-                        <span
-                            className="password-toggle"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <FiEyeOff /> : <FiEye />}
-                        </span>
-                    )}
-                </div>
+  return (
+    <div className="screen">
+      <form className="card" onSubmit={submit}>
+        <h2>Login</h2>
 
-                <button
-                    type="submit"
-                    className="btn-primary"
-                    disabled={loading}
-                >
-                    {loading ? "Logging in..." : "Login"}
-                </button>
+        <input
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-                <button
-                    type="button"
-                    className="btn-light"
-                    onClick={() => navigate("/")}
-                >
-                    Back
-                </button>
-            </form>
+        {/* Password with eye toggle */}
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          {password && (
+            <span
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              role="button"
+              tabIndex={0}
+            >
+              {showPassword ? <FiEyeOff /> : <FiEye />}
+            </span>
+          )}
         </div>
-    );
+
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+
+        <button
+          type="button"
+          className="btn-light"
+          onClick={() => navigate("/")}
+        >
+          Back
+        </button>
+      </form>
+    </div>
+  );
 }
