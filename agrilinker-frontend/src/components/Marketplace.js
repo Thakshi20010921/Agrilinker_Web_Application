@@ -128,7 +128,8 @@ const Marketplace = () => {
 
           return (
             <div
-              key={product.id}
+              key={product._id || product.id}
+
               className="bg-white border border-gray-200 rounded-2xl shadow hover:shadow-xl transition-transform transform hover:-translate-y-1 duration-300 overflow-hidden flex flex-col"
             >
               {/* Image */}
@@ -204,11 +205,17 @@ const Marketplace = () => {
 
       {/* Review Modal */}
       {reviewProduct && (
-        <ReviewModal
-          product={reviewProduct}
-          onClose={() => setReviewProduct(null)}
-        />
-      )}
+  <ReviewModal
+    item={reviewProduct}          // ✅ correct prop name
+    type="product"                // ✅ so it sends productId
+    onClose={() => setReviewProduct(null)}
+    onSubmitted={() => {
+      // optional: reload products if you want updated ratingAvg/ratingCount
+      // loadProducts();
+    }}
+  />
+)}
+
     </div>
   );
 };
