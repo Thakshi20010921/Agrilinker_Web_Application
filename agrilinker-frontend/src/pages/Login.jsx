@@ -5,6 +5,25 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 
+const normalizeRole = (role) =>
+  String(role || "")
+    .toUpperCase()
+    .replace(/^ROLE_/, "")
+    .replace(/[_\s-]/g, "");
+
+const toRoleList = (rawRoles) => {
+  if (Array.isArray(rawRoles)) return rawRoles;
+  if (typeof rawRoles === "string") return [rawRoles];
+  return [];
+};
+
+const hasRole = (roles, targetRole) => {
+  const normalizedTarget = normalizeRole(targetRole);
+  return toRoleList(roles).some(
+    (role) => normalizeRole(role) === normalizedTarget
+  );
+};
+
 export default function Login() {
   const navigate = useNavigate();
   const { loginUser } = useContext(AuthContext);
@@ -21,20 +40,17 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // expected: res.data = { token, roles, email, id/userId? }
       const token = res?.data?.token;
-      const roles = res?.data?.roles || [];
+      const roles = toRoleList(res?.data?.roles);
       const userEmail = res?.data?.email || email;
       const userId = res?.data?.id || res?.data?.userId || null;
 
       if (!token) throw new Error("Token not found in response");
 
-      // ✅ localStorage (optional, but useful after refresh)
       localStorage.setItem("token", token);
       localStorage.setItem("roles", JSON.stringify(roles));
       localStorage.setItem("email", userEmail);
 
-      // ✅ AuthContext (recommended for app state)
       loginUser(
         {
           email: userEmail,
@@ -46,10 +62,15 @@ export default function Login() {
 
       toast.success("Login successful 🎉");
 
-      // ✅ role-based navigation (your logic)
-      if (roles.includes("FARMER")) {
+      if (hasRole(roles, "ADMIN")) {
+        navigate("/admin");
+      } else if (hasRole(roles, "FARMER")) {
         navigate("/farmer/dashboard");
-      } else if (roles.includes("BUYER") || roles.includes("FERTILIZER_SUPPLIER")) {
+      } else if (
+        hasRole(roles, "BUYER") ||
+        hasRole(roles, "FERTILIZER_SUPPLIER") ||
+        hasRole(roles, "FERTILIZERSUPPLIER")
+      ) {
         navigate("/marketplace");
       } else {
         toast.error("Access denied");
@@ -75,7 +96,6 @@ export default function Login() {
           required
         />
 
-        {/* Password with eye toggle */}
         <div className="password-field">
           <input
             type={showPassword ? "text" : "password"}
