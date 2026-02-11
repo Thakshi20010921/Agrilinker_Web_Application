@@ -35,6 +35,8 @@ import AddProduct from "./components/farmer/AddProduct";
 import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 import EditProductPage from "./components/farmer/EditProductPage";
 import MyProducts from "./components/farmer/MyProducts";
+import InquiryList from "./components/farmer/FarmerInquiryPage/InquiryList";
+import InquiryItem from "./components/farmer/FarmerInquiryPage/InquiryItem";
 
 import { AuthProvider } from "./context/AuthContext";
 function App() {
@@ -88,8 +90,14 @@ function App() {
           <Route path="/fertilizers" element={<FertilizerList />} />
           <Route path="/fertilizers/add" element={<AddFertilizer />} />
           <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
-          <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
-          <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
+          <Route
+            path="/fertilizers/recommend"
+            element={<FertilizerRecommendation />}
+          />
+          <Route
+            path="/fertilizer-dashboard"
+            element={<FertilizerSupplierDashboard />}
+          />
           <Route
             path="/fertilizers/recommend"
             element={<FertilizerRecommendation />}
@@ -101,13 +109,13 @@ function App() {
           <Route path="/farmer/add-product2" element={<AddProductPage />} />
           <Route path="/farmer/my-products" element={<MyProducts />} />
           <Route path="/edit-product/:id" element={<EditProductPage />} />
+          <Route path="/farmer/inquiries" element={<InquiryList />} />
 
           {/* CART & CHECKOUT */}
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
-        <Route path="/orders" element={<OrderHistory />} />
-
+          <Route path="/orders" element={<OrderHistory />} />
         </Routes>
 
         {!hideLayout && <Footer />}
