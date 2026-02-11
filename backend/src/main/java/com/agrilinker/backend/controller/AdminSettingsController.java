@@ -19,16 +19,24 @@ public class AdminSettingsController {
 
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(@RequestBody PasswordUpdateRequest request) {
+
         if (request == null
                 || request.getCurrentPassword() == null
-                || request.getNewPassword() == null) {
+                || request.getNewPassword() == null
+                || request.getCurrentPassword().isBlank()
+                || request.getNewPassword().isBlank()
+                || request.getNewPassword().length() < 8
+                || request.getCurrentPassword().equals(request.getNewPassword())) {
             return ResponseEntity.badRequest().build();
         }
+
         boolean updated = adminSettingsService.updatePassword(
                 request.getCurrentPassword(),
-                request.getNewPassword()
-        );
-        return updated ? ResponseEntity.ok().build() : ResponseEntity.status(403).build();
+                request.getNewPassword());
+
+        return updated
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.status(403).build();
     }
 
     public static class PasswordUpdateRequest {
