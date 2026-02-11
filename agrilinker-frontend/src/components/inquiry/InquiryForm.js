@@ -1,23 +1,24 @@
-import React, { useState } from "react";
+/* useEffect(() => {
+    const fetchInquiries = async () => {
+      try {
+        if (!farmerEmail) {
+          setError("Please log in to view inquiries.");
+          setLoading(false);
+          return; 
+        }
 
-function InquiryForm({ product }) {
-  return (
-    <div className="max-w-xl mx-auto p-6">
-      <h2>Product Inquiry</h2>
+        const res = await axios.get(
+          `http://localhost:8081/api/inquiries/farmer/${encodeURIComponent(farmerEmail)}`,
+        );
+        setInquiries(res.data);
+      } catch (err) {
+        console.error("Axios Error:", err);
+        setError("Failed to load inquiries.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      <label>Product</label>
-      <input value={product.productName} disabled />
-
-      <label>Farmer</label>
-      <input value={product.farmerName} disabled />
-
-      <label>Location</label>
-      <input value={product.location} disabled />
-
-      <label>Your Message</label>
-      <textarea placeholder="Type your inquiry..." />
-
-      <button>Send Inquiry</button>
-    </div>
-  );
-}
+    fetchInquiries();
+  }, [farmerEmail]);
+  */
