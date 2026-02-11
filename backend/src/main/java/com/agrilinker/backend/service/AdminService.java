@@ -121,7 +121,7 @@ public class AdminService {
                                 product.getQuantity(),
                                 product.getUnit(),
                                 product.getStatus(),
-                                product.getFarmerId(),
+                                product.getfarmerEmail(),
                                 product.getLocation(),
                                 product.getDateAdded());
         }
