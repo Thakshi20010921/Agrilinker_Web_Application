@@ -12,6 +12,7 @@ import OrderHistory from "./components/OrderHistory";
 
 import CartPage from "./components/CartPage";
 import CheckoutPage from "./components/CheckoutPage";
+import Profile from "./components/Profile";
 
 // Fertilizer Pages
 import FertilizerList from "./components/Fertilizers/FertilizerList";
@@ -19,10 +20,21 @@ import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierDashboard";
 
+// ✅ ADD THIS (match your filename exactly)
+import Loginfertilizer from "./pages/Loginfertilizer";
+
 // Auth Pages
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminComplaints from "./pages/admin/AdminComplaints";
+import AdminAnalysis from "./pages/admin/AdminAnalysis";
+import AdminSettings from "./pages/admin/AdminSettings";
+import SupportPage from "./pages/support/SupportPage";
+import SupportHistory from "./pages/support/SupportHistory";
+
+
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,6 +51,7 @@ import InquiryList from "./components/farmer/FarmerInquiryPage/InquiryList";
 import InquiryItem from "./components/farmer/FarmerInquiryPage/InquiryItem";
 
 import { AuthProvider } from "./context/AuthContext";
+
 function App() {
   const location = useLocation();
 
@@ -46,7 +59,8 @@ function App() {
   const hideLayout =
     location.pathname === "/" ||
     location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/register" ||
+    location.pathname === "/loginfertilizer"; // ✅ ADD THIS
 
   return (
     <AuthProvider>
@@ -69,7 +83,12 @@ function App() {
           {/* Auth */}
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+
+          {/* ✅ Fertilizer Supplier Login */}
+          <Route path="/loginfertilizer" element={<Loginfertilizer />} />
+
           <Route path="/register" element={<Register />} />
+<Route path="/profile" element={<Profile />} />
 
           {/* Home */}
           <Route
@@ -98,10 +117,6 @@ function App() {
             path="/fertilizer-dashboard"
             element={<FertilizerSupplierDashboard />}
           />
-          <Route
-            path="/fertilizers/recommend"
-            element={<FertilizerRecommendation />}
-          />
 
           {/* FARMER PAGES */}
           <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
@@ -110,6 +125,16 @@ function App() {
           <Route path="/farmer/my-products" element={<MyProducts />} />
           <Route path="/edit-product/:id" element={<EditProductPage />} />
           <Route path="/farmer/inquiries" element={<InquiryList />} />
+
+          {/* ADMIN PAGES */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/complaints" element={<AdminComplaints />} />
+          <Route path="/admin/analysis" element={<AdminAnalysis />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+
+          {/* SUPPORT */}
+          <Route path="/support" element={<SupportPage />} />
+          <Route path="/support/history" element={<SupportHistory />} />
 
           {/* CART & CHECKOUT */}
           <Route path="/cart" element={<CartPage />} />

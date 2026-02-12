@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { FaShoppingCart } from "react-icons/fa";
@@ -6,6 +6,7 @@ import UserMenu from "./UserMenu";
 
 function Header() {
   const { cart } = useContext(CartContext);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   // ✅ total quantity (not number of rows)
   const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
@@ -44,6 +45,9 @@ function Header() {
           className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
         >
           Fertilizers
+        </Link>
+        <Link to="/support" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">
+          Support
         </Link>
       </nav>
 

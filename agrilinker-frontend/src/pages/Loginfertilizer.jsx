@@ -1,12 +1,12 @@
-// src/pages/LoginFertilizer.jsx
-import React, { useState, useContext } from "react";
+// src/pages/Loginfertilizer.jsx
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/auth"; // API call to login
+import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 
-export default function LoginFertilizer() {
+export default function Loginfertilizer() {
   const navigate = useNavigate();
   const { loginUser } = useContext(AuthContext);
 
@@ -15,12 +15,19 @@ export default function LoginFertilizer() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Always clear fields when this page opens (forces re-entering)
+  useEffect(() => {
+    setEmail("");
+    setPassword("");
+    setShowPassword(false);
+  }, []);
+
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await login(email, password); // API call
+      const res = await login(email, password);
 
       const token = res?.data?.token;
       const roles = res?.data?.roles || [];
@@ -29,32 +36,30 @@ export default function LoginFertilizer() {
 
       if (!token) throw new Error("Token not found in response");
 
-      // Save token & roles to localStorage
+      // ✅ Save session
       localStorage.setItem("token", token);
       localStorage.setItem("roles", JSON.stringify(roles));
       localStorage.setItem("email", userEmail);
 
-      // Update global AuthContext
+      // ✅ Update AuthContext
       loginUser({ email: userEmail, roles, id: userId }, token);
 
-      // Check Fertilizer Supplier role
+      // ✅ Must be fertilizer supplier (alone OR with farmer/buyer)
       const hasSupplier = roles.includes("FERTILIZERSUPPLIER");
+
       if (!hasSupplier) {
         toast.error(
-          "You are not registered as a Fertilizer Supplier. Please update your account roles."
+          "You are not registered as a Fertilizer Supplier. Please go to User Account and edit your details."
         );
-        navigate("/"); // redirect to home or account edit page
+        navigate("/");
         return;
       }
 
-      // ✅ User is a Fertilizer Supplier (alone or with other roles)
+      toast.success("Login successful 🎉");
       navigate("/fertilizer-dashboard");
-      toast.success("Login successful! Redirecting to Fertilizer Dashboard 🎉");
     } catch (err) {
-      // If login fails (user not registered or invalid credentials)
-      toast.error(
-        "Invalid email or password. If you are not registered, please register first."
-      );
+      // ✅ Any login failure -> go register (as you requested)
+      toast.error("Invalid email or password. Please register first.");
       navigate("/register");
     } finally {
       setLoading(false);
@@ -82,6 +87,7 @@ export default function LoginFertilizer() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
           {password && (
             <span
               className="password-toggle"

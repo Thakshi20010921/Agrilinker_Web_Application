@@ -4,6 +4,25 @@ import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 
+const normalizeRole = (role) =>
+  String(role || "")
+    .toUpperCase()
+    .replace(/^ROLE_/, "")
+    .replace(/[_\s-]/g, "");
+
+const toRoleList = (rawRoles) => {
+  if (Array.isArray(rawRoles)) return rawRoles;
+  if (typeof rawRoles === "string") return [rawRoles];
+  return [];
+};
+
+const hasRole = (roles, targetRole) => {
+  const normalizedTarget = normalizeRole(targetRole);
+  return toRoleList(roles).some(
+    (role) => normalizeRole(role) === normalizedTarget
+  );
+};
+
 export default function Login() {
   const navigate = useNavigate();
 
@@ -19,25 +38,38 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // Save auth data
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("roles", JSON.stringify(res.data.roles));
-      localStorage.setItem("email", res.data.email);
-      //masgusha
-      localStorage.setItem("name", res.data.name);
+      const token = res?.data?.token;
+      const roles = toRoleList(res?.data?.roles);
+      const userEmail = res?.data?.email || email;
+      const userId = res?.data?.id || res?.data?.userId || null;
+
+      if (!token) throw new Error("Token not found in response");
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("roles", JSON.stringify(roles));
+      localStorage.setItem("email", userEmail);
+      
+      localStorage.setItem("name", userName);
+
+      loginUser(
+        {
+          email: userEmail,
+          roles,
+          id: userId,
+        },
+        token
+      );
 
       toast.success("Login successful 🎉");
 
-      //navigate("/home");
-      const roles = res.data.roles;
-      //madhusha
-      const userName = res.data.name;
-
-      if (roles.includes("FARMER")) {
+      if (hasRole(roles, "ADMIN")) {
+        navigate("/admin");
+      } else if (hasRole(roles, "FARMER")) {
         navigate("/farmer/dashboard");
       } else if (
-        roles.includes("BUYER") ||
-        roles.includes("FERTILIZER_SUPPLIER")
+        hasRole(roles, "BUYER") ||
+        hasRole(roles, "FERTILIZER_SUPPLIER") ||
+        hasRole(roles, "FERTILIZERSUPPLIER")
       ) {
         navigate("/marketplace");
       } else {
@@ -63,7 +95,6 @@ export default function Login() {
           required
         />
 
-        {/* Password with eye toggle */}
         <div className="password-field">
           <input
             type={showPassword ? "text" : "password"}
