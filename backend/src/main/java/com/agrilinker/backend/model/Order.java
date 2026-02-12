@@ -1,7 +1,9 @@
 package com.agrilinker.backend.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +12,9 @@ public class Order {
 
     @Id
     private String id;
+
+    @Indexed(unique = true) // ✅ makes sure orderNumber can't duplicate
+    private String orderNumber;
 
     private Customer customer;
     private List<OrderItem> items;
@@ -26,6 +31,14 @@ public class Order {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    } // ✅ ADD THIS
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public Customer getCustomer() {

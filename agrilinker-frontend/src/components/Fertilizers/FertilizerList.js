@@ -1,10 +1,15 @@
-import React, { useEffect, useState, useContext } from "react";  
+// src/pages/fertilizers/FertilizerList.jsx
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { FiFilter } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import ReviewModal from "../../components/ReviewModal";
+import FertilizerButton from "./FertilizerButton";
 
 export default function FertilizerList() {
+  // ===== State =====
   const [fertilizers, setFertilizers] = useState([]);
   const [filteredFertilizers, setFilteredFertilizers] = useState([]);
 
@@ -16,68 +21,86 @@ export default function FertilizerList() {
 
   const { addToCart } = useContext(CartContext);
 
-  /* ===================== PAGINATION (NEW) ===================== */
-  const ITEMS_PER_PAGE = 10; // show 10 fertilizers per page
-  const [currentPage, setCurrentPage] = useState(1);
-  /* ============================================================ */
+  // Review modal state
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [reviewType, setReviewType] = useState("fertilizer");
 
-  // Fetch fertilizers from backend
+  // ===== Pagination =====
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 9;
+
+  // ===== Fetch fertilizers =====
   useEffect(() => {
     axios
       .get("http://localhost:8081/api/fertilizers")
       .then((res) => {
-        setFertilizers(res.data);
-        setFilteredFertilizers(res.data);
+        setFertilizers(res.data || []);
+        setFilteredFertilizers(res.data || []);
       })
       .catch((err) => console.error(err));
   }, []);
 
-  // Highlight search matches
+  // ===== Highlight search match =====
   const highlightMatch = (text) => {
     if (!text) return "";
     if (!searchTerm) return text;
     const regex = new RegExp(`(${searchTerm})`, "gi");
-    return text.replace(regex, "<mark>$1</mark>");
+    return String(text).replace(regex, "<mark>$1</mark>");
   };
 
-  // Apply search, filter, and sort
+  // ===== Add to cart =====
+  const handleBuy = (f) => {
+    addToCart({
+      id: f.id || f._id,
+      name: f.name,
+      price: Number(f.price || 0),
+      unit: f.unit || "unit",
+      imageUrl: f.imageUrl || "https://via.placeholder.com/300x200",
+      type: "fertilizer",
+    });
+
+    toast.success(`${f.name} added to cart!`);
+  };
+
+  // ===== Filter, search, sort =====
   useEffect(() => {
     let temp = [...fertilizers];
 
+    // search
     if (searchTerm.trim() !== "") {
       const text = searchTerm.toLowerCase();
-      temp = temp.filter((f) =>
-        (f.fertilizerCode && f.fertilizerCode.toLowerCase().includes(text)) ||
-        (f.name && f.name.toLowerCase().includes(text)) ||
-        (f.category && f.category.toLowerCase().includes(text)) ||
-        (f.type && f.type.toLowerCase().includes(text)) ||
-        (f.district && f.district.toLowerCase().includes(text))
+      temp = temp.filter(
+        (f) =>
+          (f.fertilizerCode && f.fertilizerCode.toLowerCase().includes(text)) ||
+          (f.name && f.name.toLowerCase().includes(text)) ||
+          (f.category && f.category.toLowerCase().includes(text)) ||
+          (f.type && f.type.toLowerCase().includes(text)) ||
+          (f.district && f.district.toLowerCase().includes(text))
       );
     }
 
+    // filters
     if (categoryFilter) temp = temp.filter((f) => f.category === categoryFilter);
     if (typeFilter) temp = temp.filter((f) => f.type === typeFilter);
     if (districtFilter) temp = temp.filter((f) => f.district === districtFilter);
 
-    if (sortOption === "priceLow") temp.sort((a, b) => a.price - b.price);
-    else if (sortOption === "priceHigh") temp.sort((a, b) => b.price - a.price);
-    else if (sortOption === "nameAZ") temp.sort((a, b) => a.name.localeCompare(b.name));
+    // sorting
+    if (sortOption === "priceLow") temp.sort((a, b) => (a.price || 0) - (b.price || 0));
+    else if (sortOption === "priceHigh") temp.sort((a, b) => (b.price || 0) - (a.price || 0));
+    else if (sortOption === "nameAZ") temp.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
     setFilteredFertilizers(temp);
-
-    /* 🔹 Reset to first page whenever search/filter/sort changes */
     setCurrentPage(1);
   }, [fertilizers, searchTerm, sortOption, categoryFilter, typeFilter, districtFilter]);
 
-  /* ===================== PAGINATION LOGIC ===================== */
+  // ===== Pagination calculations =====
   const totalPages = Math.ceil(filteredFertilizers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredFertilizers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  /* ============================================================ */
 
   return (
     <div className="max-w-6xl mx-auto p-8">
-      {/* Header + Search + Filters */}
+      {/* Header & Filters */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
         <h1 className="text-4xl font-extrabold text-green-800">Fertilizers</h1>
 
@@ -90,7 +113,10 @@ export default function FertilizerList() {
             className="border p-2 rounded-lg w-64"
           />
 
-          <button className="flex items-center bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
+          <button
+            type="button"
+            className="flex items-center bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition"
+          >
             <FiFilter className="mr-2 text-lg" /> Filters
           </button>
 
@@ -162,15 +188,9 @@ export default function FertilizerList() {
         </div>
       </div>
 
-      {/* Add & Recommendation Buttons (UNCHANGED) */}
+      {/* Add/Update & Recommendation */}
       <div className="mb-6 flex gap-4">
-        <Link
-          to="/fertilizers/add"
-          className="bg-green-700 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-green-800 transition"
-        >
-          + Add Fertilizer
-        </Link>
-
+        <FertilizerButton />
         <Link
           to="/fertilizers/recommend"
           className="bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
@@ -179,76 +199,106 @@ export default function FertilizerList() {
         </Link>
       </div>
 
-      {/* Fertilizer Grid (ONLY CHANGE: currentItems instead of all) */}
+      {/* Fertilizer Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {currentItems.map((f) => (
-          <div
-            key={f.id || f._id}
-            className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
-          >
-            <div>
-              <img
-                src={f.imageUrl || "https://via.placeholder.com/300x200"}
-                alt="Fertilizer"
-                className="rounded-lg mb-4 w-full h-48 object-cover"
-              />
+        {currentItems.map((f) => {
+          const id = f.id || f._id;
 
-              <h2
-                className="text-2xl font-bold text-green-700"
-                dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
-              />
+          return (
+            <div
+              key={id}
+              className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
+            >
+              <div>
+                <img
+                  src={f.imageUrl || "https://via.placeholder.com/300x200"}
+                  alt={f.name || "Fertilizer"}
+                  className="rounded-lg mb-4 w-full h-48 object-cover"
+                />
 
-              <p className="text-sm text-gray-500 mb-1">
-                Code: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}></span>
-              </p>
+                <h2
+                  className="text-2xl font-bold text-green-700"
+                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
+                />
 
-              <p className="text-sm text-gray-600 mb-1">
-                Type: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}></span>
-              </p>
+                {/* Review */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedItem(f);
+                    setReviewType("fertilizer");
+                  }}
+                  className="text-green-700 underline text-sm mt-2"
+                >
+                  Write a review
+                </button>
 
-              <p className="text-sm text-gray-600 mb-1">
-                Category: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}></span>
-              </p>
+                <p className="text-sm text-gray-500 mb-1 mt-2">
+                  Code:{" "}
+                  <span
+                    className="font-semibold"
+                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}
+                  />
+                </p>
 
-              <p className="text-sm text-gray-600 mb-2">
-                District: <span className="font-semibold">{f.district}</span>
-              </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Type:{" "}
+                  <span
+                    className="font-semibold"
+                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}
+                  />
+                </p>
 
-              <p className="text-gray-600 mb-2 line-clamp-2">{f.description}</p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Category:{" "}
+                  <span
+                    className="font-semibold"
+                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}
+                  />
+                </p>
 
-              <p className="text-lg font-semibold">
-                Rs. {f.price} / {f.unit}
-                {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
-                  ? ` (${f.quantityInside} ${f.unit === "bag" ? "kg" : "L"})`
-                  : ""}
-              </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  District: <span className="font-semibold">{f.district}</span>
+                </p>
+
+                <p className="text-gray-600 mb-2 line-clamp-2">{f.description}</p>
+
+                <p className="text-lg font-semibold">
+                  Rs. {f.price} / {f.unit}
+                  {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
+                    ? ` (${f.quantityInside} ${f.unit === "bag" ? "kg" : "L"})`
+                    : ""}
+                </p>
+              </div>
+
+              <div className="flex justify-between mt-4">
+                <Link
+                  to={`/fertilizers/edit/${id}`}
+                  className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
+                >
+                  Edit
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => handleBuy(f)}
+                  className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
+                >
+                  Buy
+                </button>
+              </div>
             </div>
-
-            <div className="flex justify-between mt-4">
-              <Link
-                to={`/fertilizers/edit/${f.id || f._id}`}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
-              >
-                Edit
-              </Link>
-
-              <button
-                onClick={() => addToCart(f)}
-                className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
-              >
-                Buy
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* ===================== PAGINATION UI ===================== */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-10 gap-2">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
+              type="button"
               onClick={() => setCurrentPage(page)}
               className={`px-4 py-2 border rounded-lg ${
                 currentPage === page
@@ -261,7 +311,20 @@ export default function FertilizerList() {
           ))}
         </div>
       )}
-      {/* ===================================================== */}
+
+      {/* ✅ Review Modal */}
+     {selectedItem && (
+  <ReviewModal
+    item={selectedItem}
+    type={reviewType}                 // ✅ correct prop name
+    userId={localStorage.getItem("email")} // ✅ or pass your real USER_ID
+    onClose={() => setSelectedItem(null)}
+    onSubmitted={() => {
+      // optional: refresh list or reviews
+    }}
+  />
+)}
+
     </div>
   );
 }

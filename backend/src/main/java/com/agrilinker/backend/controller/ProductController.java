@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/products")//"products"collection name 
 
 public class ProductController {
 
@@ -56,6 +56,14 @@ public class ProductController {
         return (product != null) ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
     }
 
+    // Get all products for a specific farmer
+    @GetMapping("/farmer/{email}")
+    public ResponseEntity<List<Product>> getProductsByFarmer(@PathVariable String email) {
+    List<Product> products = productService.getProductsByFarmer(email);
+    return ResponseEntity.ok(products);
+}
+
+
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(
             @PathVariable String id,
@@ -70,4 +78,6 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    
 }

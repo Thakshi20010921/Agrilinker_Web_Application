@@ -49,7 +49,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/fertilizers/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/cart/**").permitAll()
-
+                        .requestMatchers("/api/reviews/**").permitAll()
+                        .requestMatchers("/api/inquiries/**").permitAll() 
+                        .requestMatchers("/api/users/by-email").permitAll()
+                        
                         // Admin routes
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 

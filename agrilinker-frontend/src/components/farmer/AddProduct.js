@@ -161,15 +161,15 @@ const AddProduct = () => {
           className="w-full border p-2 rounded"
         />
 
-        <select
-          name="status"
-          value={product.status}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        >
-          <option value="ACTIVE">available</option>
-          <option value="INACTIVE">Out of stok</option>
-        </select>
+       <select
+  name="status"
+  value={product.status}
+  onChange={handleChange}
+  className="w-full border p-2 rounded"
+>
+  <option value="available">Available</option>
+  <option value="out_of_stock">Out of Stock</option>
+</select>
 
         <input
           type="file"

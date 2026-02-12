@@ -5,31 +5,62 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+import java.nio.file.Paths;
+
+/*@Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+         String uploadDir = Paths
+                .get(System.getProperty("user.dir"), "backend", "uploads")
+                .toAbsolutePath()
+                .toUri()
+                .toString();
+
         registry
                 .addResourceHandler("/uploads/**")
-                .addResourceLocations(
-                        "file:E:/Downloads/Agrilinker_Web_Application/backend/uploads/");
+                .addResourceLocations(uploadDir);
+                
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
 
-        // API CORS
         registry.addMapping("/api/**")
                 .allowedOrigins("http://localhost:3000")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
 
-        // IMAGE CORS (VERY IMPORTANT)
         registry.addMapping("/uploads/**")
                 .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET")
-                .allowedHeaders("*");
+                .allowedMethods("GET");
+    }
+}*/
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Serve images from backend/uploads folder
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:uploads/");
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        // Allow frontend React app to access API & images
+        registry.addMapping("/api/**")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+
+        registry.addMapping("/uploads/**")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET");
     }
 }

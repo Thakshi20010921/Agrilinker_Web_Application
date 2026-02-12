@@ -1,23 +1,35 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/api";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const USER_ID = "USER123"; // Matching your current CartContext
+
+  // ✅ use the currently logged-in user (email you confirmed is in localStorage)
+  const USER_ID = localStorage.getItem("email");
 
   useEffect(() => {
-    // Fetching from your Spring Boot API
-    axios.get(`http://localhost:8081/api/orders/user/${USER_ID}`)
-      .then((res) => {
-        setOrders(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
+    const loadOrders = async () => {
+      try {
+        if (!USER_ID) {
+          setOrders([]);
+          setLoading(false);
+          return;
+        }
+
+        // ✅ use api instance so token is sent automatically
+        const res = await api.get(`/api/orders/user/${encodeURIComponent(USER_ID)}`);
+        setOrders(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
         console.error("Error fetching orders:", err);
+        setOrders([]);
+      } finally {
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    loadOrders();
+  }, [USER_ID]);
 
   if (loading) return <div className="text-center p-10">Loading your history...</div>;
 
@@ -32,38 +44,51 @@ const OrderHistory = () => {
       ) : (
         <div className="space-y-6">
           {orders.map((order) => (
-            <div key={order.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-hover hover:shadow-md">
-              <div className="flex flex-col md:flex-row justify-between border-b pb-4 mb-4">
+            <div
+              key={order.id || order._id}
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+            >
+              <div className="flex justify-between border-b pb-4 mb-4">
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</p>
                   <p className="font-mono text-sm text-gray-700">{order.id || order._id}</p>
                 </div>
-                <div className="mt-2 md:mt-0 md:text-right">
+                <div className="text-right">
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Date</p>
-                  <p className="text-sm text-gray-700">{new Date(order.orderDate).toLocaleDateString()}</p>
+                  <p className="text-sm text-gray-700">
+                    {order.orderDate ? new Date(order.orderDate).toLocaleString() : "-"}
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                {order.items.map((item, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <span className="text-gray-800 font-medium">{item.name} <span className="text-gray-400 text-sm">x{item.quantity}</span></span>
+              <div className="space-y-2">
+                {(order.items || []).map((item, idx) => (
+                  <div key={idx} className="flex justify-between">
+                    <span className="text-gray-800">
+                      {item.name} <span className="text-gray-400 text-sm">x{item.quantity}</span>
+                    </span>
                     <span className="text-gray-600">Rs. {(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-6 pt-4 border-t flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="mt-6 pt-4 border-t flex justify-between items-center">
                 <div className="flex gap-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${order.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                    {order.paymentStatus} {/* PAID or PENDING */}
-                  </span>
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase">
-                    {order.paymentMethod} {/* cash or card */}
+                    {order.paymentMethod || "N/A"}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                      order.paymentStatus === "PAID"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {order.paymentStatus || "N/A"}
                   </span>
                 </div>
                 <div className="text-xl font-black text-green-900">
-                  Total: Rs. {order.totalAmount.toFixed(2)}
+                  Total: Rs. {Number(order.totalAmount || 0).toFixed(2)}
                 </div>
               </div>
             </div>
