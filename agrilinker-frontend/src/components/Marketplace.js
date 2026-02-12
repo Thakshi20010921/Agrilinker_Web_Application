@@ -3,6 +3,9 @@ import axios from "axios";
 import { CartContext } from "../context/CartContext";
 import { toast } from "react-toastify";
 import ReviewModal from "./ReviewModal";
+import { useNavigate } from "react-router-dom";
+//madhusha
+import InquiryModal from "./InquiryModal";
 import StarRating from "./StarRating";
 
 const WISHLIST_KEY = "wishlist";
@@ -27,6 +30,12 @@ const Marketplace = () => {
   const [wishlistOnly, setWishlistOnly] = useState(false);
 
   const [wishlist, setWishlist] = useState(loadWishlist());
+
+  //just to testinf
+  const navigate = useNavigate();
+
+  //madhusha
+  const [inquiryProduct, setInquiryProduct] = useState(null);
 
   const { addToCart } = useContext(CartContext);
 
@@ -396,17 +405,32 @@ const imageUrl = imagePath
                 >
                   {product.inStock ? "Add to Cart" : "Out of Stock"}
                 </button>
+
+                <button
+                  onClick={() => setInquiryProduct(product)}
+                  className="mt-2 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-emerald-50 hover:text-emerald-700 transition"
+                >
+                  Ask Farmer
+                </button>
               </div>
             </div>
           );
         })}
+        {inquiryProduct && (
+          <InquiryModal
+            product={inquiryProduct}
+            onClose={() => setInquiryProduct(null)}
+          />
+        )}
       </div>
 
       {/* Empty */}
       {filtered.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-300 text-6xl mb-4 animate-pulse">🍃</div>
-          <h3 className="text-xl font-semibold text-gray-600">No products found</h3>
+          <h3 className="text-xl font-semibold text-gray-600">
+            No products found
+          </h3>
           <p className="text-gray-500">Try adjusting your search or filters</p>
         </div>
       )}

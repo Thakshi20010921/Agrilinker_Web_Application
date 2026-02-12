@@ -47,6 +47,8 @@ import AddProduct from "./components/farmer/AddProduct";
 import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 import EditProductPage from "./components/farmer/EditProductPage";
 import MyProducts from "./components/farmer/MyProducts";
+import InquiryList from "./components/farmer/FarmerInquiryPage/InquiryList";
+import InquiryItem from "./components/farmer/FarmerInquiryPage/InquiryItem";
 
 import { AuthProvider } from "./context/AuthContext";
 
@@ -122,6 +124,7 @@ function App() {
           <Route path="/farmer/add-product2" element={<AddProductPage />} />
           <Route path="/farmer/my-products" element={<MyProducts />} />
           <Route path="/edit-product/:id" element={<EditProductPage />} />
+          <Route path="/farmer/inquiries" element={<InquiryList />} />
 
           {/* ADMIN PAGES */}
           <Route path="/admin" element={<AdminDashboard />} />
