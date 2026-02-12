@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
 
 const normalizeRole = (role) =>
   String(role || "")
@@ -19,12 +20,13 @@ const toRoleList = (rawRoles) => {
 const hasRole = (roles, targetRole) => {
   const normalizedTarget = normalizeRole(targetRole);
   return toRoleList(roles).some(
-    (role) => normalizeRole(role) === normalizedTarget
+    (role) => normalizeRole(role) === normalizedTarget,
   );
 };
 
 export default function Login() {
   const navigate = useNavigate();
+  const { loginUser } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,8 +50,6 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("roles", JSON.stringify(roles));
       localStorage.setItem("email", userEmail);
-      
-      localStorage.setItem("name", userName);
 
       loginUser(
         {
@@ -57,7 +57,7 @@ export default function Login() {
           roles,
           id: userId,
         },
-        token
+        token,
       );
 
       toast.success("Login successful 🎉");
@@ -74,6 +74,7 @@ export default function Login() {
         navigate("/marketplace");
       } else {
         toast.error("Access denied");
+        navigate("/");
       }
     } catch (err) {
       toast.error("Invalid email or password");
@@ -108,6 +109,8 @@ export default function Login() {
             <span
               className="password-toggle"
               onClick={() => setShowPassword(!showPassword)}
+              role="button"
+              tabIndex={0}
             >
               {showPassword ? <FiEyeOff /> : <FiEye />}
             </span>
