@@ -92,7 +92,9 @@ const Marketplace = () => {
 
         const stockOk = !inStockOnly || p.inStock;
 
-        const wishOk = !wishlistOnly || wishlist.includes(p.id);
+        const pid = p.id || p._id;
+const wishOk = !wishlistOnly || wishlist.includes(pid);
+
 
         return nameOk && catOk && minOk && maxOk && ratingOk && stockOk && wishOk;
       })
@@ -291,11 +293,14 @@ const Marketplace = () => {
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filtered.map((product) => {
-          const imageUrl = product.product_image
-            ? `http://localhost:8081${product.product_image}`
-            : "/placeholder.jpg";
+          const imagePath = product.Product_image || product.product_image;
 
-          const id = product.id;
+const imageUrl = imagePath
+  ? encodeURI(`http://localhost:8081${imagePath}`)
+  : "/placeholder.jpg";
+
+
+          const id = product.id || product._id;
           const isWishlisted = wishlist.includes(id);
 
           return (
@@ -309,9 +314,11 @@ const Marketplace = () => {
                   src={imageUrl}
                   alt={product.name}
                   className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.jpg";
-                  }}
+                 onError={(e) => {
+  e.currentTarget.onerror = null;
+  e.currentTarget.src = "/placeholder.jpg";
+}}
+
                 />
 
                 {/* Category */}

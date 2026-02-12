@@ -3,29 +3,38 @@ import { toast } from "react-toastify";
 
 const onlyDigits = (s = "") => (s || "").replace(/\D/g, "");
 
+// ✅ 16 digits, grouped 4-4-4-4
 const formatCardNumber = (value) => {
-  const digits = onlyDigits(value).slice(0, 19);
+  const digits = onlyDigits(value).slice(0, 16);
   return digits.replace(/(.{4})/g, "$1 ").trim();
 };
 
+// ✅ MM/YY formatter
 const formatExpiry = (value) => {
   const digits = onlyDigits(value).slice(0, 4);
   if (digits.length <= 2) return digits;
   return `${digits.slice(0, 2)}/${digits.slice(2)}`;
 };
 
+// ✅ Brand detector
 const detectBrand = (n) => {
   if (!n) return "CARD";
   if (/^4/.test(n)) return "VISA";
-  if (/^(5[1-5])/.test(n) || /^(222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/.test(n)) return "MC";
+  if (
+    /^(5[1-5])/.test(n) ||
+    /^(222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/.test(n)
+  )
+    return "MC";
   if (/^(34|37)/.test(n)) return "AMEX";
   if (/^(6011|65|64[4-9])/.test(n)) return "DISC";
   return "CARD";
 };
 
+// ✅ Luhn check
 const luhnCheck = (num) => {
   const digits = num.split("").map((x) => parseInt(x, 10));
   if (digits.some((x) => Number.isNaN(x))) return false;
+
   let sum = 0;
   let dbl = false;
   for (let i = digits.length - 1; i >= 0; i--) {
@@ -43,6 +52,7 @@ const luhnCheck = (num) => {
 const validExpiry = (mmYY) => {
   const [mm, yy] = (mmYY || "").split("/");
   if (!mm || !yy) return false;
+
   const m = parseInt(mm, 10);
   const y = parseInt(yy, 10);
   if (Number.isNaN(m) || Number.isNaN(y)) return false;
@@ -51,12 +61,19 @@ const validExpiry = (mmYY) => {
   const now = new Date();
   const curYY = now.getFullYear() % 100;
   const curMM = now.getMonth() + 1;
+
   if (y < curYY) return false;
   if (y === curYY && m < curMM) return false;
   return true;
 };
 
-export default function PremiumPaymentModal({ open, totalAmount, loading, onClose, onPay }) {
+export default function PremiumPaymentModal({
+  open,
+  totalAmount,
+  loading,
+  onClose,
+  onPay,
+}) {
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
@@ -67,14 +84,18 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
 
   const errors = useMemo(() => {
     const e = {};
+
+    // ✅ Card number: exactly 16 digits + Luhn
     if (!digits) e.cardNumber = "Card number is required";
-    else if (digits.length < 13) e.cardNumber = "Card number is too short";
+    else if (digits.length !== 16) e.cardNumber = "Card number must be 16 digits";
     else if (!luhnCheck(digits)) e.cardNumber = "Invalid card number";
 
+    // ✅ Expiry
     if (!expiry) e.expiry = "Expiry is required";
     else if (!/^\d{2}\/\d{2}$/.test(expiry)) e.expiry = "Use MM/YY format";
     else if (!validExpiry(expiry)) e.expiry = "Card expired";
 
+    // ✅ CVV: 3 digits (VISA/MC/DISC), 4 digits (AMEX)
     const cvvDigits = onlyDigits(cvv);
     const cvvLen = brand === "AMEX" ? 4 : 3;
     if (!cvvDigits) e.cvv = "CVV is required";
@@ -83,7 +104,10 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
     return e;
   }, [digits, expiry, cvv, brand]);
 
-  const canPay = useMemo(() => Object.keys(errors).length === 0 && !loading, [errors, loading]);
+  const canPay = useMemo(
+    () => Object.keys(errors).length === 0 && !loading,
+    [errors, loading]
+  );
 
   if (!open) return null;
 
@@ -95,7 +119,7 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
       toast.error("Fix card details first.");
       return;
     }
-    onPay(); // your CheckoutPage will call processOrder("PAID")
+    onPay();
   };
 
   const showErr = (key) => touched[key] && errors[key];
@@ -103,20 +127,25 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
   return (
     <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-[999] p-4">
       <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-300">
-        <h2 className="text-2xl font-bold mb-2 text-center text-gray-800">Card Payment</h2>
+        <h2 className="text-2xl font-bold mb-2 text-center text-gray-800">
+          Card Payment
+        </h2>
         <p className="text-gray-400 text-center mb-8 text-sm uppercase tracking-widest">
           Secure Mock Transaction
         </p>
 
-        {/* Premium preview */}
         <div className="bg-gradient-to-br from-green-600 to-green-800 p-6 rounded-2xl text-white mb-8 shadow-xl relative overflow-hidden">
           <p className="text-[10px] font-bold opacity-60 mb-1">PAYABLE AMOUNT</p>
-          <p className="text-3xl font-black mb-6">Rs. {Number(totalAmount || 0).toFixed(2)}</p>
+          <p className="text-3xl font-black mb-6">
+            Rs. {Number(totalAmount || 0).toFixed(2)}
+          </p>
           <div className="flex justify-between items-end">
             <p className="text-sm tracking-widest font-mono">
               {digits ? formatCardNumber(digits) : "•••• •••• •••• ••••"}
             </p>
-            <div className="text-xs bg-white/20 px-3 py-1 rounded-full font-bold">{brand}</div>
+            <div className="text-xs bg-white/20 px-3 py-1 rounded-full font-bold">
+              {brand}
+            </div>
           </div>
         </div>
 
@@ -133,7 +162,9 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
                 showErr("cardNumber") ? "border-red-400" : "border-gray-200"
               } focus:ring-2 focus:ring-green-500`}
             />
-            {showErr("cardNumber") && <p className="text-xs text-red-600 mt-1">{errors.cardNumber}</p>}
+            {showErr("cardNumber") && (
+              <p className="text-xs text-red-600 mt-1">{errors.cardNumber}</p>
+            )}
           </div>
 
           <div className="flex gap-4">
@@ -149,14 +180,20 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
                   showErr("expiry") ? "border-red-400" : "border-gray-200"
                 } focus:ring-2 focus:ring-green-500`}
               />
-              {showErr("expiry") && <p className="text-xs text-red-600 mt-1">{errors.expiry}</p>}
+              {showErr("expiry") && (
+                <p className="text-xs text-red-600 mt-1">{errors.expiry}</p>
+              )}
             </div>
 
             <div className="w-1/2">
               <input
                 type="text"
                 value={cvv}
-                onChange={(e) => setCvv(onlyDigits(e.target.value).slice(0, brand === "AMEX" ? 4 : 3))}
+                onChange={(e) =>
+                  setCvv(
+                    onlyDigits(e.target.value).slice(0, brand === "AMEX" ? 4 : 3)
+                  )
+                }
                 onBlur={() => setTouched((p) => ({ ...p, cvv: true }))}
                 placeholder="CVV"
                 inputMode="numeric"
@@ -164,7 +201,9 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
                   showErr("cvv") ? "border-red-400" : "border-gray-200"
                 } focus:ring-2 focus:ring-green-500`}
               />
-              {showErr("cvv") && <p className="text-xs text-red-600 mt-1">{errors.cvv}</p>}
+              {showErr("cvv") && (
+                <p className="text-xs text-red-600 mt-1">{errors.cvv}</p>
+              )}
             </div>
           </div>
         </div>
@@ -173,7 +212,9 @@ export default function PremiumPaymentModal({ open, totalAmount, loading, onClos
           onClick={handlePay}
           disabled={!canPay}
           className={`w-full py-4 rounded-2xl mt-8 font-bold text-lg shadow-lg transition-all ${
-            canPay ? "bg-green-600 hover:bg-green-700 text-white shadow-green-200" : "bg-gray-300 text-white cursor-not-allowed"
+            canPay
+              ? "bg-green-600 hover:bg-green-700 text-white shadow-green-200"
+              : "bg-gray-300 text-white cursor-not-allowed"
           }`}
         >
           {loading ? "Processing..." : "Verify & Pay"}
