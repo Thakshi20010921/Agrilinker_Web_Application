@@ -15,7 +15,7 @@ public class FertilizerServiceImpl implements FertilizerService {
     @Autowired
     private FertilizerRepository fertilizerRepository;
 
-    // Generate Fertilizer Code like CHEM-2025-0001
+    // Fertilizer Code එක Generate කරන ලොජික් එක
     private String generateFertilizerCode(String type) {
         String prefix;
         switch (type.toLowerCase()) {
@@ -23,17 +23,13 @@ public class FertilizerServiceImpl implements FertilizerService {
             case "organic":   prefix = "ORG"; break;
             case "liquid":    prefix = "LIQ"; break;
             case "granular":  prefix = "GRAN"; break;
-            case "water-soluble": prefix="WS"; break;
-            case "powder": prefix="POW"; break;
-            case "slow-release": prefix="SR"; break;
+            case "powder":    prefix = "POW"; break;
             default: prefix = "FERT"; 
         }
 
         String year = String.valueOf(Year.now().getValue());
         long count = fertilizerRepository.countByFertilizerCodeStartingWith(prefix + "-" + year);
-        String sequence = String.format("%04d", count + 1);
-
-        return prefix + "-" + year + "-" + sequence;
+        return prefix + "-" + year + "-" + String.format("%04d", count + 1);
     }
 
     @Override
@@ -49,6 +45,12 @@ public class FertilizerServiceImpl implements FertilizerService {
         return fertilizerRepository.findAll();
     }
 
+    // ✅ Dashboard එකට අලුතින් එකතු කරපු Method එක
+    @Override
+    public List<Fertilizer> getFertilizersBySupplier(String email) {
+        return fertilizerRepository.findBySupplierEmail(email);
+    }
+
     @Override
     public Fertilizer getFertilizerById(String id) {
         return fertilizerRepository.findById(id).orElse(null);
@@ -62,12 +64,14 @@ public class FertilizerServiceImpl implements FertilizerService {
                 fertilizer.setDescription(updatedFertilizer.getDescription());
                 fertilizer.setPrice(updatedFertilizer.getPrice());
                 fertilizer.setUnit(updatedFertilizer.getUnit());
-                fertilizer.setSupplierId(updatedFertilizer.getSupplierId());
                 fertilizer.setType(updatedFertilizer.getType());
                 fertilizer.setCategory(updatedFertilizer.getCategory());
                 fertilizer.setImageUrl(updatedFertilizer.getImageUrl());
                 fertilizer.setStock(updatedFertilizer.getStock());
                 fertilizer.setQuantityInside(updatedFertilizer.getQuantityInside());
+                fertilizer.setDistrict(updatedFertilizer.getDistrict());
+                // ✅ Update කරද්දී Email එක නැති වෙන්න දෙන්න එපා
+                fertilizer.setSupplierEmail(updatedFertilizer.getSupplierEmail()); 
                 return fertilizerRepository.save(fertilizer);
             }).orElse(null);
     }

@@ -70,16 +70,17 @@ export default function AddFertilizer() {
       fileData.append("file", imageFile);
 
       const uploadRes = await axios.post(
-        "http://localhost:8081/api/fertilizers/upload-image", // ✅ FIXED URL
+        "http://localhost:8081/api/fertilizers/upload-image",
         fileData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      const imageUrl = uploadRes.data; // ✅ FIXED RESPONSE
+      const imageUrl = uploadRes.data;
 
-      // ✅ 2. Save fertilizer
+      // ✅ 2. Save fertilizer with Supplier Email
       await axios.post("http://localhost:8081/api/fertilizers", {
         ...form,
+        supplierEmail: localStorage.getItem("email"), // 👈 මෙන්න මචං අලුත් කෑල්ල!
         price: Number(form.price),
         stock: Number(form.stock),
         quantityInside: form.quantityInside
@@ -89,7 +90,9 @@ export default function AddFertilizer() {
       });
 
       toast.success("Fertilizer added successfully!");
-      setTimeout(() => navigate("/fertilizers"), 800);
+      
+      // ✅ වැඩේ ඉවර වුණාම Marketplace එකට නෙවෙයි, Supplier ගේ Dashboard එකටම යමු
+      setTimeout(() => navigate("/fertilizer-dashboard"), 800);
 
     } catch (err) {
       console.error(err);
@@ -127,7 +130,7 @@ export default function AddFertilizer() {
 
         {(form.unit === "bag" || form.unit === "bottle") && (
           <input type="number" name="quantityInside"
-            placeholder="Quantity Inside"
+            placeholder="Quantity Inside (Kg/L)"
             className="w-full border p-3 rounded-lg"
             onChange={handleChange} />
         )}
@@ -150,11 +153,31 @@ export default function AddFertilizer() {
         <select name="district" className="w-full border p-3 rounded-lg"
           onChange={handleChange}>
           <option value="">District</option>
-          <option>Colombo</option>
-          <option>Kandy</option>
-          <option>Galle</option>
-          <option>Kurunegala</option>
-          <option>Jaffna</option>
+          <option>Ampara</option>
+<option>Anuradhapura</option>
+<option>Badulla</option>
+<option>Batticaloa</option>
+<option>Colombo</option>
+<option>Galle</option>
+<option>Gampaha</option>
+<option>Hambantota</option>
+<option>Jaffna</option>
+<option>Kalutara</option>
+<option>Kandy</option>
+<option>Kegalle</option>
+<option>Kilinochchi</option>
+<option>Kurunegala</option>
+<option>Mannar</option>
+<option>Matale</option>
+<option>Matara</option>
+<option>Moneragala</option>
+<option>Mullaitivu</option>
+<option>Nuwara Eliya</option>
+<option>Polonnaruwa</option>
+<option>Puttalam</option>
+<option>Ratnapura</option>
+<option>Trincomalee</option>
+<option>Vavuniya</option>
         </select>
 
         <input type="number" name="stock"
@@ -162,12 +185,16 @@ export default function AddFertilizer() {
           className="w-full border p-3 rounded-lg"
           onChange={handleChange} />
 
-        <input type="file" accept="image/*"
-          onChange={handleFileChange} />
+        <div className="flex flex-col gap-2">
+          <label className="font-semibold text-gray-700">Upload Product Image</label>
+          <input type="file" accept="image/*"
+            className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+            onChange={handleFileChange} />
+        </div>
 
         <button type="submit"
-          className="bg-green-700 text-white px-6 py-3 rounded-lg">
-          Add Fertilizer
+          className="w-full bg-green-700 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-800 transition shadow-lg">
+          Add Fertilizer Product
         </button>
       </form>
     </div>
