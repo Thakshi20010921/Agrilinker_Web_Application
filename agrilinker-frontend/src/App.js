@@ -38,6 +38,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { CartProvider } from "./context/CartContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 //----farmer
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
@@ -47,6 +48,9 @@ import EditProductPage from "./components/farmer/EditProductPage";
 import MyProducts from "./components/farmer/MyProducts";
 import InquiryList from "./components/farmer/FarmerInquiryPage/InquiryList";
 import InquiryItem from "./components/farmer/FarmerInquiryPage/InquiryItem";
+
+
+
 
 import { AuthProvider } from "./context/AuthContext";
 
@@ -62,6 +66,7 @@ function App() {
 
   return (
     <AuthProvider>
+      <NotificationProvider>
       <CartProvider>
         {/* ✅ Toast system (GLOBAL) */}
         <ToastContainer
@@ -74,6 +79,9 @@ function App() {
           draggable
           theme="colored"
         />
+        
+        
+
 
         {!hideLayout && <Header />}
 
@@ -143,6 +151,7 @@ function App() {
 
         {!hideLayout && <Footer />}
       </CartProvider>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

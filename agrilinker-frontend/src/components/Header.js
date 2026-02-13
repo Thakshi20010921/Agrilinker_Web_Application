@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { FaShoppingCart } from "react-icons/fa";
 import UserMenu from "./UserMenu";
+import NotificationBell from "./NotificationBell";
 
 function Header() {
   const { cart } = useContext(CartContext);
@@ -53,6 +54,7 @@ function Header() {
 
       {/* Cart & Avatar */}
       <div className="flex items-center space-x-4">
+         <NotificationBell />
         <Link
           to="/cart"
           className="relative text-white text-3xl hover:text-green-300 hover:scale-110 transition"
