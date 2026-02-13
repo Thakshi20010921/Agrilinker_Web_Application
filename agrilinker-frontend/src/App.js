@@ -3,47 +3,34 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Layout Components
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HeroSection from "./components/HeroSection";
 import HowItWorks from "./components/HowItWorks";
 import Benefits from "./components/Benefits";
 
-// Fertilizer Components
 import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierDashboard";
 import FertilizerRecommendation from "./components/Fertilizers/FertilizerRecommendation";
 
-// Auth & Other Pages
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminComplaints from "./pages/admin/AdminComplaints";
-import AdminAnalysis from "./pages/admin/AdminAnalysis";
-import AdminSettings from "./pages/admin/AdminSettings";
-import SupportPage from "./pages/support/SupportPage";
-import SupportHistory from "./pages/support/SupportHistory";
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Loginfertilizer from "./pages/Loginfertilizer";
+import Profile from "./components/Profile";
+import Marketplace from "./components/Marketplace";
 
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { AuthProvider } from "./context/AuthContext";
 
-// Farmer Pages
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 import MyProducts from "./components/farmer/MyProducts";
 import EditProductPage from "./components/farmer/EditProductPage";
-
-
-
-
-import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   const location = useLocation();
