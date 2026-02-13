@@ -9,7 +9,7 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   // ✅ Use ONLY the logged-in user from AuthContext
-const USER_ID = user?.email || null;
+  const USER_ID = user?.id || user?.userId || user?.email || null;
 
   const loadCart = async () => {
     if (!USER_ID) {
@@ -52,6 +52,7 @@ const USER_ID = user?.email || null;
       image:
         item.imageUrl ||
         (item.product_image ? `http://localhost:8081${item.product_image}` : "/images/placeholder.png"),
+      farmerEmail: item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
       quantity: 1,
     };
 
