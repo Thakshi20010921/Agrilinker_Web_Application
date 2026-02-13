@@ -21,9 +21,18 @@ import FertilizerRecommendation from "./components/Fertilizers/FertilizerRecomme
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Loginfertilizer from "./pages/Loginfertilizer";
-import Profile from "./components/Profile"; // ✅ Profile එක තියෙන්නේ components ඇතුළේ නිසා මේ path එක විතරක් ඇති
-import Marketplace from "./components/Marketplace";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminComplaints from "./pages/admin/AdminComplaints";
+import AdminAnalysis from "./pages/admin/AdminAnalysis";
+import AdminSettings from "./pages/admin/AdminSettings";
+import SupportPage from "./pages/support/SupportPage";
+import SupportHistory from "./pages/support/SupportHistory";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { CartProvider } from "./context/CartContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 // Farmer Pages
 import FarmerDashboard from "./components/farmer/FarmerDashboard";
@@ -31,8 +40,9 @@ import AddProduct from "./components/farmer/AddProduct";
 import MyProducts from "./components/farmer/MyProducts";
 import EditProductPage from "./components/farmer/EditProductPage";
 
-// Providers
-import { CartProvider } from "./context/CartContext";
+
+
+
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -47,9 +57,22 @@ function App() {
 
   return (
     <AuthProvider>
+      <NotificationProvider>
       <CartProvider>
-        {/* ✅ Global Toast System */}
-        <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+        {/* ✅ Toast system (GLOBAL) */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="colored"
+        />
+        
+        
+
 
         {!hideLayout && <Header />}
 
@@ -83,6 +106,7 @@ function App() {
 
         {!hideLayout && <Footer />}
       </CartProvider>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

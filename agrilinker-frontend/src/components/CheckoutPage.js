@@ -7,6 +7,7 @@ import PremiumPaymentModal from "../components/PremiumPaymentModal";
 const CheckoutPage = () => {
   const { cart, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
+const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const [form, setForm] = useState({
     name: "",
@@ -74,14 +75,17 @@ const CheckoutPage = () => {
 
     setLoading(true);
 
-    const orderData = {
-      customer: { ...form },
-      items: normalizedItems, // ✅ includes itemId + itemType
-      totalAmount,
-      paymentMethod,
-      paymentStatus: payStatus,
-      orderDate: new Date().toISOString(),
-    };
+   const orderData = {
+  customer: {
+    ...form,
+    email: user?.email || form.email, // ✅ email stored where backend expects
+  },
+  items: normalizedItems,
+  totalAmount,
+  paymentMethod,
+  paymentStatus: payStatus,
+  orderDate: new Date().toISOString(),
+};
 
     try {
       // ✅ Create order
