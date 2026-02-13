@@ -165,7 +165,7 @@ const InquiryModal = ({ product, onClose }) => {
         </div>
       </div>
     </div>
-  );
+  ); // no changes
 };
 
 export default InquiryModal;
