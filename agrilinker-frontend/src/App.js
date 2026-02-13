@@ -32,6 +32,9 @@ import AddProduct from "./components/farmer/AddProduct";
 import MyProducts from "./components/farmer/MyProducts";
 import EditProductPage from "./components/farmer/EditProductPage";
 
+import SupportPage from "./pages/support/SupportPage";
+import SupportHistory from "./pages/support/SupportHistory";
+
 function App() {
   const location = useLocation();
 
@@ -76,6 +79,8 @@ function App() {
 
           {/* Marketplace */}
           <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/support" element={<SupportPage />} />
+<Route path="/support/history" element={<SupportHistory />} />
 
           {/* 🌿 FERTILIZER ROUTES */}
           <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
