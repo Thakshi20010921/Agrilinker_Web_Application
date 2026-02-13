@@ -1,7 +1,7 @@
 // src/pages/fertilizers/FertilizerList.jsx
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { FiFilter } from "react-icons/fi";
+import { FiFilter, FiSearch, FiMapPin, FiPackage, FiTag } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -99,232 +99,207 @@ export default function FertilizerList() {
   const currentItems = filteredFertilizers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      {/* Header & Filters */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
-        <h1 className="text-4xl font-extrabold text-green-800">Fertilizers</h1>
+    <div className="bg-gray-50 min-h-screen p-6 md:p-10">
+      <div className="max-w-7xl mx-auto">
+        {/* Header & Filters */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
+          <h1 className="text-4xl font-extrabold text-green-800 border-l-8 border-green-600 pl-4">
+            Fertilizers
+          </h1>
 
-        <div className="flex flex-wrap gap-3 items-center">
-          <input
-            type="text"
-            placeholder="Search by name, code, type, category, district..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border p-2 rounded-lg w-64"
-          />
-
-          <button
-            type="button"
-            className="flex items-center bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition"
-          >
-            <FiFilter className="mr-2 text-lg" /> Filters
-          </button>
-
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="border p-2 rounded-lg"
-          >
-            <option value="">Sort By</option>
-            <option value="priceLow">Price: Low → High</option>
-            <option value="priceHigh">Price: High → Low</option>
-            <option value="nameAZ">Name: A → Z</option>
-          </select>
-
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="border p-2 rounded-lg"
-          >
-            <option value="">All Categories</option>
-            <option value="Organic">Organic</option>
-            <option value="Chemical">Chemical</option>
-          </select>
-
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="border p-2 rounded-lg"
-          >
-            <option value="">All Types</option>
-            <option value="Liquid">Liquid</option>
-            <option value="Granular">Granular</option>
-            <option value="Water-Soluble">Water-Soluble</option>
-            <option value="Powder">Powder</option>
-            <option value="Slow-Release">Slow-Release</option>
-          </select>
-
-          <select
-            value={districtFilter}
-            onChange={(e) => setDistrictFilter(e.target.value)}
-            className="border p-2 rounded-lg"
-          >
-            <option value="">All Districts</option>
-            <option>Colombo</option>
-            <option>Gampaha</option>
-            <option>Kalutara</option>
-            <option>Kandy</option>
-            <option>Matale</option>
-            <option>Nuwara Eliya</option>
-            <option>Galle</option>
-            <option>Matara</option>
-            <option>Hambantota</option>
-            <option>Jaffna</option>
-            <option>Kilinochchi</option>
-            <option>Mannar</option>
-            <option>Vavuniya</option>
-            <option>Mullaitivu</option>
-            <option>Batticaloa</option>
-            <option>Ampara</option>
-            <option>Trincomalee</option>
-            <option>Kurunegala</option>
-            <option>Puttalam</option>
-            <option>Anuradhapura</option>
-            <option>Polonnaruwa</option>
-            <option>Badulla</option>
-            <option>Moneragala</option>
-            <option>Ratnapura</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Add/Update & Recommendation */}
-      <div className="mb-6 flex gap-4">
-        <FertilizerButton />
-        <Link
-          to="/fertilizers/recommend"
-          className="bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
-        >
-          Get Fertilizer Recommendation
-        </Link>
-      </div>
-
-      {/* Fertilizer Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {currentItems.map((f) => {
-          const id = f.id || f._id;
-
-          return (
-            <div
-              key={id}
-              className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
-            >
-              <div>
-                <img
-                  src={f.imageUrl || "https://via.placeholder.com/300x200"}
-                  alt={f.name || "Fertilizer"}
-                  className="rounded-lg mb-4 w-full h-48 object-cover"
-                />
-
-                <h2
-                  className="text-2xl font-bold text-green-700"
-                  dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
-                />
-
-                {/* Review */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedItem(f);
-                    setReviewType("fertilizer");
-                  }}
-                  className="text-green-700 underline text-sm mt-2"
-                >
-                  Write a review
-                </button>
-
-                <p className="text-sm text-gray-500 mb-1 mt-2">
-                  Code:{" "}
-                  <span
-                    className="font-semibold"
-                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }}
-                  />
-                </p>
-
-                <p className="text-sm text-gray-600 mb-1">
-                  Type:{" "}
-                  <span
-                    className="font-semibold"
-                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }}
-                  />
-                </p>
-
-                <p className="text-sm text-gray-600 mb-1">
-                  Category:{" "}
-                  <span
-                    className="font-semibold"
-                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.category) }}
-                  />
-                </p>
-
-                <p className="text-sm text-gray-600 mb-2">
-                  District: <span className="font-semibold">{f.district}</span>
-                </p>
-
-                <p className="text-gray-600 mb-2 line-clamp-2">{f.description}</p>
-
-                <p className="text-lg font-semibold">
-                  Rs. {f.price} / {f.unit}
-                  {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
-                    ? ` (${f.quantityInside} ${f.unit === "bag" ? "kg" : "L"})`
-                    : ""}
-                </p>
-              </div>
-
-              <div className="flex justify-between mt-4">
-                <Link
-                  to={`/fertilizers/edit/${id}`}
-                  className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
-                >
-                  Edit
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => handleBuy(f)}
-                  className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition"
-                >
-                  Buy
-                </button>
-              </div>
+          <div className="flex flex-wrap gap-3 items-center w-full lg:w-auto">
+            <div className="relative flex-grow lg:flex-grow-0">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by name, code..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl w-full lg:w-64 focus:ring-2 focus:ring-green-500 outline-none shadow-sm"
+              />
             </div>
-          );
-        })}
-      </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-10 gap-2">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              type="button"
-              onClick={() => setCurrentPage(page)}
-              className={`px-4 py-2 border rounded-lg ${
-                currentPage === page
-                  ? "bg-green-700 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
             >
-              {page}
-            </button>
-          ))}
+              <option value="">Sort By</option>
+              <option value="priceLow">Price: Low → High</option>
+              <option value="priceHigh">Price: High → Low</option>
+              <option value="nameAZ">Name: A → Z</option>
+            </select>
+
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
+            >
+              <option value="">All Categories</option>
+              <option value="Organic">Organic</option>
+              <option value="Chemical">Chemical</option>
+            </select>
+
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
+            >
+              <option value="">All Types</option>
+              <option value="Liquid">Liquid</option>
+              <option value="Granular">Granular</option>
+              <option value="Water-Soluble">Water-Soluble</option>
+              <option value="Powder">Powder</option>
+              <option value="Slow-Release">Slow-Release</option>
+            </select>
+
+            <select
+              value={districtFilter}
+              onChange={(e) => setDistrictFilter(e.target.value)}
+              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
+            >
+              <option value="">All Districts</option>
+              <option>Colombo</option><option>Gampaha</option><option>Kalutara</option><option>Kandy</option>
+              <option>Matale</option><option>Nuwara Eliya</option><option>Galle</option><option>Matara</option>
+              <option>Hambantota</option><option>Jaffna</option><option>Kilinochchi</option><option>Mannar</option>
+              <option>Vavuniya</option><option>Mullaitivu</option><option>Batticaloa</option><option>Ampara</option>
+              <option>Trincomalee</option><option>Kurunegala</option><option>Puttalam</option><option>Anuradhapura</option>
+              <option>Polonnaruwa</option><option>Badulla</option><option>Moneragala</option><option>Ratnapura</option>
+            </select>
+          </div>
         </div>
-      )}
 
-      {/* ✅ Review Modal */}
-     {selectedItem && (
-  <ReviewModal
-    item={selectedItem}
-    type={reviewType}                 // ✅ correct prop name
-    userId={localStorage.getItem("email")} // ✅ or pass your real USER_ID
-    onClose={() => setSelectedItem(null)}
-    onSubmitted={() => {
-      // optional: refresh list or reviews
-    }}
-  />
-)}
+        {/* Action Buttons */}
+        <div className="mb-10 flex flex-wrap gap-4">
+          <FertilizerButton />
+          <Link
+            to="/fertilizers/recommend"
+            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-1"
+          >
+            Get Recommendation
+          </Link>
+        </div>
 
+        {/* Fertilizer Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {currentItems.map((f) => {
+            const id = f.id || f._id;
+
+            return (
+              <div
+                key={id}
+                className="group bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              >
+                <div className="p-5">
+                  <div className="relative overflow-hidden rounded-2xl mb-4">
+                    <img
+                      src={f.imageUrl || "https://via.placeholder.com/300x200"}
+                      alt={f.name || "Fertilizer"}
+                      className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-green-700 shadow-sm">
+                        {f.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h2
+                    className="text-2xl font-bold text-gray-800 mb-2 leading-tight"
+                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
+                  />
+
+                  {/* Review */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedItem(f);
+                      setReviewType("fertilizer");
+                    }}
+                    className="text-green-600 hover:text-green-700 font-medium underline text-sm mb-4 block transition"
+                  >
+                    Write a review
+                  </button>
+
+                  <div className="space-y-2 mb-4 border-t border-gray-50 pt-4">
+                    <p className="flex items-center gap-2 text-sm text-gray-600">
+                      <FiTag className="text-green-600" /> 
+                      Code: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }} />
+                    </p>
+                    <p className="flex items-center gap-2 text-sm text-gray-600">
+                      <FiTag className="text-green-600" /> 
+                      Type: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }} />
+                    </p>
+                    <p className="flex items-center gap-2 text-sm text-gray-600">
+                      <FiMapPin className="text-green-600" /> 
+                      District: <span className="font-semibold text-gray-800">{f.district}</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm font-medium">
+                      <FiPackage className="text-green-600" /> 
+                      Stock: <span className={f.stock < 10 ? "text-red-600 font-bold" : "text-gray-800"}>{f.stock} {f.unit}</span>
+                    </p>
+                  </div>
+
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-2 italic leading-relaxed">
+                    {f.description}
+                  </p>
+
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-black text-green-700">Rs. {f.price}</span>
+                    <span className="text-sm text-gray-400 font-medium">/ {f.unit}</span>
+                    {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
+                      ? <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full ml-2">
+                          {f.quantityInside} {f.unit === "bag" ? "kg" : "L"}
+                        </span>
+                      : ""}
+                  </div>
+                </div>
+
+                <div className="p-5 pt-0">
+                  <button
+                    type="button"
+                    onClick={() => handleBuy(f)}
+                    className="w-full bg-green-700 text-white py-3.5 rounded-2xl font-bold hover:bg-green-800 transition shadow-lg shadow-green-100 active:scale-95"
+                  >
+                    Buy Now
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center mt-16 pb-10 gap-3">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => setCurrentPage(page)}
+                className={`w-12 h-12 flex items-center justify-center font-bold rounded-xl border transition-all duration-200 ${
+                  currentPage === page
+                    ? "bg-green-700 text-white border-green-700 shadow-lg scale-110"
+                    : "bg-white text-gray-400 border-gray-200 hover:border-green-500 hover:text-green-600"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ✅ Review Modal */}
+        {selectedItem && (
+          <ReviewModal
+            item={selectedItem}
+            type={reviewType}
+            userId={localStorage.getItem("email")}
+            onClose={() => setSelectedItem(null)}
+            onSubmitted={() => {}}
+          />
+        )}
+      </div>
     </div>
   );
 }
