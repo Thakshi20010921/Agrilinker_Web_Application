@@ -6,8 +6,10 @@ export default function UserMenu() {
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
-  const email = localStorage.getItem("email");
-  const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+
+const email = storedUser?.email || localStorage.getItem("email") || "";
+const roles = storedUser?.roles || JSON.parse(localStorage.getItem("roles") || "[]");
 
   const hasRole = (targetRole) =>
     roles.some((r) => {
