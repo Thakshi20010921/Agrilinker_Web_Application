@@ -19,7 +19,7 @@ public class SentimentService {
             @Value("${huggingface.token:}") String token,
             @Value("${huggingface.model}") String model) {
 
-        // ✅ correct HF router endpoint
+        // HF router endpoint
         this.webClient = builder.baseUrl("https://router.huggingface.co").build();
         this.token = token;
         this.model = model;
