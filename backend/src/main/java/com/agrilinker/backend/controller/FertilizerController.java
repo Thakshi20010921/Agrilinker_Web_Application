@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/fertilizers")
+@CrossOrigin(origins = "http://localhost:3000") // Frontend එකත් එක්ක connect වෙන්න
 public class FertilizerController {
 
     @Autowired
@@ -47,7 +48,7 @@ public class FertilizerController {
     }
 
     // ======================================================
-    // ✅ CREATE FERTILIZER (IMAGE URL COMES FROM upload-image)
+    // ✅ CREATE FERTILIZER (With Supplier Email)
     // ======================================================
     @PostMapping
     public ResponseEntity<Fertilizer> createFertilizer(
@@ -62,15 +63,25 @@ public class FertilizerController {
                 request.getType(),
                 request.getCategory(),
                 null, // fertilizerCode
-                request.getImageUrl(), // ✅ saved image URL
+                request.getImageUrl(),
                 request.getStock(),
                 request.getQuantityInside(),
-                request.getDistrict()
+                request.getDistrict(),
+                request.getSupplierEmail() // ✅ Saved from frontend request
         );
 
         return ResponseEntity.ok(
                 fertilizerService.createFertilizer(fertilizer)
         );
+    }
+
+    // ======================================================
+    // ✅ GET FERTILIZERS BY SUPPLIER EMAIL (For Dashboard)
+    // ======================================================
+    @GetMapping("/supplier/{email}")
+    public ResponseEntity<List<Fertilizer>> getFertilizersBySupplier(@PathVariable String email) {
+        List<Fertilizer> list = fertilizerService.getFertilizersBySupplier(email);
+        return ResponseEntity.ok(list);
     }
 
     // ======================================================
@@ -93,7 +104,8 @@ public class FertilizerController {
                 request.getImageUrl(),
                 request.getStock(),
                 request.getQuantityInside(),
-                request.getDistrict()
+                request.getDistrict(),
+                request.getSupplierEmail() // ✅ Keep the email during update
         );
 
         Fertilizer updated =
@@ -105,7 +117,7 @@ public class FertilizerController {
     }
 
     // ======================================================
-    // ✅ GET ALL FERTILIZERS
+    // ✅ GET ALL FERTILIZERS (For Marketplace)
     // ======================================================
     @GetMapping
     public ResponseEntity<List<Fertilizer>> getAllFertilizers() {
