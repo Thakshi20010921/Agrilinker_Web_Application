@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import api from "../api/api";
+import { AuthContext } from "../context/AuthContext";
 
 const OrderHistory = () => {
+  const { user } = useContext(AuthContext);     // ✅ get logged-in user
+  const USER_ID = user?.email || null;          // ✅ email comes from user object
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // ✅ use the currently logged-in user (email you confirmed is in localStorage)
-  const USER_ID = localStorage.getItem("email");
 
   useEffect(() => {
     const loadOrders = async () => {
       try {
         if (!USER_ID) {
           setOrders([]);
-          setLoading(false);
           return;
         }
 
-        // ✅ use api instance so token is sent automatically
-        const res = await api.get(`/api/orders/user/${encodeURIComponent(USER_ID)}`);
+        const res = await api.get(
+          `/api/orders/user/${encodeURIComponent(USER_ID)}`
+        );
+
         setOrders(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -65,9 +67,12 @@ const OrderHistory = () => {
                 {(order.items || []).map((item, idx) => (
                   <div key={idx} className="flex justify-between">
                     <span className="text-gray-800">
-                      {item.name} <span className="text-gray-400 text-sm">x{item.quantity}</span>
+                      {item.name}{" "}
+                      <span className="text-gray-400 text-sm">x{item.quantity}</span>
                     </span>
-                    <span className="text-gray-600">Rs. {(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="text-gray-600">
+                      Rs. {(Number(item.price) * Number(item.quantity)).toFixed(2)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -77,6 +82,7 @@ const OrderHistory = () => {
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase">
                     {order.paymentMethod || "N/A"}
                   </span>
+
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
                       order.paymentStatus === "PAID"
@@ -87,6 +93,7 @@ const OrderHistory = () => {
                     {order.paymentStatus || "N/A"}
                   </span>
                 </div>
+
                 <div className="text-xl font-black text-green-900">
                   Total: Rs. {Number(order.totalAmount || 0).toFixed(2)}
                 </div>
