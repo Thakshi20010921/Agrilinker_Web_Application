@@ -22,6 +22,7 @@ import Register from "./pages/Register";
 import Loginfertilizer from "./pages/Loginfertilizer";
 import Profile from "./components/Profile";
 import Marketplace from "./components/Marketplace";
+import CartPage from "./components/CartPage";
 
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
@@ -73,6 +74,7 @@ function App() {
           <Route path="/loginfertilizer" element={<Loginfertilizer />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
+<Route path="/cart" element={<CartPage />} />
 
           {/* Home Route */}
           <Route path="/home" element={<><HeroSection /><HowItWorks /><Benefits /></>} />
