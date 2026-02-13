@@ -67,6 +67,7 @@ function Step3Form({ productData, setProductData }) {
               <input
                 type="number"
                 name="price"
+                required
                 min="0"
                 max="10000"
                 placeholder="0.00"
@@ -99,6 +100,7 @@ function Step3Form({ productData, setProductData }) {
             <input
               type="number"
               name="quantity"
+              required
               min="0"
               max="100000"
               placeholder="e.g. 100"
@@ -119,9 +121,8 @@ function Step3Form({ productData, setProductData }) {
             >
               <option value="kg">Kilograms (kg)</option>
               <option value="g">Grams (g)</option>
-              <option value="L">Liters (L)</option>
-              <option value="pcs">Pieces (pcs)</option>
-              <option value="bunch">Bunch</option>
+
+              <option value="Units">Units</option>
             </select>
           </div>
         </div>
