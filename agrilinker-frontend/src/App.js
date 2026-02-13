@@ -36,6 +36,18 @@ import EditProductPage from "./components/farmer/EditProductPage";
 import SupportPage from "./pages/support/SupportPage";
 import SupportHistory from "./pages/support/SupportHistory";
 
+import CheckoutPage from "./components/CheckoutPage";
+import OrderConfirmation from "./components/OrderConfirmation";
+import OrderHistory from "./components/OrderHistory";
+
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminComplaints from "./pages/admin/AdminComplaints";
+import AdminAnalysis from "./pages/admin/AdminAnalysis";
+import AdminSettings from "./pages/admin/AdminSettings";
+
+import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
+
+
 function App() {
   const location = useLocation();
 
@@ -96,6 +108,18 @@ function App() {
           <Route path="/farmer/add-product" element={<AddProduct />} />
           <Route path="/farmer/my-products" element={<MyProducts />} />
           <Route path="/edit-product/:id" element={<EditProductPage />} />
+
+          <Route path="/checkout" element={<CheckoutPage />} />
+<Route path="/order-confirmation" element={<OrderConfirmation />} />
+<Route path="/orders" element={<OrderHistory />} />
+
+<Route path="/admin" element={<AdminDashboard />} />
+<Route path="/admin/complaints" element={<AdminComplaints />} />
+<Route path="/admin/analysis" element={<AdminAnalysis />} />
+<Route path="/admin/settings" element={<AdminSettings />} />
+
+<Route path="/farmer/add-product2" element={<AddProductPage />} />
+
         </Routes>
 
         {!hideLayout && <Footer />}
