@@ -361,7 +361,7 @@ const imageUrl = imagePath
                   </h2>
 
                   <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                    {product.farmerEmail} • {product.location}
+                    {product.location}
                   </p>
 
                   {/* Price + Review */}

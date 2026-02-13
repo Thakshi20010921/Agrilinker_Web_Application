@@ -47,9 +47,6 @@ export default function Login() {
 
       if (!token) throw new Error("Token not found in response");
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("roles", JSON.stringify(roles));
-      localStorage.setItem("email", userEmail);
 
       loginUser(
         {
