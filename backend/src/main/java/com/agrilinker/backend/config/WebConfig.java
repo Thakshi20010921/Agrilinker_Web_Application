@@ -39,28 +39,32 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET");
     }
 }*/
-
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                String projectDir = System.getProperty("user.dir");
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Serve images from backend/uploads folder
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
-    }
+                String uploadPath = projectDir.endsWith("backend")
+                                ? Paths.get(projectDir, "uploads").toString()
+                                : Paths.get(projectDir, "backend", "uploads").toString();
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        // Allow frontend React app to access API & images
-        registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                String uploadDir = Paths.get(uploadPath).toAbsolutePath().toUri().toString();
 
-        registry.addMapping("/uploads/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET");
-    }
+                registry.addResourceHandler("/uploads/**")
+                                .addResourceLocations(uploadDir);
+        }
+
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                                .allowedOrigins("http://localhost:3000")
+                                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                                .allowedHeaders("*")
+                                .allowCredentials(true);
+
+                registry.addMapping("/uploads/**")
+                                .allowedOrigins("http://localhost:3000")
+                                .allowedMethods("GET");
+        }
 }
