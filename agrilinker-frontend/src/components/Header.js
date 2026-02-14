@@ -1,16 +1,37 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
+import { AuthContext } from "../context/AuthContext";
 import { FaShoppingCart } from "react-icons/fa";
 import UserMenu from "./UserMenu";
 import NotificationBell from "./NotificationBell";
 
+// role helpers
+const normalizeRole = (role) =>
+  String(role || "")
+    .toUpperCase()
+    .replace(/^ROLE_/, "")
+    .replace(/[\s_-]/g, "");
+
+const hasRole = (roles, targetRole) =>
+  Array.isArray(roles) &&
+  roles.some((role) => normalizeRole(role) === normalizeRole(targetRole));
+
 function Header() {
   const { cart } = useContext(CartContext);
-  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const { user } = useContext(AuthContext);
 
-  // ✅ total quantity (not number of rows)
-  const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  const roles = user?.roles || [];
+
+  // ✅ Only Buyer or Admin can see Support
+  const canViewSupport =
+    hasRole(roles, "BUYER") || hasRole(roles, "ADMIN");
+
+  // total quantity
+  const cartCount = cart.reduce(
+    (sum, item) => sum + (item.quantity || 1),
+    0
+  );
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
@@ -31,37 +52,54 @@ function Header() {
       <nav className="flex space-x-8">
         <Link
           to="/home"
-          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
         >
           Home
         </Link>
+
         <Link
           to="/marketplace"
-          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
         >
           Marketplace
         </Link>
+
         <Link
           to="/fertilizers"
-          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
         >
           Fertilizers
         </Link>
-        <Link to="/support" className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150">
-          Support
+
+        {/* ✅ Show only for Buyer & Admin */}
+        {canViewSupport && (
+          <Link
+            to="/support"
+            className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+          >
+            Support
+          </Link>
+        )}
+
+        {/* Contact Us visible for all */}
+        <Link
+          to="/contact-us"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+        >
+          Contact Us
         </Link>
       </nav>
 
-      {/* Cart & Avatar */}
+      {/* Right side */}
       <div className="flex items-center space-x-4">
-         <NotificationBell />
+        <NotificationBell />
+
         <Link
           to="/cart"
           className="relative text-white text-3xl hover:text-green-300 hover:scale-110 transition"
         >
           <FaShoppingCart />
 
-          {/* ✅ show badge only if items exist */}
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-3 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
               {cartCount}
