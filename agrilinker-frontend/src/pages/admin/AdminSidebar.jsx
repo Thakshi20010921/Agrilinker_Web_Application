@@ -3,6 +3,7 @@ import {
   BarChart3,
   LayoutDashboard,
   MessageSquareWarning,
+  MessageSquareMore,   // ✅ Added
   Settings,
 } from "lucide-react";
 
@@ -16,6 +17,11 @@ const navigationItems = [
     label: "Analysis",
     to: "/admin/analysis",
     Icon: BarChart3,
+  },
+  {
+    label: "Inquiries",                // ✅ Added
+    to: "/admin/inquiries",
+    Icon: MessageSquareMore,
   },
   {
     label: "Complaints",
@@ -34,9 +40,8 @@ export default function AdminSidebar({ isExpanded, onToggle }) {
 
   return (
     <aside
-      className={`w-full rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:sticky lg:top-8 lg:self-start ${
-        isExpanded ? "lg:w-64" : "lg:w-24"
-      }`}
+      className={`w-full rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:sticky lg:top-8 lg:self-start ${isExpanded ? "lg:w-64" : "lg:w-24"
+        }`}
     >
       <div className="flex items-start justify-between gap-3">
         {isExpanded ? (
@@ -49,6 +54,7 @@ export default function AdminSidebar({ isExpanded, onToggle }) {
             </h2>
           </div>
         ) : null}
+
         <button
           type="button"
           onClick={onToggle}
@@ -57,28 +63,29 @@ export default function AdminSidebar({ isExpanded, onToggle }) {
           {isExpanded ? "Collapse" : "Expand"}
         </button>
       </div>
+
       <nav className="mt-6 space-y-2">
         {navigationItems.map((item) => {
           const isActive = location.pathname === item.to;
+
           return (
             <Link
               key={item.label}
               to={item.to}
-              className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${
-                isActive
+              className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${isActive
                   ? "bg-green-50 text-green-700"
                   : "text-gray-600 hover:bg-gray-50"
-              }`}
+                }`}
             >
               <span
-                className={`flex h-10 w-10 items-center justify-center rounded-xl ${
-                  isActive
+                className={`flex h-10 w-10 items-center justify-center rounded-xl ${isActive
                     ? "bg-green-600 text-white"
                     : "bg-gray-100 text-gray-500"
-                }`}
+                  }`}
               >
                 <item.Icon size={20} />
               </span>
+
               {isExpanded ? item.label : null}
             </Link>
           );
