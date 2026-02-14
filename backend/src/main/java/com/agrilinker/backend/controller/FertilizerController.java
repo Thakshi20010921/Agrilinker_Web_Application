@@ -30,20 +30,29 @@ public class FertilizerController {
     @PostMapping("/upload-image")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            String uploadDir = "uploads/";
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir, fileName);
 
-            Files.createDirectories(filePath.getParent());
+            String projectDir = System.getProperty("user.dir");
+
+            String uploadPath = projectDir.endsWith("backend")
+                    ? Paths.get(projectDir, "uploads").toString()
+                    : Paths.get(projectDir, "backend", "uploads").toString();
+
+            Path uploadDir = Paths.get(uploadPath);
+            Files.createDirectories(uploadDir);
+
+            String extension = file.getOriginalFilename()
+                    .substring(file.getOriginalFilename().lastIndexOf("."));
+
+            String fileName = System.currentTimeMillis() + extension;
+
+            Path filePath = uploadDir.resolve(fileName);
+
             Files.write(filePath, file.getBytes());
 
-            // Accessible image URL
-            String imageUrl = "http://localhost:8081/uploads/" + fileName;
-            return ResponseEntity.ok(imageUrl);
+            return ResponseEntity.ok("/uploads/" + fileName);
 
         } catch (Exception e) {
-            return ResponseEntity.status(500)
-                    .body("Image upload failed: " + e.getMessage());
+            return ResponseEntity.status(500).body("Upload failed: " + e.getMessage());
         }
     }
 
@@ -71,8 +80,7 @@ public class FertilizerController {
         );
 
         return ResponseEntity.ok(
-                fertilizerService.createFertilizer(fertilizer)
-        );
+                fertilizerService.createFertilizer(fertilizer));
     }
 
     // ======================================================
@@ -108,8 +116,7 @@ public class FertilizerController {
                 request.getSupplierEmail() // ✅ Keep the email during update
         );
 
-        Fertilizer updated =
-                fertilizerService.updateFertilizer(id, updatedFertilizer);
+        Fertilizer updated = fertilizerService.updateFertilizer(id, updatedFertilizer);
 
         return (updated != null)
                 ? ResponseEntity.ok(updated)
@@ -122,8 +129,7 @@ public class FertilizerController {
     @GetMapping
     public ResponseEntity<List<Fertilizer>> getAllFertilizers() {
         return ResponseEntity.ok(
-                fertilizerService.getAllFertilizers()
-        );
+                fertilizerService.getAllFertilizers());
     }
 
     // ======================================================
@@ -131,8 +137,7 @@ public class FertilizerController {
     // ======================================================
     @GetMapping("/{id}")
     public ResponseEntity<Fertilizer> getFertilizerById(@PathVariable String id) {
-        Fertilizer fertilizer =
-                fertilizerService.getFertilizerById(id);
+        Fertilizer fertilizer = fertilizerService.getFertilizerById(id);
 
         return (fertilizer != null)
                 ? ResponseEntity.ok(fertilizer)
@@ -155,12 +160,10 @@ public class FertilizerController {
     public ResponseEntity<String> recommendFertilizer(
             @Valid @RequestBody FertilizerRecommendationRequest request) {
 
-        String recommendation =
-                getRecommendation(
-                        request.getCropType(),
-                        request.getSoilType(),
-                        request.getGrowthStage()
-                );
+        String recommendation = getRecommendation(
+                request.getCropType(),
+                request.getSoilType(),
+                request.getGrowthStage());
 
         return ResponseEntity.ok(recommendation);
     }
