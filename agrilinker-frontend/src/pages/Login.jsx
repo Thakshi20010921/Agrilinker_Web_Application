@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
@@ -17,15 +17,18 @@ const toRoleList = (rawRoles) => {
   return [];
 };
 
-const hasRole = (roles, targetRole) => {
-  const normalizedTarget = normalizeRole(targetRole);
-  return toRoleList(roles).some(
-    (role) => normalizeRole(role) === normalizedTarget,
-  );
+const hasAnyAllowedRole = (roles) => {
+  const list = toRoleList(roles).map(normalizeRole);
+
+  // ✅ your valid roles
+  const allowed = ["ADMIN", "FARMER", "BUYER", "FERTILIZERSUPPLIER"];
+
+  return list.some((r) => allowed.includes(r));
 };
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ to read "from"
   const { loginUser } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
@@ -47,32 +50,28 @@ export default function Login() {
 
       if (!token) throw new Error("Token not found in response");
 
-
+      // ✅ store user + token
       loginUser(
         {
           email: userEmail,
           roles,
           id: userId,
         },
-        token,
+        token
       );
 
       toast.success("Login successful 🎉");
 
-      if (hasRole(roles, "ADMIN")) {
-        navigate("/admin");
-      } else if (hasRole(roles, "FARMER")) {
-        navigate("/farmer/dashboard");
-      } else if (
-        hasRole(roles, "BUYER") ||
-        hasRole(roles, "FERTILIZER_SUPPLIER") ||
-        hasRole(roles, "FERTILIZERSUPPLIER")
-      ) {
-        navigate("/marketplace");
-      } else {
+      // ✅ if roles are not any of these => block
+      if (!hasAnyAllowedRole(roles)) {
         toast.error("Access denied");
-        navigate("/");
+        navigate("/", { replace: true });
+        return;
       }
+
+      // ✅ Industry: go back to intended page OR role dashboard
+      const from = location.state?.from;
+      navigate(from ? from : "/go", { replace: true });
     } catch (err) {
       toast.error("Invalid email or password");
     } finally {
