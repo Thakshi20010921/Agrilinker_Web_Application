@@ -75,7 +75,10 @@ export default function AddFertilizer() {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      const imageUrl = uploadRes.data;
+      const imageUrl = uploadRes.data.startsWith("http")
+  ? uploadRes.data.replace("http://localhost:8081", "")
+  : uploadRes.data;
+
 
       // ✅ 2. Save fertilizer with Supplier Email
       await axios.post("http://localhost:8081/api/fertilizers", {

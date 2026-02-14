@@ -192,11 +192,27 @@ export default function FertilizerList() {
               >
                 <div className="p-5">
                   <div className="relative overflow-hidden rounded-2xl mb-4">
-                    <img
-                      src={f.imageUrl || "https://via.placeholder.com/300x200"}
-                      alt={f.name || "Fertilizer"}
-                      className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                   <img
+  src={
+    f.imageUrl
+      ? encodeURI(
+          f.imageUrl.startsWith("http")
+            ? f.imageUrl
+            : `http://localhost:8081/${
+                f.imageUrl.replace(/^.*uploads[\\/]/, "uploads/")
+              }`
+        )
+      : "/placeholder.jpg"
+  }
+  alt={f.name || "Fertilizer"}
+  className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
+  onError={(e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = "/placeholder.jpg";
+  }}
+/>
+
+
                     <div className="absolute top-3 left-3">
                       <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-green-700 shadow-sm">
                         {f.category}
