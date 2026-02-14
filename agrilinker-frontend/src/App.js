@@ -1,5 +1,6 @@
+// ✅ FULL src/App.js (ONLY /, /login, /register, /loginfertilizer are public)
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,8 +19,8 @@ import FertilizerRecommendation from "./components/Fertilizers/FertilizerRecomme
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
 import Loginfertilizer from "./pages/Loginfertilizer";
+
 import Profile from "./components/Profile";
 import Marketplace from "./components/Marketplace";
 import CartPage from "./components/CartPage";
@@ -32,9 +33,11 @@ import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 import MyProducts from "./components/farmer/MyProducts";
 import EditProductPage from "./components/farmer/EditProductPage";
+import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 
 import SupportPage from "./pages/support/SupportPage";
 import SupportHistory from "./pages/support/SupportHistory";
+import ContactUsPage from "./pages/support/ContactUsPage";
 
 import CheckoutPage from "./components/CheckoutPage";
 import OrderConfirmation from "./components/OrderConfirmation";
@@ -44,14 +47,17 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminComplaints from "./pages/admin/AdminComplaints";
 import AdminAnalysis from "./pages/admin/AdminAnalysis";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminInquiries from "./pages/admin/AdminInquiries";
 
-import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
-
+// ✅ Security
+import ProtectedRoute from "./components/ProtectedRoute";
+import RoleRedirect from "./components/RoleRedirect";
+import AccessDenied from "./pages/AccessDenied";
 
 function App() {
   const location = useLocation();
 
-  // Header සහ Footer හංගන්න ඕන පේජ් ටික
+  // ✅ hide layout on public auth pages
   const hideLayout =
     location.pathname === "/" ||
     location.pathname === "/login" ||
@@ -61,69 +67,274 @@ function App() {
   return (
     <AuthProvider>
       <NotificationProvider>
-      <CartProvider>
-        {/* ✅ Toast system (GLOBAL) */}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="colored"
-        />
-        
-        
+        <CartProvider>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="colored"
+          />
 
+          {!hideLayout && <Header />}
 
-        {!hideLayout && <Header />}
+          <Routes>
+            {/* ===================== PUBLIC ONLY ===================== */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/loginfertilizer" element={<Loginfertilizer />} />
 
-        <Routes>
-          {/* Auth Routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/loginfertilizer" element={<Loginfertilizer />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-<Route path="/cart" element={<CartPage />} />
+            {/* ===================== PROTECTED UTILS ===================== */}
+            <Route
+              path="/access-denied"
+              element={
+                <ProtectedRoute>
+                  <AccessDenied />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/go"
+              element={
+                <ProtectedRoute>
+                  <RoleRedirect />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Home Route */}
-          <Route path="/home" element={<><HeroSection /><HowItWorks /><Benefits /></>} />
+            {/* ===================== PROTECTED (ANY LOGGED-IN USER) ===================== */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <HeroSection />
+                    <HowItWorks />
+                    <Benefits />
+                  </>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Marketplace */}
-          <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/support" element={<SupportPage />} />
-<Route path="/support/history" element={<SupportHistory />} />
+            <Route
+              path="/marketplace"
+              element={
+                <ProtectedRoute>
+                  <Marketplace />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* 🌿 FERTILIZER ROUTES */}
-          <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
-          <Route path="/fertilizers" element={<FertilizerList />} />
-          <Route path="/fertilizers/add" element={<AddFertilizer />} />
-          <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
-          <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
+            <Route
+              path="/fertilizers"
+              element={
+                <ProtectedRoute>
+                  <FertilizerList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fertilizers/recommend"
+              element={
+                <ProtectedRoute>
+                  <FertilizerRecommendation />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Farmer Routes */}
-          <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
-          <Route path="/farmer/add-product" element={<AddProduct />} />
-          <Route path="/farmer/my-products" element={<MyProducts />} />
-          <Route path="/edit-product/:id" element={<EditProductPage />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="/checkout" element={<CheckoutPage />} />
-<Route path="/order-confirmation" element={<OrderConfirmation />} />
-<Route path="/orders" element={<OrderHistory />} />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <CartPage />
+                </ProtectedRoute>
+              }
+            />
 
-<Route path="/admin" element={<AdminDashboard />} />
-<Route path="/admin/complaints" element={<AdminComplaints />} />
-<Route path="/admin/analysis" element={<AdminAnalysis />} />
-<Route path="/admin/settings" element={<AdminSettings />} />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
 
-<Route path="/farmer/add-product2" element={<AddProductPage />} />
+            <Route
+              path="/order-confirmation"
+              element={
+                <ProtectedRoute>
+                  <OrderConfirmation />
+                </ProtectedRoute>
+              }
+            />
 
-        </Routes>
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <OrderHistory />
+                </ProtectedRoute>
+              }
+            />
 
-        {!hideLayout && <Footer />}
-      </CartProvider>
+            {/* ===================== SUPPORT (BUYER + ADMIN ONLY) ===================== */}
+            <Route
+              path="/support"
+              element={
+                <ProtectedRoute allowedRoles={["BUYER", "ADMIN"]}>
+                  <SupportPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/support/history"
+              element={
+                <ProtectedRoute allowedRoles={["BUYER", "ADMIN"]}>
+                  <SupportHistory />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Contact Us now protected */}
+            <Route
+              path="/contact-us"
+              element={
+                <ProtectedRoute>
+                  <ContactUsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ===================== FARMER ONLY ===================== */}
+            <Route
+              path="/farmer/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <FarmerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/farmer/add-product"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <AddProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/farmer/add-product2"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <AddProductPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/farmer/my-products"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <MyProducts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-product/:id"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <EditProductPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ===================== FERTILIZER SUPPLIER ONLY ===================== */}
+            <Route
+              path="/fertilizer-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["FERTILIZERSUPPLIER"]}>
+                  <FertilizerSupplierDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fertilizers/add"
+              element={
+                <ProtectedRoute allowedRoles={["FERTILIZERSUPPLIER"]}>
+                  <AddFertilizer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fertilizers/edit/:id"
+              element={
+                <ProtectedRoute allowedRoles={["FERTILIZERSUPPLIER"]}>
+                  <UpdateFertilizer />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ===================== ADMIN ONLY ===================== */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/inquiries"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminInquiries />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/complaints"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminComplaints />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/analysis"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminAnalysis />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminSettings />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ===================== FALLBACK ===================== */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+
+          {!hideLayout && <Footer />}
+        </CartProvider>
       </NotificationProvider>
     </AuthProvider>
   );
