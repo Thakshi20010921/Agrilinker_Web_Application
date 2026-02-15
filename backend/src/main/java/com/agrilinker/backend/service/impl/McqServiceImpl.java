@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class McqServiceImpl implements McqService {
@@ -46,10 +47,10 @@ public class McqServiceImpl implements McqService {
         return questionRepo.findById(questionId).orElse(null);
     }
 
-    @Override
+    /*@Override
     public McqAnswer submitAnswer(McqAnswer answer) {
-        answer.setAnsweredAt(new Date());
-        answerRepo.save(answer);
+    answer.setAnsweredAt(new Date());
+    answerRepo.save(answer);
 
         // Update analysis counts in mcq_questions
         Query query = new Query(Criteria.where("_id").is(answer.getQuestionId()));
@@ -59,10 +60,45 @@ public class McqServiceImpl implements McqService {
         mongoTemplate.updateFirst(query, update, McqQuestion.class);
 
         return answer;
-    }
+    }*/
 
     @Override
     public McqQuestion getQuestionAnalysis(String questionId) {
         return questionRepo.findById(questionId).orElse(null);
     }
+
+        @Override
+public McqAnswer submitAnswer(McqAnswer answer) {
+
+    // Check if user already voted
+   Optional<McqAnswer> existing =
+        answerRepo.findByQuestionIdAndUserEmail(answer.getQuestionId(), answer.getUserEmail());
+
+    if (existing.isPresent()) {
+        throw new RuntimeException("You have already voted for this question");
+    }
+
+    answer.setAnsweredAt(new Date());
+    answerRepo.save(answer);
+
+    Query query = new Query(Criteria.where("_id").is(answer.getQuestionId()));
+
+    Update update = new Update()
+            .inc("totalVotes." + answer.getOptionSelected(), 1)
+            .inc("provinceWise." + answer.getProvince() + "." + answer.getOptionSelected(), 1);
+
+    mongoTemplate.updateFirst(query, update, McqQuestion.class);
+
+    return answer;
+}
+
+
+
+
+    @Override
+public Optional<McqAnswer> getAnswerByQuestionIdAndUserId(String questionId, String userEmail) {
+    return answerRepo.findByQuestionIdAndUserEmail(questionId, userEmail);
+}
+
+
 }
