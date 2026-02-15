@@ -85,5 +85,11 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getOrdersByUserEmail(String email) {
         return orderRepository.findByCustomerEmail(email);
     }
+//farmer
+    @Override
+public List<Order> getOrdersByFarmerEmail(String farmerEmail) {
+    return orderRepository.findOrdersByFarmerEmail(farmerEmail);
+}
+
 
 }
