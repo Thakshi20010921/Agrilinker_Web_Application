@@ -46,7 +46,7 @@ export default function Login() {
       const userId = res?.data?.id || res?.data?.userId || null;
 
       if (!token) throw new Error("Token not found in response");
-
+      console.log("FULL LOGIN RESPONSE:", res.data);
 
       loginUser(
         {
@@ -56,6 +56,13 @@ export default function Login() {
         },
         token,
       );
+
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("roles", JSON.stringify(["FARMER"]));
+      // Store email for dashboard
+      localStorage.setItem("email", userEmail);
+      // Trigger dashboard to refresh products
+      window.dispatchEvent(new Event("farmerChanged"));
 
       toast.success("Login successful 🎉");
 
