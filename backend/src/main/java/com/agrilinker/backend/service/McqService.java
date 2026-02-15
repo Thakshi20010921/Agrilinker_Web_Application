@@ -2,7 +2,8 @@ package com.agrilinker.backend.service;
 
 import com.agrilinker.backend.model.McqQuestion;
 import com.agrilinker.backend.model.McqAnswer;
-import java.util.List;
+
+import java.util.*;
 
 public interface McqService {
 
@@ -16,4 +17,7 @@ public interface McqService {
 
     // Optional: get analysis
     McqQuestion getQuestionAnalysis(String questionId);
+
+    //Optional<McqAnswer> getAnswerByQuestionIdAndUserId(String questionId, String userId);
+
 }
