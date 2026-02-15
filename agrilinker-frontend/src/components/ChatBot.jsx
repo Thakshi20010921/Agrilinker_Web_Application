@@ -70,7 +70,7 @@ const ChatBot = () => {
                                 <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2 text-green-700">
                                     <FiMessageSquare />
                                 </div>
-                                <p className="text-gray-400 text-sm italic">ASK!</p>
+                                <p className="text-gray-400 text-sm italic">we are here to help you!</p>
                             </div>
                         )}
                         
