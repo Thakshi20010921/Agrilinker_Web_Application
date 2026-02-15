@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public routes
                         .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/chat/**").permitAll() // ✅ මෙන්න මේක ඇඩ් කරා
                         .requestMatchers("/api/orders/**").permitAll()
                         .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/api/fertilizers/**").permitAll()

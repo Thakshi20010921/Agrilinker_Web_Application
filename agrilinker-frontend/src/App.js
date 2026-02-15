@@ -54,6 +54,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRedirect from "./components/RoleRedirect";
 import AccessDenied from "./pages/AccessDenied";
 
+//Chatbot
+import ChatBot from "./components/ChatBot";
+
 function App() {
   const location = useLocation();
 
@@ -332,7 +335,7 @@ function App() {
             {/* ===================== FALLBACK ===================== */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-
+          {!hideLayout && <ChatBot />}
           {!hideLayout && <Footer />}
         </CartProvider>
       </NotificationProvider>
