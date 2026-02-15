@@ -16,6 +16,10 @@ import java.util.Optional;
 import com.agrilinker.backend.notifications.NotificationSseService;
 import java.util.Map;
 
+import com.agrilinker.backend.repository.ProductRepository;
+import com.agrilinker.backend.model.Product;
+import com.agrilinker.backend.model.OrderItem;
+
 @Service
 @RequiredArgsConstructor
 
@@ -24,8 +28,25 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final NotificationSseService sse;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     @Override
+
     public Order createOrder(Order order) {
+
+        // ✅ ADD THIS BLOCK FIRST
+        for (OrderItem item : order.getItems()) {
+
+            // only fetch farmer if productId exists
+            if (item.getProductId() != null && !item.getProductId().isBlank()) {
+
+                Product product = productRepository.findById(item.getProductId())
+                        .orElseThrow(() -> new RuntimeException("Product not found"));
+
+                item.setfarmerEmail(product.getfarmerEmail());
+            }
+        }
 
         Order saved;
 
@@ -36,14 +57,12 @@ public class OrderServiceImpl implements OrderService {
                     saved = orderRepository.save(order);
                     break;
                 } catch (DuplicateKeyException e) {
-                    // collision, retry
                 }
             }
         } else {
             saved = orderRepository.save(order);
         }
 
-        // ✅ SEND REAL-TIME NOTIFICATION HERE
         sse.sendToUser(saved.getCustomer().getEmail(), Map.of(
                 "title", "Order Confirmed 🎉",
                 "message", "Order " + saved.getOrderNumber() + " placed successfully."));
