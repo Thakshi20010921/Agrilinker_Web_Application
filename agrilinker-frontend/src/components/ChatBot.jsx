@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { FiSend, FiMessageSquare, FiX, FiCpu } from 'react-icons/fi';
+import { FiSend, FiMessageSquare, FiX, FiCpu, FiInfo, FiLayers } from 'react-icons/fi';
 
 const ChatBot = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [mode, setMode] = useState(null); 
     const [message, setMessage] = useState("");
     const [chat, setChat] = useState([]);
     const [loading, setLoading] = useState(false);
     const chatEndRef = useRef(null);
 
-    // අලුත් මැසේජ් එකක් ආපු ගමන් පල්ලෙහාට scroll කරන්න
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chat]);
@@ -17,7 +17,6 @@ const ChatBot = () => {
     const handleSend = async () => {
         if (!message.trim()) return;
 
-        // User ගේ මැසේජ් එක UI එකට දානවා
         const userMsg = { role: 'user', text: message };
         setChat(prev => [...prev, userMsg]);
         setLoading(true);
@@ -25,13 +24,14 @@ const ChatBot = () => {
         setMessage("");
 
         try {
-            // Spring Boot Backend එකට Call එකක් යවනවා
-            const res = await axios.post("http://localhost:8081/api/chat/ask", { message: currentMsg });
+            const res = await axios.post("http://localhost:8081/api/chat/ask", { 
+                message: currentMsg,
+                mode: mode 
+            });
             
-            // AI එකේ Reply එක UI එකට දානවා
             setChat(prev => [...prev, { role: 'bot', text: res.data.reply }]);
         } catch (err) {
-            setChat(prev => [...prev, { role: 'bot', text: "සමාවෙන්න, සර්වර් එකත් එක්ක සම්බන්ධ වෙන්න බැහැ." }]);
+            setChat(prev => [...prev, { role: 'bot', text: "Sorry, I'm having trouble connecting to the server." }]);
             console.error(err);
         } finally {
             setLoading(false);
@@ -40,79 +40,119 @@ const ChatBot = () => {
 
     return (
         <div className="fixed bottom-6 right-6 z-50 font-sans">
-            {/* Chat එක ඇරීමට සහ වැසීමට ඇති Button එක */}
+            {/* Toggle Button - Green Theme */}
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="bg-green-700 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center"
+                className="bg-[#15803d] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center border-2 border-white"
             >
                 {isOpen ? <FiX size={28}/> : <FiMessageSquare size={28}/>}
             </button>
 
-            {/* Chat Window එක */}
+            {/* Main Chat Window */}
             {isOpen && (
-                <div className="absolute bottom-20 right-0 w-80 md:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col h-[500px] transition-all animate-in fade-in slide-in-from-bottom-4">
+                <div className="absolute bottom-20 right-0 w-85 md:w-96 bg-[#f0fdf4] rounded-3xl shadow-2xl border border-green-200 overflow-hidden flex flex-col h-[550px] transition-all animate-in fade-in slide-in-from-bottom-4">
                     
-                    {/* Header */}
-                    <div className="bg-green-700 p-4 text-white flex items-center gap-2 font-bold shadow-md">
-                        <div className="bg-white/20 p-2 rounded-lg">
-                            <FiCpu className="animate-pulse" />
+                    {/* Header - Using Solid Green */}
+                    <div className="bg-[#15803d] p-4 text-white flex items-center justify-between shadow-md">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-white/20 p-2 rounded-lg">
+                                <FiCpu className="text-white animate-pulse" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold">Agri-Link AI</p>
+                                <p className="text-[10px] text-green-100 opacity-80 uppercase tracking-wider font-semibold">
+                                    {mode ? mode.replace('_', ' ') : 'Select Mode'}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm">Agri-Link AI</p>
-                            <p className="text-[10px] font-light opacity-80">Online | Llama 3 Expert</p>
-                        </div>
+                        {mode && (
+                            <button onClick={() => {setMode(null); setChat([]);}} className="text-[10px] bg-white/20 text-white px-2 py-1 rounded hover:bg-white/30 transition-all">
+                                RESET
+                            </button>
+                        )}
                     </div>
 
-                    {/* Messages Area */}
-                    <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50/50">
-                        {chat.length === 0 && (
-                            <div className="text-center mt-10">
-                                <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2 text-green-700">
-                                    <FiMessageSquare />
-                                </div>
-                                <p className="text-gray-400 text-sm italic">we are here to help you!</p>
+                    {/* Content Area */}
+                    <div className="flex-grow overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-green-200">
+                        {!mode ? (
+                            /* --- OPTION CARDS --- */
+                            <div className="flex flex-col gap-4 justify-center h-full animate-in fade-in zoom-in duration-300">
+                                <p className="text-green-800 text-center text-sm mb-2 font-medium">Hello! How can I assist you today?</p>
+                                
+                                <button 
+                                    onClick={() => setMode('SYSTEM')}
+                                    className="p-5 bg-white border border-green-100 rounded-2xl hover:border-[#15803d] hover:shadow-md transition-all text-left group flex items-start gap-4"
+                                >
+                                    <div className="bg-green-50 p-3 rounded-xl group-hover:bg-[#15803d] group-hover:text-white transition-colors">
+                                        <FiInfo size={20} className="text-[#15803d] group-hover:text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-[#15803d] font-bold text-sm">Our Services</h4>
+                                        <p className="text-[11px] text-gray-500 mt-1">Learn about our app features, marketplace, and how it works.</p>
+                                    </div>
+                                </button>
+
+                                <button 
+                                    onClick={() => setMode('AGRICULTURE')}
+                                    className="p-5 bg-white border border-green-100 rounded-2xl hover:border-[#15803d] hover:shadow-md transition-all text-left group flex items-start gap-4"
+                                >
+                                    <div className="bg-green-50 p-3 rounded-xl group-hover:bg-[#15803d] group-hover:text-white transition-colors">
+                                        <FiLayers size={20} className="text-[#15803d] group-hover:text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-[#15803d] font-bold text-sm">Agriculture Expert</h4>
+                                        <p className="text-[11px] text-gray-500 mt-1">Get AI-powered solutions for farming and fertilizer issues.</p>
+                                    </div>
+                                </button>
                             </div>
+                        ) : (
+                            /* --- CHAT INTERFACE --- */
+                            <>
+                                {chat.length === 0 && (
+                                    <p className="text-center text-green-600 text-[11px] mt-4 uppercase tracking-widest font-semibold">Chat Started in {mode} Mode</p>
+                                )}
+                                {chat.map((msg, i) => (
+                                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[85%] p-3 rounded-2xl text-[13px] leading-relaxed shadow-sm ${
+                                            msg.role === 'user' 
+                                            ? 'bg-[#15803d] text-white rounded-tr-none font-medium' 
+                                            : 'bg-white text-gray-800 border border-green-100 rounded-tl-none'
+                                        }`}>
+                                            {msg.text}
+                                        </div>
+                                    </div>
+                                ))}
+                                {loading && (
+                                    <div className="flex justify-start">
+                                        <div className="bg-white text-green-600 p-3 rounded-2xl rounded-tl-none text-[11px] animate-pulse border border-green-100">
+                                            AI Expert is thinking...
+                                        </div>
+                                    </div>
+                                )}
+                                <div ref={chatEndRef} />
+                            </>
                         )}
-                        
-                        {chat.map((msg, i) => (
-                            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                                    msg.role === 'user' 
-                                    ? 'bg-green-600 text-white rounded-tr-none' 
-                                    : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
-                                }`}>
-                                    {msg.text}
-                                </div>
-                            </div>
-                        ))}
-                        
-                        {loading && (
-                            <div className="flex justify-start">
-                                <div className="bg-gray-200 text-gray-500 p-3 rounded-2xl rounded-tl-none text-xs animate-pulse">
-                                    AI thinking...
-                                </div>
-                            </div>
-                        )}
-                        <div ref={chatEndRef} />
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-4 bg-white border-t border-gray-100 flex gap-2 items-center">
-                        <input 
-                            value={message} 
-                            onChange={(e) => setMessage(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                            placeholder="Type your msh here"
-                            className="flex-grow p-3 bg-gray-100 border-none rounded-xl outline-none focus:ring-2 focus:ring-green-500 text-sm transition-all"
-                        />
-                        <button 
-                            onClick={handleSend} 
-                            disabled={!message.trim()}
-                            className="bg-green-700 text-white p-3 rounded-xl hover:bg-green-800 transition-colors disabled:opacity-50"
-                        >
-                            <FiSend size={20} />
-                        </button>
-                    </div>
+                    {mode && (
+                        <div className="p-4 bg-white border-t border-green-50 flex gap-2 items-center">
+                            <input 
+                                value={message} 
+                                onChange={(e) => setMessage(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                placeholder={`Ask about ${mode === 'SYSTEM' ? 'our services' : 'farming'}...`}
+                                className="flex-grow p-3 bg-green-50/50 border border-green-100 rounded-xl outline-none focus:border-[#15803d] text-gray-800 text-sm transition-all"
+                            />
+                            <button 
+                                onClick={handleSend} 
+                                disabled={!message.trim()}
+                                className="bg-[#15803d] text-white p-3 rounded-xl hover:bg-[#166534] transition-all disabled:opacity-30 shadow-md shadow-green-200"
+                            >
+                                <FiSend size={18} />
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
