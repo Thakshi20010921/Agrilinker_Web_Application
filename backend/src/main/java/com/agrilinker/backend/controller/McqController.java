@@ -4,13 +4,15 @@ import com.agrilinker.backend.model.McqQuestion;
 import com.agrilinker.backend.model.McqAnswer;
 import com.agrilinker.backend.service.McqService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/mcq")
-@CrossOrigin("*")
+//@CrossOrigin("*")
 public class McqController {
 
     @Autowired
@@ -35,4 +37,22 @@ public class McqController {
     public McqAnswer submitAnswer(@RequestBody McqAnswer answer) {
         return mcqService.submitAnswer(answer);
     }
+
+    /*  @PostMapping("/answers")
+public ResponseEntity<?> submitAnswer(@RequestBody McqAnswer answer) {
+    Optional<McqAnswer> existing = AnswerRepository.findByQuestionIdAndUserId(
+        answer.getQuestionId(),
+        answer.getUserId()
+    );
+
+    if(existing.isPresent()) {
+        return ResponseEntity
+                 .badRequest()
+                 .body("User has already voted for this question");
+    }
+
+    answerRepository.save(answer);
+    return ResponseEntity.ok("Vote submitted successfully");
+}*/
+   
 }
