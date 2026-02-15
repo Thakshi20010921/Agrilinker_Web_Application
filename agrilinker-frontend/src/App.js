@@ -32,6 +32,9 @@ import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 import MyProducts from "./components/farmer/MyProducts";
 import EditProductPage from "./components/farmer/EditProductPage";
+import FarmerHub from "./components/farmer/FarmerHub";
+import FarmerOrders from "./components/farmer/FarmerOrders";
+import InquiryList from "./components/farmer/FarmerInquiryPage/InquiryList";
 
 import SupportPage from "./pages/support/SupportPage";
 import SupportHistory from "./pages/support/SupportHistory";
@@ -47,7 +50,6 @@ import AdminSettings from "./pages/admin/AdminSettings";
 
 import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 
-
 function App() {
   const location = useLocation();
 
@@ -61,69 +63,86 @@ function App() {
   return (
     <AuthProvider>
       <NotificationProvider>
-      <CartProvider>
-        {/* ✅ Toast system (GLOBAL) */}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="colored"
-        />
-        
-        
+        <CartProvider>
+          {/* ✅ Toast system (GLOBAL) */}
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="colored"
+          />
 
+          {!hideLayout && <Header />}
 
-        {!hideLayout && <Header />}
+          <Routes>
+            {/* Auth Routes */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/loginfertilizer" element={<Loginfertilizer />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/cart" element={<CartPage />} />
 
-        <Routes>
-          {/* Auth Routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/loginfertilizer" element={<Loginfertilizer />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-<Route path="/cart" element={<CartPage />} />
+            {/* Home Route */}
+            <Route
+              path="/home"
+              element={
+                <>
+                  <HeroSection />
+                  <HowItWorks />
+                  <Benefits />
+                </>
+              }
+            />
 
-          {/* Home Route */}
-          <Route path="/home" element={<><HeroSection /><HowItWorks /><Benefits /></>} />
-
-          {/* Marketplace */}
-          <Route path="/marketplace" element={<Marketplace />} />
+            {/* Marketplace */}
+            <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/support" element={<SupportPage />} />
-<Route path="/support/history" element={<SupportHistory />} />
+            <Route path="/support/history" element={<SupportHistory />} />
 
-          {/* 🌿 FERTILIZER ROUTES */}
-          <Route path="/fertilizer-dashboard" element={<FertilizerSupplierDashboard />} />
-          <Route path="/fertilizers" element={<FertilizerList />} />
-          <Route path="/fertilizers/add" element={<AddFertilizer />} />
-          <Route path="/fertilizers/edit/:id" element={<UpdateFertilizer />} />
-          <Route path="/fertilizers/recommend" element={<FertilizerRecommendation />} />
+            {/* 🌿 FERTILIZER ROUTES */}
+            <Route
+              path="/fertilizer-dashboard"
+              element={<FertilizerSupplierDashboard />}
+            />
+            <Route path="/fertilizers" element={<FertilizerList />} />
+            <Route path="/fertilizers/add" element={<AddFertilizer />} />
+            <Route
+              path="/fertilizers/edit/:id"
+              element={<UpdateFertilizer />}
+            />
+            <Route
+              path="/fertilizers/recommend"
+              element={<FertilizerRecommendation />}
+            />
 
-          {/* Farmer Routes */}
-          <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
-          <Route path="/farmer/add-product" element={<AddProduct />} />
-          <Route path="/farmer/my-products" element={<MyProducts />} />
-          <Route path="/edit-product/:id" element={<EditProductPage />} />
+            {/* Farmer Routes */}
+            <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+            <Route path="/farmer/add-product" element={<AddProduct />} />
+            <Route path="/farmer/my-products" element={<MyProducts />} />
+            <Route path="/edit-product/:id" element={<EditProductPage />} />
+            <Route path="/farmer/FarmerHub" element={<FarmerHub />} />
+            <Route path="/farmer/orders" element={<FarmerOrders />} />
+            <Route path="/farmer/inquiries" element={<InquiryList />} />
 
-          <Route path="/checkout" element={<CheckoutPage />} />
-<Route path="/order-confirmation" element={<OrderConfirmation />} />
-<Route path="/orders" element={<OrderHistory />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/orders" element={<OrderHistory />} />
 
-<Route path="/admin" element={<AdminDashboard />} />
-<Route path="/admin/complaints" element={<AdminComplaints />} />
-<Route path="/admin/analysis" element={<AdminAnalysis />} />
-<Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/complaints" element={<AdminComplaints />} />
+            <Route path="/admin/analysis" element={<AdminAnalysis />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
 
-<Route path="/farmer/add-product2" element={<AddProductPage />} />
+            <Route path="/farmer/add-product2" element={<AddProductPage />} />
+          </Routes>
 
-        </Routes>
-
-        {!hideLayout && <Footer />}
-      </CartProvider>
+          {!hideLayout && <Footer />}
+        </CartProvider>
       </NotificationProvider>
     </AuthProvider>
   );
