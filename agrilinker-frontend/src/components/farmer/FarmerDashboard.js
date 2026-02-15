@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom"; // Import this for navigation
 
 const FarmerDashboard = () => {
   const [products, setProducts] = useState([]);
-  const farmerEmail = localStorage.getItem("email"); // or use stored farmerEmail
+  //const farmerEmail = localStorage.getItem("email"); // or use stored farmerEmail
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const [farmerEmail, setFarmerEmail] = useState(localStorage.getItem("email"));
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(
@@ -21,7 +23,66 @@ const FarmerDashboard = () => {
     };
 
     fetchProducts();
-  }, [farmerEmail]);
+  }, [farmerEmail]);*/
+
+  /*useEffect(() => {
+    const fetchProducts = async () => {
+      if (!farmerEmail) return;
+      try {
+        const res = await axios.get(
+          `http://localhost:8081/api/products/farmer/${farmerEmail}`,
+        );
+        setProducts(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProducts();
+  }, [farmerEmail]); // now useEffect re-runs when farmerEmail changes*/
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const email = localStorage.getItem("email"); // always latest
+      if (!email) return;
+
+      try {
+        const res = await axios.get(
+          `http://localhost:8081/api/products/farmer/${email}`,
+        );
+        setProducts(res.data);
+        setFarmerEmail(email); // update state if needed
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProducts(); // initial fetch
+
+    // Listen for login changes
+    window.addEventListener("farmerChanged", fetchProducts);
+    return () => window.removeEventListener("farmerChanged", fetchProducts);
+  }, []);
+
+  /*useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:8081/api/products/my-products", // new endpoint
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // send the JWT
+            },
+          },
+        );
+        setProducts(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProducts();
+  }, [token]); // run when token changes*/
 
   return (
     <div className="relative min-h-screen bg-slate-50 p-8">
