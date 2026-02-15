@@ -96,7 +96,7 @@ public McqAnswer submitAnswer(McqAnswer answer) {
 
 
     @Override
-public Optional<McqAnswer> getAnswerByQuestionIdAndUserId(String questionId, String userEmail) {
+public Optional<McqAnswer> getAnswerByQuestionIdAndUserEmail(String questionId, String userEmail) {
     return answerRepo.findByQuestionIdAndUserEmail(questionId, userEmail);
 }
 
