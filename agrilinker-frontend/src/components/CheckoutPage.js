@@ -7,7 +7,7 @@ import PremiumPaymentModal from "../components/PremiumPaymentModal";
 const CheckoutPage = () => {
   const { cart, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
-const user = JSON.parse(localStorage.getItem("user") || "null");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const [form, setForm] = useState({
     name: "",
@@ -26,7 +26,7 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
   const totalAmount = useMemo(() => {
     return cart.reduce(
       (sum, item) => sum + (Number(item.price) || 0) * (item.quantity || 1),
-      0
+      0,
     );
   }, [cart]);
 
@@ -39,7 +39,9 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
     const itemType =
       item.type ||
       item.itemType ||
-      (item.fertilizerId || item.type === "fertilizer" ? "FERTILIZER" : "PRODUCT");
+      (item.fertilizerId || item.type === "fertilizer"
+        ? "FERTILIZER"
+        : "PRODUCT");
 
     return {
       itemId,
@@ -69,23 +71,25 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
     const missing = normalizedItems.find((x) => !x.itemId);
 
     if (missing) {
-      alert("Checkout error: Some cart items are missing an ID (product/fertilizer).");
+      alert(
+        "Checkout error: Some cart items are missing an ID (product/fertilizer).",
+      );
       return;
     }
 
     setLoading(true);
 
-   const orderData = {
-  customer: {
-    ...form,
-    email: user?.email || form.email, // ✅ email stored where backend expects
-  },
-  items: normalizedItems,
-  totalAmount,
-  paymentMethod,
-  paymentStatus: payStatus,
-  orderDate: new Date().toISOString(),
-};
+    const orderData = {
+      customer: {
+        ...form,
+        email: user?.email || form.email, // ✅ email stored where backend expects
+      },
+      items: normalizedItems,
+      totalAmount,
+      paymentMethod,
+      paymentStatus: payStatus,
+      orderDate: new Date().toISOString(),
+    };
 
     try {
       // ✅ Create order
@@ -96,7 +100,7 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
         cart
           .map((i) => i.cartItemId)
           .filter(Boolean)
-          .map((id) => api.delete(`/cart/${id}`))
+          .map((id) => api.delete(`/cart/${id}`)),
       );
 
       // ✅ Clear frontend cart
@@ -104,7 +108,9 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
 
       // ✅ Close modal + redirect
       setIsModalOpen(false);
-      navigate("/order-confirmation", { state: { order: res.data || orderData } });
+      navigate("/order-confirmation", {
+        state: { order: res.data || orderData },
+      });
     } catch (error) {
       console.error(error);
       alert("Error: Could not place order. Check backend connection/logs.");
@@ -230,12 +236,21 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
 
               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                 {cart.map((item, idx) => {
-                  const key = item.cartItemId || item.productId || item.fertilizerId || item.id || item._id || idx;
+                  const key =
+                    item.cartItemId ||
+                    item.productId ||
+                    item.fertilizerId ||
+                    item.id ||
+                    item._id ||
+                    idx;
                   const qty = item.quantity || 1;
                   const price = Number(item.price) || 0;
 
                   return (
-                    <div key={key} className="flex justify-between items-center">
+                    <div
+                      key={key}
+                      className="flex justify-between items-center"
+                    >
                       <div>
                         <p className="font-bold text-gray-800">{item.name}</p>
                         <p className="text-sm text-gray-500">Qty: {qty}</p>
