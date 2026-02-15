@@ -55,6 +55,7 @@ public class SecurityConfig {
                         // inquiry
                         .requestMatchers("/api/inquiries/**").permitAll()
                         .requestMatchers("/api/users/by-email").permitAll()
+                        .requestMatchers("/api/mcq/**").permitAll()
 
                         // Admin routes
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
