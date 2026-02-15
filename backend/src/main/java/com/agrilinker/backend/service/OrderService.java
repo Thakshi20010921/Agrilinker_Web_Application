@@ -16,4 +16,8 @@ public interface OrderService {
     Order updateOrder(String id, Order order);
 
     void deleteOrder(String id);
+
+    //farmer
+    List<Order> getOrdersByFarmerEmail(String farmerEmail);
+
 }
