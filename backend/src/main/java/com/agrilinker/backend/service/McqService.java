@@ -18,6 +18,7 @@ public interface McqService {
     // Optional: get analysis
     McqQuestion getQuestionAnalysis(String questionId);
 
-    //Optional<McqAnswer> getAnswerByQuestionIdAndUserId(String questionId, String userId);
+// methana comite neni 
+    Optional<McqAnswer> getAnswerByQuestionIdAndUserEmail(String questionId, String UserEmail);
 
-}
+} 
