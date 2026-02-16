@@ -1,4 +1,4 @@
-// ✅ FULL src/App.js (ONLY /, /login, /register, /loginfertilizer are public)
+// ✅ FULL src/App.js (/, /landing, /login, /register, /loginfertilizer are public)
 import React from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -17,6 +17,7 @@ import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierD
 import CropAdvisor from "./components/Advisor/CropAdvisor";
 
 import Landing from "./pages/Landing";
+import IntroHome from "./pages/IntroHome"; // ✅ NEW (Intro first page)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Loginfertilizer from "./pages/Loginfertilizer";
@@ -63,9 +64,10 @@ import ChatBot from "./components/ChatBot";
 function App() {
   const location = useLocation();
 
-  // ✅ hide layout on public auth pages
+  // ✅ hide layout on public pages (intro + landing + auth)
   const hideLayout =
     location.pathname === "/" ||
+    location.pathname === "/landing" || // ✅ NEW (Landing is public and layout hidden)
     location.pathname === "/login" ||
     location.pathname === "/register" ||
     location.pathname === "/loginfertilizer";
@@ -89,7 +91,8 @@ function App() {
 
           <Routes>
             {/* ===================== PUBLIC ONLY ===================== */}
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={<IntroHome />} /> {/* ✅ Intro page first */}
+            <Route path="/landing" element={<Landing />} /> {/* ✅ then your Landing */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/loginfertilizer" element={<Loginfertilizer />} />
@@ -143,7 +146,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/crop-advisor" element={<CropAdvisor />} />
+
+            <Route
+              path="/crop-advisor"
+              element={
+                <ProtectedRoute>
+                  <CropAdvisor />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/profile"
@@ -208,7 +219,6 @@ function App() {
               }
             />
 
-            {/* Contact Us now protected */}
             <Route
               path="/contact-us"
               element={
@@ -259,9 +269,30 @@ function App() {
                 </ProtectedRoute>
               }
             />
-             <Route path="/farmer/FarmerHub" element={<FarmerHub />} />
-            <Route path="/farmer/orders" element={<FarmerOrders />} />
-            <Route path="/farmer/inquiries" element={<InquiryList />} />
+            <Route
+              path="/farmer/FarmerHub"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <FarmerHub />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/farmer/orders"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <FarmerOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/farmer/inquiries"
+              element={
+                <ProtectedRoute allowedRoles={["FARMER"]}>
+                  <InquiryList />
+                </ProtectedRoute>
+              }
+            />
 
             {/* ===================== FERTILIZER SUPPLIER ONLY ===================== */}
             <Route
@@ -334,6 +365,7 @@ function App() {
             {/* ===================== FALLBACK ===================== */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+
           {!hideLayout && <ChatBot />}
           {!hideLayout && <Footer />}
         </CartProvider>
