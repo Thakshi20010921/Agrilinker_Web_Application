@@ -60,8 +60,10 @@ export default function Login() {
         token
       );
 
-      toast.success("Login successful 🎉");
+      
+localStorage.setItem("email", userEmail); 
 
+toast.success("Login successful 🎉");
       // ✅ if roles are not any of these => block
       if (!hasAnyAllowedRole(roles)) {
         toast.error("Access denied");
