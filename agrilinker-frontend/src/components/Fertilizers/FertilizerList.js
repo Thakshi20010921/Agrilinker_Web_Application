@@ -155,12 +155,13 @@ export default function FertilizerList() {
         {/* Action Buttons */}
         <div className="mb-10 flex flex-wrap gap-4">
           <FertilizerButton />
-          <Link
-            to="/fertilizers/recommend"
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-xl hover:shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-95"
-          >
-            Get Smart Recommendation <FiArrowRight />
-          </Link>
+          <Link 
+  to="/crop-advisor" 
+  className="text-sm font-bold text-emerald-700 hover:text-emerald-900 transition-all flex items-center gap-2 mt-4 decoration-emerald-200 underline-offset-4 hover:underline"
+>
+  <span className="bg-emerald-100 p-1 rounded-md">✨</span> 
+  Get Fertilizer Recommendations
+</Link>
         </div>
 
         {/* Fertilizer Grid */}
