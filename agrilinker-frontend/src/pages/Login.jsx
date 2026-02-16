@@ -62,15 +62,10 @@ export default function Login() {
         token
       );
 
-      localStorage.setItem("userId", userId);
-      localStorage.setItem("roles", JSON.stringify(["FARMER"]));
-      // Store email for dashboard
-      localStorage.setItem("email", userEmail);
-      // Trigger dashboard to refresh products
-      window.dispatchEvent(new Event("farmerChanged"));
+      
+localStorage.setItem("email", userEmail); 
 
-      toast.success("Login successful 🎉");
-
+toast.success("Login successful 🎉");
       // ✅ if roles are not any of these => block
       if (!hasAnyAllowedRole(roles)) {
         toast.error("Access denied");

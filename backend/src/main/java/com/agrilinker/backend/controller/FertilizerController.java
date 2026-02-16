@@ -127,10 +127,10 @@ public class FertilizerController {
     // ✅ GET ALL FERTILIZERS (For Marketplace)
     // ======================================================
     @GetMapping
-    public ResponseEntity<List<Fertilizer>> getAllFertilizers() {
-        return ResponseEntity.ok(
-                fertilizerService.getAllFertilizers());
-    }
+public ResponseEntity<List<Fertilizer>> getAllFertilizers(@RequestParam(required = false) String email) {
+    // email එක ආවොත් ඒක service එකට යවනවා, නැත්නම් null යවනවා
+    return ResponseEntity.ok(fertilizerService.getAllFertilizersForUser(email));
+}
 
     // ======================================================
     // ✅ GET FERTILIZER BY ID

@@ -28,14 +28,29 @@ export default function FertilizerList() {
 
   // ===== Fetch fertilizers =====
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/fertilizers")
-      .then((res) => {
-        setFertilizers(res.data || []);
-        setFilteredFertilizers(res.data || []);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+    const userEmail = localStorage.getItem("email"); 
+    
+    // මේ log එකෙන් බලාගන්න පුළුවන් email එක ඇත්තටම එනවද කියලා
+    console.log("Current Logged-in Email:", userEmail); 
+
+    if (userEmail) {
+        axios
+          .get(`http://localhost:8081/api/fertilizers?email=${userEmail}`)
+          .then((res) => {
+            setFertilizers(res.data || []);
+            setFilteredFertilizers(res.data || []);
+          })
+          .catch((err) => console.error("API Error:", err));
+    } else {
+        // Email එක නැතිනම් සාමාන්‍ය විදිහට call කරන්න (එතකොට 10% වැඩි මිල පේයි)
+        axios.get(`http://localhost:8081/api/fertilizers`)
+          .then((res) => {
+            setFertilizers(res.data || []);
+            setFilteredFertilizers(res.data || []);
+          })
+          .catch((err) => console.error(err));
+    }
+}, []);
 
   // ===== Highlight search match =====
   const highlightMatch = (text) => {
@@ -50,7 +65,7 @@ export default function FertilizerList() {
     addToCart({
       id: f.id || f._id,
       name: f.name,
-      price: Number(f.price || 0),
+      price: Number(f.displayPrice || 0),
       unit: f.unit || "unit",
       imageUrl: f.imageUrl || "https://via.placeholder.com/300x200",
       type: "fertilizer",
@@ -228,7 +243,7 @@ export default function FertilizerList() {
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black text-gray-400 uppercase">Unit Price</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-black text-green-700">Rs. {f.price}</span>
+                            <span className="text-3xl font-black text-green-700">Rs. {f.displayPrice}</span>
                             <span className="text-xs text-gray-400 font-bold">/ {f.unit}</span>
                         </div>
                     </div>
