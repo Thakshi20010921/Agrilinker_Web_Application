@@ -2,7 +2,7 @@ package com.agrilinker.backend.controller;
 
 import com.agrilinker.backend.model.Fertilizer;
 import com.agrilinker.backend.service.FertilizerService;
-import com.agrilinker.backend.dto.FertilizerRecommendationRequest;
+//import com.agrilinker.backend.dto.RecommendationRequest;
 import com.agrilinker.backend.dto.FertilizerRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,7 +156,7 @@ public class FertilizerController {
     // ======================================================
     // ✅ FERTILIZER RECOMMENDATION
     // ======================================================
-    @PostMapping("/recommend")
+    /*@PostMapping("/recommend")
     public ResponseEntity<String> recommendFertilizer(
             @Valid @RequestBody FertilizerRecommendationRequest request) {
 
@@ -166,9 +166,9 @@ public class FertilizerController {
                 request.getGrowthStage());
 
         return ResponseEntity.ok(recommendation);
-    }
+    }*/
 
-    private String getRecommendation(String crop, String soil, String stage) {
+  /*   private String getRecommendation(String crop, String soil, String stage) {
         if (crop.equalsIgnoreCase("Rice") && soil.equalsIgnoreCase("Clay")) {
             return "Recommended Fertilizers: Urea + Potash";
         } else if (crop.equalsIgnoreCase("Tea") && soil.equalsIgnoreCase("Loamy")) {
@@ -180,5 +180,5 @@ public class FertilizerController {
         } else {
             return "No specific recommendation found. Consult agronomist.";
         }
-    }
+    }*/
 }
