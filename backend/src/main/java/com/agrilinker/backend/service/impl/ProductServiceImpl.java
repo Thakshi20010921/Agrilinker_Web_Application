@@ -67,4 +67,21 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getProductsByFarmer(String farmerEmail) {
     return productRepository.findByFarmerEmail(farmerEmail);
 }
+
+    @Override
+    public void reduceProductQuantity(String productId, int quantity) {
+
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        int currentQty = product.getQuantity();
+
+        if (currentQty < quantity) {
+            throw new RuntimeException("Not enough stock");
+        }
+
+        product.setQuantity(currentQty - quantity);
+
+        productRepository.save(product);
+    }
 }
