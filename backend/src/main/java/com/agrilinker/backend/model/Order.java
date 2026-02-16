@@ -22,6 +22,10 @@ public class Order {
     private String paymentMethod;
     private Date orderDate = new Date();
     private String farmerEmail;
+    //new
+    private String status;
+    private String paymentStatus;
+
 
     public Order() {
     }
@@ -89,5 +93,23 @@ public class Order {
     public void setfarmerEmail(String farmerEmail) {
         this.farmerEmail = farmerEmail;
     }
+
+    //new
+    public String getStatus() {
+    return status;
+}
+
+public void setStatus(String status) {
+    this.status = status;
+}
+
+public String getPaymentStatus() {
+    return paymentStatus;
+}
+
+public void setPaymentStatus(String paymentStatus) {
+    this.paymentStatus = paymentStatus;
+}
+
 
 }
