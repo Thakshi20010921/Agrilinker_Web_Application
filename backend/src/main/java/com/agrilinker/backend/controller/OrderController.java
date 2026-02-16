@@ -1,5 +1,6 @@
 package com.agrilinker.backend.controller;
 
+import com.agrilinker.backend.model.FarmerStatsDTO;
 import com.agrilinker.backend.model.Order;
 import com.agrilinker.backend.service.InvoiceService;
 import com.agrilinker.backend.service.OrderService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import com.agrilinker.backend.repository.OrderRepository;
 import com.agrilinker.backend.security.JwtAuthenticationFilter;
@@ -17,6 +19,10 @@ import com.agrilinker.backend.security.*;
 
 
 import org.springframework.security.core.AuthenticationException;
+//new
+import java.util.Map;
+
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -93,6 +99,65 @@ public ResponseEntity<List<Order>> getFarmerOrders(Principal principal) {
 
     return ResponseEntity.ok(orders);
 }
+
+    @GetMapping("/farmer/{email}")
+    public ResponseEntity<List<Order>> getFarmerOrdersByEmail(@PathVariable String email) {
+    List<Order> orders = orderService.getOrdersByFarmerEmail(email);
+    return ResponseEntity.ok(orders);
+}
+
+     //new
+     @GetMapping("/sales-history/{email}")
+       public ResponseEntity<List<Map<String, Object>>>getSalesHistory(
+        @PathVariable String email,
+        @RequestParam(required = false) Integer year,
+        @RequestParam(required = false) Integer month) {
+
+    // 1. මුලින්ම එම ගොවියාගේ COMPLETED ඕඩර්ස් ඔක්කොම ගන්නවා
+    List<Order> orders = orderRepository.findCompletedOrdersByFarmerEmail(email);
+
+    // 2. Year සහ Month අනුව Filter කරනවා
+    List<Order> filteredOrders = orders.stream().filter(order -> {
+        boolean matchesYear = (year == null) || (order.getOrderDate().getYear() + 1900 == year);
+        boolean matchesMonth = (month == null) || (order.getOrderDate().getMonth() + 1 == month);
+        return matchesYear && matchesMonth;
+    }).toList();
+
+    // 3. Flat map items to a Map (no DTO)
+    List<Map<String, Object>> report = filteredOrders.stream()
+            .flatMap(order -> order.getItems().stream()
+                    .map(item -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("orderNumber", order.getOrderNumber());
+                        map.put("orderDate", order.getOrderDate());
+                        map.put("product", item.getName());
+                        map.put("quantity", item.getQuantity());
+                        map.put("amount", item.getPrice() * item.getQuantity());
+                        map.put("paymentMethod", order.getPaymentMethod());
+                        map.put("status", order.getStatus());
+                        return map;
+                    })
+            )
+            .toList();
+
+
+    
+
+    return ResponseEntity.ok(report);
+
+    }
+
+
+
+    @GetMapping("/farmer-stats/{email}")
+    public ResponseEntity<FarmerStatsDTO> getStats(@PathVariable String email) {
+    return ResponseEntity.ok(orderService.getFarmerStats(email));
+} 
+ @GetMapping("/farmer/payment-breakdown/{email}")
+public ResponseEntity<Map<String, Double>> getPaymentBreakdown(@PathVariable String email) {
+    return ResponseEntity.ok(orderService.getPaymentBreakdown(email));
+}
+
 
 
 
