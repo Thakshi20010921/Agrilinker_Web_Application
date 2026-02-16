@@ -16,6 +16,9 @@ public interface ProductService {
     void deleteProduct(String id);
 
     List<Product> getProductsByFarmer(String farmerEmail);
+    //new 
+    void reduceProductQuantity(String productId, int quantity);
+
 
    
 }
