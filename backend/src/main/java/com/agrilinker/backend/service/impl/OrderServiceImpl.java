@@ -1,8 +1,10 @@
 package com.agrilinker.backend.service.impl;
 
+import com.agrilinker.backend.model.FarmerStatsDTO;
 import com.agrilinker.backend.model.Order;
 import com.agrilinker.backend.repository.OrderRepository;
 import com.agrilinker.backend.service.OrderService;
+import com.agrilinker.backend.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.agrilinker.backend.util.OrderNumberGenerator;
 import org.springframework.dao.DuplicateKeyException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import com.agrilinker.backend.notifications.NotificationSseService;
@@ -19,6 +22,7 @@ import java.util.Map;
 import com.agrilinker.backend.repository.ProductRepository;
 import com.agrilinker.backend.model.Product;
 import com.agrilinker.backend.model.OrderItem;
+import com.agrilinker.backend.service.ProductService;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final NotificationSseService sse;
+    //
+    private final ProductService productService;
+
 
     @Autowired
     private ProductRepository productRepository;
@@ -34,6 +41,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
 
     public Order createOrder(Order order) {
+                
+if (order.getStatus() == null) {
+        order.setStatus("PENDING");
+    }
+       
 
         // ✅ ADD THIS BLOCK FIRST
         for (OrderItem item : order.getItems()) {
@@ -45,6 +57,8 @@ public class OrderServiceImpl implements OrderService {
                         .orElseThrow(() -> new RuntimeException("Product not found"));
 
                 item.setfarmerEmail(product.getfarmerEmail());
+                
+
             }
         }
 
@@ -85,11 +99,26 @@ public class OrderServiceImpl implements OrderService {
     public Order updateOrder(String id, Order order) {
         Order existingOrder = getOrderById(id);
         if (existingOrder != null) {
+            //new
+            if ("ACCEPTED".equalsIgnoreCase(order.getStatus()) &&
+            !"ACCEPTED".equalsIgnoreCase(existingOrder.getStatus())) {
+
+            for (OrderItem item : existingOrder.getItems()) {
+
+                productService.reduceProductQuantity(
+                    item.getProductId(),
+                    item.getQuantity()
+                );
+            }
+        }
             existingOrder.setCustomer(order.getCustomer());
             existingOrder.setItems(order.getItems());
             existingOrder.setTotalAmount(order.getTotalAmount());
             existingOrder.setPaymentMethod(order.getPaymentMethod());
             existingOrder.setOrderDate(order.getOrderDate());
+            //new
+            existingOrder.setStatus(order.getStatus());
+            existingOrder.setPaymentStatus(order.getPaymentStatus());
             return orderRepository.save(existingOrder);
         }
         return null;
@@ -104,11 +133,110 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getOrdersByUserEmail(String email) {
         return orderRepository.findByCustomerEmail(email);
     }
-//farmer
+    //farmer
     @Override
-public List<Order> getOrdersByFarmerEmail(String farmerEmail) {
-    return orderRepository.findOrdersByFarmerEmail(farmerEmail);
+    public List<Order> getOrdersByFarmerEmail(String farmerEmail) {
+    return orderRepository.findByFarmerEmail(farmerEmail);
 }
+
+    @Override
+    public FarmerStatsDTO getFarmerStats(String farmerEmail) {
+    // Farmer ge analisis states 
+    List<Order> farmerOrders = orderRepository.findByFarmerEmail(farmerEmail);
+
+    double totalSales = 0;
+    long completedOrdersCount = 0;
+    int totalProductsSold = 0;
+    double pendingPayments = 0;
+
+    for (Order order : farmerOrders) {
+        double farmerOrderSubtotal = 0;
+        int farmerItemCount = 0;
+
+        // Order එකේ තියෙන items වලින් මේ farmer ට අයිති ඒවා විතරක් filter කරනවා
+        for (OrderItem item : order.getItems()) {
+            if (farmerEmail.equals(item.getfarmerEmail())) {
+                double itemTotal = item.getPrice() * item.getQuantity();
+                farmerOrderSubtotal += itemTotal;
+                farmerItemCount += item.getQuantity();
+            }
+        }
+
+        // Calculation Logic
+        if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
+            totalSales += farmerOrderSubtotal;
+            completedOrdersCount++;
+            totalProductsSold += farmerItemCount;
+        } else if ("PENDING".equalsIgnoreCase(order.getStatus())) {
+            pendingPayments += farmerOrderSubtotal;
+        }
+    }
+
+    // Average Order Value (AOV)
+    double averageOrderValue = (completedOrdersCount > 0) ? totalSales / completedOrdersCount : 0;
+
+    return new FarmerStatsDTO(
+            totalSales, 
+            completedOrdersCount, 
+            averageOrderValue, 
+            totalProductsSold, 
+            pendingPayments
+    );
+}
+
+{/*@Override
+public List<Map<String,Object>> getPaymentBreakdown(String farmerEmail) {
+
+    List<Order> orders = orderRepository.findByFarmerEmail(farmerEmail);
+
+    double paid = 0;
+    double pending = 0;
+
+    for (Order order : orders) {
+
+        double total = order.getItems().stream()
+                .filter(item -> farmerEmail.equals(item.getfarmerEmail()))
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+
+        if ("PAID".equalsIgnoreCase(order.getPaymentStatus()))
+            paid += total;
+        else
+            pending += total;
+    }
+
+    return List.of(
+            Map.of("name","PAID","value",paid),
+            Map.of("name","PENDING","value",pending)
+    );
+}*/}
+Override
+    public Map<String, Double> getPaymentBreakdown(String farmerEmail) {
+        List<Order> orders = orderRepository.findByFarmerEmail(farmerEmail);
+        
+        double paid = 0;
+        double pending = 0;
+
+        for (Order order : orders) {
+            for (OrderItem item : order.getItems()) {
+                if (farmerEmail.equals(item.getfarmerEmail())) {
+                    double itemTotal = item.getPrice() * item.getQuantity();
+                    if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
+                        paid += itemTotal;
+                    } else if ("PENDING".equalsIgnoreCase(order.getStatus())) {
+                        pending += itemTotal;
+                    }
+                }
+            }
+        }
+
+        Map<String, Double> result = new HashMap<>();
+        result.put("PAID", paid);
+        result.put("PENDING", pending);
+        return result;
+    }
+
+
 
 
 }

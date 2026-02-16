@@ -16,6 +16,13 @@ public interface OrderRepository extends MongoRepository<Order, String> {
 
     //farmer 
     @Query("{ 'items.farmerEmail': ?0 }")
-List<Order> findOrdersByFarmerEmail(String farmerEmail);
+    List<Order> findByFarmerEmail(String email);
+
+    // to get farmerrrr email that oder is completed 
+    @Query("{ 'items.farmerEmail': ?0, 'status': 'COMPLETED' }")
+    List<Order> findCompletedOrdersByFarmerEmail(String email);
+    
+   
+
 
 }
