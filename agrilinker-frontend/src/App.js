@@ -14,7 +14,7 @@ import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierDashboard";
-import FertilizerRecommendation from "./components/Fertilizers/FertilizerRecommendation";
+import CropAdvisor from "./components/Advisor/CropAdvisor";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -140,14 +140,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/fertilizers/recommend"
-              element={
-                <ProtectedRoute>
-                  <FertilizerRecommendation />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/crop-advisor" element={<CropAdvisor />} />
 
             <Route
               path="/profile"

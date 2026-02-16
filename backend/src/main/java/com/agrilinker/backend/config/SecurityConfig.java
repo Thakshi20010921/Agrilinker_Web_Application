@@ -65,6 +65,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/buyer/**").hasRole("BUYER")
                         .requestMatchers("/api/fertilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
 
+                        // ✅ Crop Advisor සඳහා අවසර ලබා දීම
+.requestMatchers("/api/advisor/**").permitAll()
+
                         // All other requests need authentication
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
