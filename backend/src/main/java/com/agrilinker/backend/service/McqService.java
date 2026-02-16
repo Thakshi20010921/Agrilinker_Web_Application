@@ -18,6 +18,6 @@ public interface McqService {
     // Optional: get analysis
     McqQuestion getQuestionAnalysis(String questionId);
 
-    //Optional<McqAnswer> getAnswerByQuestionIdAndUserId(String questionId, String userId);
+    Optional<McqAnswer> getAnswerByQuestionIdAndUserId(String questionId, String userId);
 
 }

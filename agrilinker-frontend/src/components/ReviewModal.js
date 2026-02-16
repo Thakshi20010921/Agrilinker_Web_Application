@@ -41,10 +41,15 @@ const ReviewModal = ({ item, type = "auto", userId, onClose, onSubmitted }) => {
 
     // ✅ Use real user id/email (you store email in localStorage)
     const uid =
-      userId ||
-      localStorage.getItem("userId") ||
-      localStorage.getItem("email") ||
-      "demoUser";
+  userId ||
+  localStorage.getItem("userId") ||
+  localStorage.getItem("email");
+
+if (!uid) {
+  toast.error("Please login first");
+  return;
+}
+
 
     const payload = {
       userId: uid,
