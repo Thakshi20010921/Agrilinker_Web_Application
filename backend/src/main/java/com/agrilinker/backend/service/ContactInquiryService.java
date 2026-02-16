@@ -1,7 +1,6 @@
 package com.agrilinker.backend.service;
 
 import java.util.List;
-
 import com.agrilinker.backend.model.ContactInquiry;
 
 public interface ContactInquiryService {
@@ -10,9 +9,12 @@ public interface ContactInquiryService {
 
     List<ContactInquiry> getInquiriesBySender(String senderEmail);
 
-    // ✅ admin
+    // admin
     List<ContactInquiry> getAllInquiries();
 
-    // ✅ admin reply
+    // admin reply save
     ContactInquiry replyToInquiry(String inquiryId, String adminEmail, String replyMessage, String method);
+
+    // ✅ admin AI generate (does NOT save)
+    String generateAiReply(String inquiryId);
 }
