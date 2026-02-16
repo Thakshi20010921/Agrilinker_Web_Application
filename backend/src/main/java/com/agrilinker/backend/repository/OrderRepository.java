@@ -2,6 +2,7 @@ package com.agrilinker.backend.repository;
 
 import com.agrilinker.backend.model.Order;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.List;
@@ -12,4 +13,9 @@ public interface OrderRepository extends MongoRepository<Order, String> {
     Optional<Order> findByOrderNumber(String orderNumber);
 
     List<Order> findByCustomerEmail(String email);
+
+    //farmer 
+    @Query("{ 'items.farmerEmail': ?0 }")
+List<Order> findOrdersByFarmerEmail(String farmerEmail);
+
 }

@@ -33,6 +33,9 @@ import FarmerDashboard from "./components/farmer/FarmerDashboard";
 import AddProduct from "./components/farmer/AddProduct";
 import MyProducts from "./components/farmer/MyProducts";
 import EditProductPage from "./components/farmer/EditProductPage";
+import FarmerHub from "./components/farmer/FarmerHub";
+import FarmerOrders from "./components/farmer/FarmerOrders";
+import InquiryList from "./components/farmer/FarmerInquiryPage/InquiryList";
 import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 
 import SupportPage from "./pages/support/SupportPage";
@@ -256,6 +259,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+             <Route path="/farmer/FarmerHub" element={<FarmerHub />} />
+            <Route path="/farmer/orders" element={<FarmerOrders />} />
+            <Route path="/farmer/inquiries" element={<InquiryList />} />
 
             {/* ===================== FERTILIZER SUPPLIER ONLY ===================== */}
             <Route

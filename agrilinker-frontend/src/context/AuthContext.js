@@ -5,17 +5,18 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [authReady, setAuthReady] = useState(false); // ✅ NEW
 
-  // Load user + token from localStorage on refresh
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
 
     if (storedUser) setUser(JSON.parse(storedUser));
     if (storedToken) setToken(storedToken);
+
+    setAuthReady(true); // ✅ NEW (auth state loaded)
   }, []);
 
-  // ✅ login: save both user + token
   const loginUser = (userData, jwtToken) => {
     setUser(userData);
     setToken(jwtToken);
@@ -24,7 +25,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("token", jwtToken);
   };
 
-  // ✅ logout: clear everything
   const logoutUser = () => {
     setUser(null);
     setToken(null);
@@ -32,12 +32,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("email");
-localStorage.removeItem("roles");
-
+    localStorage.removeItem("roles");
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loginUser, logoutUser }}>
+    <AuthContext.Provider value={{ user, token, authReady, loginUser, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );

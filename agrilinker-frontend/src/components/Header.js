@@ -88,6 +88,13 @@ function Header() {
         >
           Contact Us
         </Link>
+
+        <Link
+          to="/farmer/FarmerHub"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
+        >
+          Farmer Hub
+        </Link>
       </nav>
 
       {/* Right side */}
