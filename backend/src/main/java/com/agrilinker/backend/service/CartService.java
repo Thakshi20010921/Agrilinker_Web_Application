@@ -35,11 +35,20 @@ public class CartService {
         return cartRepository.save(item);
     }
 
-    public CartItem updateQuantity(String cartItemId, int quantity) {
+    public CartItem updateQuantity(String cartItemId, int change) {
+
         CartItem item = cartRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
 
-        item.setQuantity(quantity);
+        int newQty = item.getQuantity() + change;
+
+        // auto remove if qty becomes 0 or less
+        if (newQty <= 0) {
+            cartRepository.delete(item);
+            return null;
+        }
+
+        item.setQuantity(newQty);
         return cartRepository.save(item);
     }
 
