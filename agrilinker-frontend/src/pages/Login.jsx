@@ -49,6 +49,8 @@ export default function Login() {
       const userId = res?.data?.id || res?.data?.userId || null;
 
       if (!token) throw new Error("Token not found in response");
+      console.log("FULL LOGIN RESPONSE:", res.data);
+
 
       // ✅ store user + token
       loginUser(

@@ -5,10 +5,19 @@ import com.agrilinker.backend.service.InvoiceService;
 import com.agrilinker.backend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+
+import java.security.Principal;
 import java.util.List;
 import com.agrilinker.backend.repository.OrderRepository;
+import com.agrilinker.backend.security.JwtAuthenticationFilter;
+import com.agrilinker.backend.security.*;
+
+
+import org.springframework.security.core.AuthenticationException;
+
 
 @RestController
 @RequestMapping("/api/orders")
@@ -74,5 +83,18 @@ public class OrderController {
         List<Order> orders = orderService.getOrdersByUserEmail(email);
         return ResponseEntity.ok(orders);
     }
+
+    @GetMapping("/farmer")
+public ResponseEntity<List<Order>> getFarmerOrders(Principal principal) {
+
+    String farmerEmail = principal.getName();
+
+    List<Order> orders = orderService.getOrdersByFarmerEmail(farmerEmail);
+
+    return ResponseEntity.ok(orders);
+}
+
+
+
 
 }

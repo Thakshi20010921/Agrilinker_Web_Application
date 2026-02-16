@@ -7,6 +7,7 @@ import PremiumPaymentModal from "../components/PremiumPaymentModal";
 const CheckoutPage = () => {
   const { cart, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const [form, setForm] = useState({
     name: "",
@@ -25,7 +26,7 @@ const CheckoutPage = () => {
   const totalAmount = useMemo(() => {
     return cart.reduce(
       (sum, item) => sum + (Number(item.price) || 0) * (item.quantity || 1),
-      0
+      0,
     );
   }, [cart]);
 
@@ -38,7 +39,9 @@ const CheckoutPage = () => {
     const itemType =
       item.type ||
       item.itemType ||
-      (item.fertilizerId || item.type === "fertilizer" ? "FERTILIZER" : "PRODUCT");
+      (item.fertilizerId || item.type === "fertilizer"
+        ? "FERTILIZER"
+        : "PRODUCT");
 
     return {
       itemId,
@@ -69,7 +72,9 @@ const CheckoutPage = () => {
     const missing = normalizedItems.find((x) => !x.itemId);
 
     if (missing) {
-      alert("Checkout error: Some cart items are missing an ID (product/fertilizer).");
+      alert(
+        "Checkout error: Some cart items are missing an ID (product/fertilizer).",
+      );
       return;
     }
 
@@ -93,7 +98,7 @@ const CheckoutPage = () => {
         cart
           .map((i) => i.cartItemId)
           .filter(Boolean)
-          .map((id) => api.delete(`/cart/${id}`))
+          .map((id) => api.delete(`/cart/${id}`)),
       );
 
       // ✅ Clear frontend cart
@@ -101,7 +106,9 @@ const CheckoutPage = () => {
 
       // ✅ Close modal + redirect
       setIsModalOpen(false);
-      navigate("/order-confirmation", { state: { order: res.data || orderData } });
+      navigate("/order-confirmation", {
+        state: { order: res.data || orderData },
+      });
     } catch (error) {
       console.error(error);
       alert("Error: Could not place order. Check backend connection/logs.");
@@ -225,12 +232,21 @@ const CheckoutPage = () => {
 
               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                 {cart.map((item, idx) => {
-                  const key = item.cartItemId || item.productId || item.fertilizerId || item.id || item._id || idx;
+                  const key =
+                    item.cartItemId ||
+                    item.productId ||
+                    item.fertilizerId ||
+                    item.id ||
+                    item._id ||
+                    idx;
                   const qty = item.quantity || 1;
                   const price = Number(item.price) || 0;
 
                   return (
-                    <div key={key} className="flex justify-between items-center">
+                    <div
+                      key={key}
+                      className="flex justify-between items-center"
+                    >
                       <div>
                         <p className="font-bold text-gray-800">{item.name}</p>
                         <p className="text-sm text-gray-500">Qty: {qty}</p>

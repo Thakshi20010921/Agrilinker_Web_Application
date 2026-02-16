@@ -21,6 +21,7 @@ public class Order {
     private double totalAmount;
     private String paymentMethod;
     private Date orderDate = new Date();
+    private String farmerEmail;
 
     public Order() {
     }
@@ -80,4 +81,13 @@ public class Order {
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
     }
+
+    public String getfarmerEmail() {
+        return farmerEmail;
+    }
+
+    public void setfarmerEmail(String farmerEmail) {
+        this.farmerEmail = farmerEmail;
+    }
+
 }

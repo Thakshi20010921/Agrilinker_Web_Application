@@ -17,9 +17,9 @@ public class Product {
     private double price;
     private int quantity;
     private String unit;
-    //private String farmerId;
+    // private String farmerId;
     private String farmerEmail;
-    
+
     private String location;
     private String Product_image;
     private String status;

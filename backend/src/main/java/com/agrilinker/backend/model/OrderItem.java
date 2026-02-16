@@ -2,6 +2,7 @@ package com.agrilinker.backend.model;
 
 public class OrderItem {
 
+    private String productId;
     private String fertilizerId;
     private String name;
     private int quantity;
@@ -9,6 +10,14 @@ public class OrderItem {
     private String farmerEmail;
 
     // Getters & Setters
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
     public String getFertilizerId() {
         return fertilizerId;
     }
@@ -41,11 +50,12 @@ public class OrderItem {
         this.price = price;
     }
 
-    public String getFarmerEmail() {
+    public String getfarmerEmail() {
         return farmerEmail;
     }
 
-    public void setFarmerEmail(String farmerEmail) {
+    public void setfarmerEmail(String farmerEmail) {
         this.farmerEmail = farmerEmail;
     }
+
 }

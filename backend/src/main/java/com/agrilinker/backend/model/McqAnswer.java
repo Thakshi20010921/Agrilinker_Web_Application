@@ -10,6 +10,7 @@ public class McqAnswer {
     private String id;
     private String questionId;
     private String userId;
+    private String userEmail;
     private String optionSelected;
     private String province;
     private Date answeredAt;
@@ -18,6 +19,9 @@ public class McqAnswer {
 public String getId(){
     return id;
 }
+
+public McqAnswer() {}
+
 public void setId(String id){
     this.id = id;
 }
@@ -36,4 +40,7 @@ public String getQuestionId() { return questionId; }
 
     public Date getAnsweredAt() { return answeredAt; }
     public void setAnsweredAt(Date answeredAt) { this.answeredAt = answeredAt; }
+
+     public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 }
