@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { FiFilter, FiSearch, FiMapPin, FiPackage, FiTag, FiShoppingBag, FiStar, FiArrowRight } from "react-icons/fi";
+import { FiFilter, FiSearch, FiMapPin, FiPackage, FiTag, FiShoppingBag, FiStar, FiArrowRight, FiInfo, FiCheckCircle } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -144,7 +144,40 @@ export default function FertilizerList() {
             </div>
           </div>
         </div>
-
+{/* 2. Alert Logic - Dynamic Rewards & Info ✅ */}
+<div className="max-w-7xl mx-auto mb-8">
+  {fertilizers.length > 0 && (
+    <div className="animate-fade-in">
+      {fertilizers.some(f => f.displayPrice > (f.price || 0)) ? (
+        /* Discount නැති අයට - Amber Style */
+        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/5 border-l-8 border-amber-500 p-6 rounded-[2rem] shadow-xl shadow-amber-900/5 flex items-center gap-5 backdrop-blur-sm border border-amber-100">
+          <div className="bg-amber-500 p-3 rounded-2xl text-white shadow-lg shadow-amber-200">
+            <FiInfo size={24} />
+          </div>
+          <div>
+            <h4 className="text-amber-900 font-black text-lg tracking-tight">Need a Fertilizer Discount? 💸</h4>
+            <p className="text-amber-800/80 font-bold text-sm">
+              You can get exclusive discounts by <Link to="/marketplace/add" className="underline decoration-amber-400 decoration-2 underline-offset-4 hover:text-amber-950 transition-colors">selling your farm products</Link> through our marketplace!
+            </p>
+          </div>
+        </div>
+      ) : (
+        /* Discount ලැබුණු අයට - Blue/Emerald Style */
+        <div className="bg-gradient-to-r from-emerald-600/10 to-blue-600/5 border-l-8 border-emerald-500 p-6 rounded-[2rem] shadow-xl shadow-green-900/5 flex items-center gap-5 backdrop-blur-sm border border-emerald-100">
+          <div className="bg-emerald-500 p-3 rounded-2xl text-white shadow-lg shadow-emerald-200">
+            <FiCheckCircle size={24} />
+          </div>
+          <div>
+            <h4 className="text-emerald-900 font-black text-lg tracking-tight">Active Farmer Rewards! 🏆</h4>
+            <p className="text-emerald-800/80 font-bold text-sm">
+              You've unlocked premium discounts because you're an active seller in our system. Keep growing with us!
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  )}
+</div>
         {/* Filters Row 2 */}
         <div className="flex flex-wrap gap-3 mb-10 items-center bg-white/50 backdrop-blur-md p-4 rounded-[2rem] border border-white/60 shadow-sm">
             <div className="flex items-center gap-2 px-4 text-green-800 font-bold border-r border-green-200 mr-2">
