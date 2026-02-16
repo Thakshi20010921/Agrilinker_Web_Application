@@ -46,10 +46,12 @@ const CheckoutPage = () => {
     return {
       itemId,
       itemType,
+      productId: itemId,
       name: item.name,
       quantity: item.quantity || 1,
       price: Number(item.price) || 0,
-      farmerEmail: item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
+      farmerEmail:
+        item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
     };
   };
 
@@ -191,10 +193,11 @@ const CheckoutPage = () => {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("cash")}
-                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === "cash"
+                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                    paymentMethod === "cash"
                       ? "border-green-500 bg-green-50"
                       : "border-gray-100 hover:border-gray-200"
-                    }`}
+                  }`}
                 >
                   <span className="text-2xl">💵</span>
                   <span className="font-bold text-gray-700">Cash</span>
@@ -203,10 +206,11 @@ const CheckoutPage = () => {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
-                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === "card"
+                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                    paymentMethod === "card"
                       ? "border-green-500 bg-green-50"
                       : "border-gray-100 hover:border-gray-200"
-                    }`}
+                  }`}
                 >
                   <span className="text-2xl">💳</span>
                   <span className="font-bold text-gray-700">Card</span>
