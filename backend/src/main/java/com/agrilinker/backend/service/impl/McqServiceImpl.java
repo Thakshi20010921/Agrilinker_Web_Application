@@ -95,7 +95,7 @@ public class McqServiceImpl implements McqService {
         return answer;
     }
 
-    // @Override
+    @Override
     public Optional<McqAnswer> getAnswerByQuestionIdAndUserEmail(String questionId, String userEmail) {
         return answerRepo.findByQuestionIdAndUserEmail(questionId, userEmail);
     }
