@@ -18,8 +18,8 @@ const OrderHistory = () => {
         }
 
         const res = await api.get(
-          `/api/orders/user/${encodeURIComponent(USER_ID)}`
-        );
+  `/api/orders?email=${encodeURIComponent(USER_ID)}`
+);
 
         setOrders(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
