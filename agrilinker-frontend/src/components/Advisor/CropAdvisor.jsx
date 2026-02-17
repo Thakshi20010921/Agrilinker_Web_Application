@@ -105,7 +105,7 @@ export default function CropAdvisor() {
               <div className="bg-slate-900 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden">
                 <FiCheckCircle className="absolute -right-8 -bottom-8 text-white/5 text-[10rem] pointer-events-none" />
                 <div className="relative z-10">
-                  <h3 className="text-green-400 font-black uppercase tracking-widest text-[10px] mb-4"> Advisory Note</h3>
+                  <h3 className="text-green-400 font-black uppercase tracking-widest text-[10px] mb-4">Advisory Note for you...</h3>
                   <p className="text-gray-100 font-medium italic text-lg pr-4">"{result.aiNote}"</p>
                 </div>
               </div>
