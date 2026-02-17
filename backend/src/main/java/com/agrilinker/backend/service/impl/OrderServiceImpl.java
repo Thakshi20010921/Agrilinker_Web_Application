@@ -28,7 +28,6 @@ import com.agrilinker.backend.model.Notification;
 import com.agrilinker.backend.repository.FertilizerRepository;
 import com.agrilinker.backend.model.Fertilizer;
 
-
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -37,7 +36,6 @@ public class OrderServiceImpl implements OrderService {
     private final NotificationSseService sse;
     //
     private final ProductService productService;
-    
 
     private final NotificationRepository notificationRepository;
     private final FertilizerRepository fertilizerRepository;
@@ -47,11 +45,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(Order order) {
-                
-if (order.getStatus() == null) {
-        order.setStatus("PENDING");
-    }
-       
+
+        if (order.getStatus() == null) {
+            order.setStatus("PENDING");
+        }
 
         // attach farmer emails + update stock
         for (OrderItem item : order.getItems()) {
@@ -168,24 +165,23 @@ if (order.getStatus() == null) {
         Order existingOrder = getOrderById(id);
 
         if (existingOrder != null) {
-            //new
+            // new
             if ("ACCEPTED".equalsIgnoreCase(order.getStatus()) &&
-            !"ACCEPTED".equalsIgnoreCase(existingOrder.getStatus())) {
+                    !"ACCEPTED".equalsIgnoreCase(existingOrder.getStatus())) {
 
-            for (OrderItem item : existingOrder.getItems()) {
+                for (OrderItem item : existingOrder.getItems()) {
 
-                productService.reduceProductQuantity(
-                    item.getProductId(),
-                    item.getQuantity()
-                );
+                    productService.reduceProductQuantity(
+                            item.getProductId(),
+                            item.getQuantity());
+                }
             }
-        }
             existingOrder.setCustomer(order.getCustomer());
             existingOrder.setItems(order.getItems());
             existingOrder.setTotalAmount(order.getTotalAmount());
             existingOrder.setPaymentMethod(order.getPaymentMethod());
             existingOrder.setOrderDate(order.getOrderDate());
-            //new
+            // new
             existingOrder.setStatus(order.getStatus());
             existingOrder.setPaymentStatus(order.getPaymentStatus());
             return orderRepository.save(existingOrder);
@@ -203,66 +199,64 @@ if (order.getStatus() == null) {
     public List<Order> getOrdersByUserEmail(String email) {
         return orderRepository.findByCustomerEmail(email);
     }
-    //farmer
+
+    // farmer
     @Override
     public List<Order> getOrdersByFarmerEmail(String farmerEmail) {
-    return orderRepository.findByFarmerEmail(farmerEmail);
-}
+        return orderRepository.findByFarmerEmail(farmerEmail);
+    }
 
     @Override
     public FarmerStatsDTO getFarmerStats(String farmerEmail) {
-    // Farmer ge analisis states 
-    List<Order> farmerOrders = orderRepository.findByFarmerEmail(farmerEmail);
+        // Farmer ge analisis states
+        List<Order> farmerOrders = orderRepository.findByFarmerEmail(farmerEmail);
 
-    double totalSales = 0;
-    long completedOrdersCount = 0;
-    int totalProductsSold = 0;
-    double pendingPayments = 0;
-    int pendingOrders=0;
+        double totalSales = 0;
+        long completedOrdersCount = 0;
+        int totalProductsSold = 0;
+        double pendingPayments = 0;
+        int pendingOrders = 0;
 
-    for (Order order : farmerOrders) {
-        double farmerOrderSubtotal = 0;
-        int farmerItemCount = 0;
+        for (Order order : farmerOrders) {
+            double farmerOrderSubtotal = 0;
+            int farmerItemCount = 0;
 
-        // Order එකේ තියෙන items වලින් මේ farmer ට අයිති ඒවා විතරක් filter කරනවා
-        for (OrderItem item : order.getItems()) {
-            if (farmerEmail.equals(item.getfarmerEmail())) {
-                double itemTotal = item.getPrice() * item.getQuantity();
-                farmerOrderSubtotal += itemTotal;
-                farmerItemCount += item.getQuantity();
+            // Order එකේ තියෙන items වලින් මේ farmer ට අයිති ඒවා විතරක් filter කරනවා
+            for (OrderItem item : order.getItems()) {
+                if (farmerEmail.equals(item.getfarmerEmail())) {
+                    double itemTotal = item.getPrice() * item.getQuantity();
+                    farmerOrderSubtotal += itemTotal;
+                    farmerItemCount += item.getQuantity();
+                }
+            }
+
+            // Calculation Logic
+            if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
+                totalSales += farmerOrderSubtotal;
+                completedOrdersCount++;
+                totalProductsSold += farmerItemCount;
+            } else if ("PENDING".equalsIgnoreCase(order.getStatus())) {
+                pendingPayments += farmerOrderSubtotal;
+                pendingOrders++;
             }
         }
 
-        // Calculation Logic
-        if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
-            totalSales += farmerOrderSubtotal;
-            completedOrdersCount++;
-            totalProductsSold += farmerItemCount;
-        } else if ("PENDING".equalsIgnoreCase(order.getStatus())) {
-            pendingPayments += farmerOrderSubtotal;
-            pendingOrders++; 
-        }
+        // Average Order Value (AOV)
+        double averageOrderValue = (completedOrdersCount > 0) ? totalSales / completedOrdersCount : 0;
+
+        return new FarmerStatsDTO(
+                totalSales,
+                completedOrdersCount,
+                averageOrderValue,
+                totalProductsSold,
+                pendingPayments,
+                pendingOrders);
     }
-
-    // Average Order Value (AOV)
-    double averageOrderValue = (completedOrdersCount > 0) ? totalSales / completedOrdersCount : 0;
-
-    return new FarmerStatsDTO(
-            totalSales, 
-            completedOrdersCount, 
-            averageOrderValue, 
-            totalProductsSold, 
-            pendingPayments,
-            pendingOrders
-    );
-}
-
-
 
     @Override
     public Map<String, Double> getPaymentBreakdown(String farmerEmail) {
         List<Order> orders = orderRepository.findByFarmerEmail(farmerEmail);
-        
+
         double paid = 0;
         double pending = 0;
 
@@ -285,44 +279,36 @@ if (order.getStatus() == null) {
         return result;
     }
 
+    @Override
+    public List<Double> getMonthlySales(String farmerEmail) {
 
-@Override
-public List<Double> getMonthlySales(String farmerEmail) {
+        List<Order> orders = orderRepository.findCompletedOrdersByFarmerEmail(farmerEmail);
 
-    List<Order> orders = orderRepository.findCompletedOrdersByFarmerEmail(farmerEmail);
+        List<Double> monthlySales = new ArrayList<>();
 
-    List<Double> monthlySales = new ArrayList<>();
+        // initialize 12 months with 0
+        for (int i = 0; i < 12; i++) {
+            monthlySales.add(0.0);
+        }
 
-    // initialize 12 months with 0
-    for (int i = 0; i < 12; i++) {
-        monthlySales.add(0.0);
-    }
+        for (Order order : orders) {
 
-    for (Order order : orders) {
+            int month = order.getOrderDate().getMonth(); // 0-11
 
-        int month = order.getOrderDate().getMonth(); // 0-11
+            for (OrderItem item : order.getItems()) {
 
-        for (OrderItem item : order.getItems()) {
+                if (farmerEmail.equals(item.getfarmerEmail())) {
 
-            if (farmerEmail.equals(item.getfarmerEmail())) {
+                    double total = item.getPrice() * item.getQuantity();
 
-                double total = item.getPrice() * item.getQuantity();
-
-                monthlySales.set(
-                    month,
-                    monthlySales.get(month) + total
-                );
+                    monthlySales.set(
+                            month,
+                            monthlySales.get(month) + total);
+                }
             }
         }
+
+        return monthlySales;
     }
 
-    return monthlySales;
-}
-
-
-    // farmer orders
-    @Override
-    public List<Order> getOrdersByFarmerEmail(String farmerEmail) {
-        return orderRepository.findOrdersByFarmerEmail(farmerEmail);
-    }
 }
