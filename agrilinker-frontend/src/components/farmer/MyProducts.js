@@ -7,6 +7,7 @@ const MyProducts = () => {
   const [loading, setLoading] = useState(true);
   const farmerEmail = localStorage.getItem("email");
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ pendingOrders: 0 });
 
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,6 +30,26 @@ const MyProducts = () => {
       }
     };
     if (farmerEmail) fetchProducts();
+  }, [farmerEmail]);
+
+  // Fetch farmer stats (pending orders count)
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8081/api/orders/farmer-stats/${farmerEmail}`,
+        );
+
+        console.log("Stats response:", res.data); // debug
+        setStats(res.data);
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    };
+
+    if (farmerEmail) {
+      fetchStats();
+    }
   }, [farmerEmail]);
 
   useEffect(() => {
@@ -109,7 +130,7 @@ const MyProducts = () => {
             Pending orders
           </p>
           <p className="text-3xl font-black text-emerald-600">
-            {products.length}
+            {stats.pendingOrders}
           </p>
         </div>
       </div>
@@ -240,8 +261,14 @@ const MyProducts = () => {
                   path: "/farmer/dashboard",
                 },
                 { name: "Add Prodct", icon: "", path: "/farmer/add-product2" },
-                { name: "My Orders", icon: "", path: "/orders" },
+                { name: "My Orders", icon: "", path: "/farmer/orders" },
                 { name: "My Products", icon: "", path: "/farmer/my-products" },
+                { name: "My request", icon: "", path: "/farmer/inquiries" },
+                {
+                  name: "Sales History",
+                  icon: "",
+                  path: "/farmer/sales-history",
+                },
               ].map((item) => (
                 <button
                   key={item.name}

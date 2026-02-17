@@ -1,15 +1,20 @@
 package com.agrilinker.backend.service.impl;
 
+import com.agrilinker.backend.model.FarmerStatsDTO;
 import com.agrilinker.backend.model.Order;
 import com.agrilinker.backend.repository.NotificationRepository;
 import com.agrilinker.backend.repository.OrderRepository;
 import com.agrilinker.backend.service.OrderService;
+import com.agrilinker.backend.service.ProductService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.agrilinker.backend.util.OrderNumberGenerator;
 import org.springframework.dao.DuplicateKeyException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
@@ -23,12 +28,17 @@ import com.agrilinker.backend.model.Notification;
 import com.agrilinker.backend.repository.FertilizerRepository;
 import com.agrilinker.backend.model.Fertilizer;
 
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final NotificationSseService sse;
+    //
+    private final ProductService productService;
+    
+
     private final NotificationRepository notificationRepository;
     private final FertilizerRepository fertilizerRepository;
 
@@ -37,6 +47,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(Order order) {
+                
+if (order.getStatus() == null) {
+        order.setStatus("PENDING");
+    }
+       
 
         // attach farmer emails + update stock
         for (OrderItem item : order.getItems()) {
@@ -153,13 +168,26 @@ public class OrderServiceImpl implements OrderService {
         Order existingOrder = getOrderById(id);
 
         if (existingOrder != null) {
+            //new
+            if ("ACCEPTED".equalsIgnoreCase(order.getStatus()) &&
+            !"ACCEPTED".equalsIgnoreCase(existingOrder.getStatus())) {
 
+            for (OrderItem item : existingOrder.getItems()) {
+
+                productService.reduceProductQuantity(
+                    item.getProductId(),
+                    item.getQuantity()
+                );
+            }
+        }
             existingOrder.setCustomer(order.getCustomer());
             existingOrder.setItems(order.getItems());
             existingOrder.setTotalAmount(order.getTotalAmount());
             existingOrder.setPaymentMethod(order.getPaymentMethod());
             existingOrder.setOrderDate(order.getOrderDate());
-
+            //new
+            existingOrder.setStatus(order.getStatus());
+            existingOrder.setPaymentStatus(order.getPaymentStatus());
             return orderRepository.save(existingOrder);
         }
 
@@ -175,6 +203,122 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getOrdersByUserEmail(String email) {
         return orderRepository.findByCustomerEmail(email);
     }
+    //farmer
+    @Override
+    public List<Order> getOrdersByFarmerEmail(String farmerEmail) {
+    return orderRepository.findByFarmerEmail(farmerEmail);
+}
+
+    @Override
+    public FarmerStatsDTO getFarmerStats(String farmerEmail) {
+    // Farmer ge analisis states 
+    List<Order> farmerOrders = orderRepository.findByFarmerEmail(farmerEmail);
+
+    double totalSales = 0;
+    long completedOrdersCount = 0;
+    int totalProductsSold = 0;
+    double pendingPayments = 0;
+    int pendingOrders=0;
+
+    for (Order order : farmerOrders) {
+        double farmerOrderSubtotal = 0;
+        int farmerItemCount = 0;
+
+        // Order එකේ තියෙන items වලින් මේ farmer ට අයිති ඒවා විතරක් filter කරනවා
+        for (OrderItem item : order.getItems()) {
+            if (farmerEmail.equals(item.getfarmerEmail())) {
+                double itemTotal = item.getPrice() * item.getQuantity();
+                farmerOrderSubtotal += itemTotal;
+                farmerItemCount += item.getQuantity();
+            }
+        }
+
+        // Calculation Logic
+        if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
+            totalSales += farmerOrderSubtotal;
+            completedOrdersCount++;
+            totalProductsSold += farmerItemCount;
+        } else if ("PENDING".equalsIgnoreCase(order.getStatus())) {
+            pendingPayments += farmerOrderSubtotal;
+            pendingOrders++; 
+        }
+    }
+
+    // Average Order Value (AOV)
+    double averageOrderValue = (completedOrdersCount > 0) ? totalSales / completedOrdersCount : 0;
+
+    return new FarmerStatsDTO(
+            totalSales, 
+            completedOrdersCount, 
+            averageOrderValue, 
+            totalProductsSold, 
+            pendingPayments,
+            pendingOrders
+    );
+}
+
+
+
+    @Override
+    public Map<String, Double> getPaymentBreakdown(String farmerEmail) {
+        List<Order> orders = orderRepository.findByFarmerEmail(farmerEmail);
+        
+        double paid = 0;
+        double pending = 0;
+
+        for (Order order : orders) {
+            for (OrderItem item : order.getItems()) {
+                if (farmerEmail.equals(item.getfarmerEmail())) {
+                    double itemTotal = item.getPrice() * item.getQuantity();
+                    if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
+                        paid += itemTotal;
+                    } else if ("PENDING".equalsIgnoreCase(order.getStatus())) {
+                        pending += itemTotal;
+                    }
+                }
+            }
+        }
+
+        Map<String, Double> result = new HashMap<>();
+        result.put("PAID", paid);
+        result.put("PENDING", pending);
+        return result;
+    }
+
+
+@Override
+public List<Double> getMonthlySales(String farmerEmail) {
+
+    List<Order> orders = orderRepository.findCompletedOrdersByFarmerEmail(farmerEmail);
+
+    List<Double> monthlySales = new ArrayList<>();
+
+    // initialize 12 months with 0
+    for (int i = 0; i < 12; i++) {
+        monthlySales.add(0.0);
+    }
+
+    for (Order order : orders) {
+
+        int month = order.getOrderDate().getMonth(); // 0-11
+
+        for (OrderItem item : order.getItems()) {
+
+            if (farmerEmail.equals(item.getfarmerEmail())) {
+
+                double total = item.getPrice() * item.getQuantity();
+
+                monthlySales.set(
+                    month,
+                    monthlySales.get(month) + total
+                );
+            }
+        }
+    }
+
+    return monthlySales;
+}
+
 
     // farmer orders
     @Override

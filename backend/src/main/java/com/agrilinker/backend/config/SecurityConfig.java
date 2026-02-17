@@ -57,6 +57,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/inquiries/**").permitAll()
                         .requestMatchers("/api/users/by-email").permitAll()
                         .requestMatchers("/api/mcq/**").permitAll()
+                        .requestMatchers("/api/orders/farmer/monthly-sales/**").permitAll()
+                        .requestMatchers("/api/orders/farmer/**").permitAll()
+
 
                         // Admin routes
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

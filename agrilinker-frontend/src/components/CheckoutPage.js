@@ -32,14 +32,28 @@ const CheckoutPage = () => {
 
   // ✅ Normalize ID + TYPE for both Product & Fertilizer
   const normalizeCartItem = (item) => {
+    const itemId = item.productId || item.fertilizerId || item.id || item._id;
 
-  return {
+    // Best: if your cart item already has item.type use it
+    // Otherwise infer: fertilizers you add should set type: "FERTILIZER"
+    const itemType =
+      item.type ||
+      item.itemType ||
+      (item.fertilizerId || item.type === "fertilizer"
+        ? "FERTILIZER"
+        : "PRODUCT");
+
+    return {
+    itemId,
+    itemType,
     productId: item.productId || null,
     fertilizerId: item.fertilizerId || (item.type === "fertilizer" ? item.id : null),
-
     name: item.name,
     quantity: item.quantity || 1,
-    price: Number(item.price) || 0
+    price: Number(item.price) || 0,
+    farmerEmail:
+      item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
+  };
   };
 };
 
@@ -186,10 +200,11 @@ items: normalizedItems, // includes productId / fertilizerId
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("cash")}
-                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === "cash"
+                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                    paymentMethod === "cash"
                       ? "border-green-500 bg-green-50"
                       : "border-gray-100 hover:border-gray-200"
-                    }`}
+                  }`}
                 >
                   <span className="text-2xl">💵</span>
                   <span className="font-bold text-gray-700">Cash</span>
@@ -198,10 +213,11 @@ items: normalizedItems, // includes productId / fertilizerId
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
-                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === "card"
+                  className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                    paymentMethod === "card"
                       ? "border-green-500 bg-green-50"
                       : "border-gray-100 hover:border-gray-200"
-                    }`}
+                  }`}
                 >
                   <span className="text-2xl">💳</span>
                   <span className="font-bold text-gray-700">Card</span>
