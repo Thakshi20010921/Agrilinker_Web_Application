@@ -7,6 +7,32 @@ import { toast } from "react-toastify";
 import ReviewModal from "../../components/ReviewModal";
 import FertilizerButton from "./FertilizerButton";
 
+const ExpandableText = ({ text, limit = 80 }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  // පෙළ සීමාවට වඩා අඩු නම් නිකන්ම පෙන්වන්න
+  if (text.length <= limit) {
+    return <p className="text-gray-500 text-sm mb-6 italic leading-relaxed font-medium">"{text}"</p>;
+  }
+
+  return (
+    <div className="mb-6">
+      <p className="text-gray-500 text-sm italic leading-relaxed font-medium inline">
+        "{isExpanded ? text : `${text.substring(0, limit)}...`}"
+      </p>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setIsExpanded(!isExpanded);
+        }}
+        className="ml-2 text-xs font-black uppercase tracking-tighter text-emerald-600 hover:text-emerald-800 transition-colors"
+      >
+        {isExpanded ? "Show Less" : "Read More"}
+      </button>
+    </div>
+  );
+};
+
 export default function FertilizerList() {
   // ===== State (No changes here) =====
   const [fertilizers, setFertilizers] = useState([]);
@@ -268,9 +294,8 @@ export default function FertilizerList() {
                     </div>
                   </div>
 
-                  <p className="text-gray-500 text-sm mb-6 line-clamp-2 italic leading-relaxed font-medium">
-                    "{f.description}"
-                  </p>
+                  {/* පරණ <p> tags ඔක්කොම අයින් කරලා මේක විතරක් දාන්න */}
+<ExpandableText text={f.description || "No description available."} limit={100} />
 
                   <div className="flex items-end justify-between">
                     <div className="flex flex-col">
