@@ -24,5 +24,7 @@ public interface OrderService {
     FarmerStatsDTO getFarmerStats(String farmerEmail);
     //List<Map<String, Object>> getPaymentBreakdown(String farmerEmail);
     Map<String, Double> getPaymentBreakdown(String farmerEmail);
+    List<Double> getMonthlySales(String farmerEmail);
+
 
 }
