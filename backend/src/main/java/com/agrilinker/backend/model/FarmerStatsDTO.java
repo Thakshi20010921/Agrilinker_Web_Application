@@ -13,4 +13,5 @@ public class FarmerStatsDTO {
     private double averageOrderValue;
     private int totalProductsSold;
     private double pendingPayments;
+    private int pendingOrders;
 }
