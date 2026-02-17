@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { FiEdit3, FiUploadCloud, FiInfo, FiTag, FiMapPin, FiPackage, FiSave } from "react-icons/fi";
 
 export default function UpdateFertilizer() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [form, setForm] = useState({
     name: "",
     description: "",
     price: "",
     unit: "",
-    category: "", // ✅ Add form එකේ වගේම දැන් මෙතනත් තියෙනවා
-    type: "",     // ✅ Add form එකේ වගේම දැන් මෙතනත් තියෙනවා
+    category: "",
+    type: "",
     stock: "",
     quantityInside: "",
-    district: "", // ✅ Add form එකේ වගේම දැන් මෙතනත් තියෙනවා
+    district: "",
     imageUrl: "",
     supplierEmail: ""
   });
 
   const [uploading, setUploading] = useState(false);
 
-  // 1. පරණ දත්ත load කිරීම
+  // 1. loading old data
   useEffect(() => {
     axios.get(`http://localhost:8081/api/fertilizers/${id}`)
       .then(res => {
@@ -67,129 +67,159 @@ export default function UpdateFertilizer() {
     try {
       await axios.put(`http://localhost:8081/api/fertilizers/${id}`, finalData);
       toast.success("Updated successfully!");
-      
       setTimeout(() => navigate("/fertilizer-dashboard"), 800);
-      
     } catch (err) {
       toast.error("Update failed! Please check all fields.");
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10 border-t-8 border-green-700">
-      <h2 className="text-3xl font-bold text-green-800 mb-6 font-serif">Update Fertilizer Details</h2>
-      
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-12 px-4">
+      <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white rounded-[2.5rem] overflow-hidden">
         
-        {/* Name & Description */}
-        <div className="md:col-span-2">
-          <label className="font-bold text-gray-700">Product Name *</label>
-          <input name="name" value={form.name} className="w-full border p-3 rounded-lg mt-1" onChange={handleChange} required />
-        </div>
-        
-        <div className="md:col-span-2">
-          <label className="font-bold text-gray-700">Description *</label>
-          <textarea name="description" value={form.description} className="w-full border p-3 rounded-lg mt-1" onChange={handleChange} required />
-        </div>
-
-        {/* Category & Type (දැන් මේවා Update එකේ පේනවා) */}
-        <div>
-          <label className="font-bold text-gray-700">Category *</label>
-          <select name="category" value={form.category} className="w-full border p-3 rounded-lg mt-1" onChange={handleChange} required>
-            <option value="">Select Category</option>
-            <option value="Organic">Organic</option>
-            <option value="Chemical">Chemical</option>
-          </select>
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-green-800 to-emerald-700 p-8 text-center relative overflow-hidden">
+          <FiEdit3 className="text-white/10 text-8xl absolute -right-4 -top-4 rotate-12" />
+          <h1 className="text-3xl font-black text-white uppercase tracking-tighter relative z-10">
+            Update Fertilizer Details
+          </h1>
+          <p className="text-green-50 text-sm font-medium opacity-80 mt-1 relative z-10">
+            Keep your product information accurate and up to date
+          </p>
         </div>
 
-        <div>
-          <label className="font-bold text-gray-700">Type *</label>
-          <select name="type" value={form.type} className="w-full border p-3 rounded-lg mt-1" onChange={handleChange} required>
-            <option value="">Select Type</option>
-            <option value="Granular">Granular</option>
-            <option value="Liquid">Liquid</option>
-            <option value="Powder">Powder</option>
-          </select>
-        </div>
+        <form onSubmit={handleSubmit} className="p-8 md:p-12 space-y-8">
+          
+          {/* Name & Description Grid */}
+          <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">
+                <FiTag className="text-green-600" /> Product Name
+              </label>
+              <input name="name" value={form.name} 
+                className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-700 shadow-sm"
+                onChange={handleChange} required />
+            </div>
 
-        {/* Price & Unit */}
-        <div>
-          <label className="font-bold text-gray-700">Price (Rs.) *</label>
-          <input name="price" type="number" value={form.price} className="w-full border p-3 rounded-lg mt-1" onChange={handleChange} required />
-        </div>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">
+                <FiInfo className="text-green-600" /> Description
+              </label>
+              <textarea name="description" value={form.description} 
+                className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-medium text-gray-600 shadow-sm"
+                rows="3" onChange={handleChange} required />
+            </div>
+          </div>
 
-        <div>
-          <label className="font-bold text-gray-700">Selling Unit *</label>
-          <select name="unit" value={form.unit} className="w-full border p-3 rounded-lg mt-1" onChange={handleChange} required>
-            <option value="bag">Bag</option>
-            <option value="bottle">Bottle</option>
-            <option value="kg">Kg (Bulk)</option>
-            <option value="liter">Liter (Bulk)</option>
-          </select>
-        </div>
+          {/* 4-Grid Layout for Category, Type, Price, Unit */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Category</label>
+              <select name="category" value={form.category} className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-600 cursor-pointer shadow-sm" onChange={handleChange} required>
+                <option value="">Select Category</option>
+                <option value="Organic">Organic</option>
+                <option value="Chemical">Chemical</option>
+              </select>
+            </div>
 
-        {/* District */}
-        <div>
-          <label className="font-bold text-gray-700">District *</label>
-          <select name="district" value={form.district} className="w-full border p-3 rounded-lg mt-1" onChange={handleChange} required>
-            <option value="Ampara">Ampara</option>
-<option value="Anuradhapura">Anuradhapura</option>
-<option value="Badulla">Badulla</option>
-<option value="Batticaloa">Batticaloa</option>
-<option value="Colombo">Colombo</option>
-<option value="Galle">Galle</option>
-<option value="Gampaha">Gampaha</option>
-<option value="Hambantota">Hambantota</option>
-<option value="Jaffna">Jaffna</option>
-<option value="Kalutara">Kalutara</option>
-<option value="Kandy">Kandy</option>
-<option value="Kegalle">Kegalle</option>
-<option value="Kilinochchi">Kilinochchi</option>
-<option value="Kurunegala">Kurunegala</option>
-<option value="Mannar">Mannar</option>
-<option value="Matale">Matale</option>
-<option value="Matara">Matara</option>
-<option value="Moneragala">Moneragala</option>
-<option value="Mullaitivu">Mullaitivu</option>
-<option value="Nuwara Eliya">Nuwara Eliya</option>
-<option value="Polonnaruwa">Polonnaruwa</option>
-<option value="Puttalam">Puttalam</option>
-<option value="Ratnapura">Ratnapura</option>
-<option value="Trincomalee">Trincomalee</option>
-<option value="Vavuniya">Vavuniya</option>
-          </select>
-        </div>
+            <div className="space-y-2">
+              <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Form Type</label>
+              <select name="type" value={form.type} className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-600 cursor-pointer shadow-sm" onChange={handleChange} required>
+                <option value="">Select Type</option>
+                <option value="Granular">Granular</option>
+                <option value="Liquid">Liquid</option>
+                <option value="Powder">Powder</option>
+              </select>
+            </div>
 
-        {/* Stock */}
-        <div>
-          <label className="font-bold text-gray-700 capitalize">Stock (In {form.unit}s) *</label>
-          <input name="stock" type="number" value={form.stock} className="w-full border p-3 rounded-lg mt-1 border-green-200" onChange={handleChange} required />
-        </div>
+            <div className="space-y-2">
+              <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Price (Rs.)</label>
+              <input name="price" type="number" value={form.price} className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-black text-green-700 shadow-sm" onChange={handleChange} required />
+            </div>
 
-        {/* Quantity Inside Logic */}
-        {(form.unit === "bag" || form.unit === "bottle") && (
-          <div className="md:col-span-2 bg-blue-50 p-4 rounded-lg border border-blue-100">
-            <label className="block font-bold text-blue-800">
-              {form.unit === "bag" ? "Weight per Bag (kg)" : "Volume per Bottle (L)"} *
+            <div className="space-y-2">
+              <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Selling Unit</label>
+              <select name="unit" value={form.unit} className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-600 cursor-pointer shadow-sm" onChange={handleChange} required>
+                <option value="bag">Bag</option>
+                <option value="bottle">Bottle</option>
+                <option value="kg">Kg (Bulk)</option>
+                <option value="liter">Liter (Bulk)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* District & Stock */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">
+                <FiMapPin className="text-green-600" /> District
+              </label>
+              <select name="district" value={form.district} className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-600 cursor-pointer shadow-sm" onChange={handleChange} required>
+                {["Ampara","Anuradhapura","Badulla","Batticaloa","Colombo","Galle","Gampaha","Hambantota","Jaffna","Kalutara","Kandy","Kegalle","Kilinochchi","Kurunegala","Mannar","Matale","Matara","Moneragala","Mullaitivu","Nuwara Eliya","Polonnaruwa","Puttalam","Ratnapura","Trincomalee","Vavuniya"].map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">
+                <FiPackage className="text-green-600" /> Current Stock
+              </label>
+              <input name="stock" type="number" value={form.stock} className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-700 shadow-sm" onChange={handleChange} required />
+            </div>
+          </div>
+
+          {/* Quantity Inside Logic (Animated) */}
+          {(form.unit === "bag" || form.unit === "bottle") && (
+            <div className="animate-in fade-in slide-in-from-top-2 bg-green-50/50 p-6 rounded-[2rem] border border-green-100 flex flex-col gap-2">
+              <label className="block font-black text-green-800 text-[11px] uppercase tracking-widest">
+                {form.unit === "bag" ? "Weight per Bag (kg)" : "Volume per Bottle (L)"} *
+              </label>
+              <input name="quantityInside" type="number" step="0.01" value={form.quantityInside || ""} 
+                className="w-full bg-white border-none p-3 rounded-xl focus:ring-4 focus:ring-green-100 outline-none font-bold text-green-700 shadow-sm"
+                onChange={handleChange} required />
+            </div>
+          )}
+
+          {/* Image Management */}
+          <div className="bg-gray-50/50 p-6 rounded-[2.5rem] border border-gray-100">
+            <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest mb-4 block">
+              Product Media
             </label>
-            <input name="quantityInside" type="number" step="0.01" value={form.quantityInside || ""} className="w-full border p-2 rounded mt-1 border-blue-200" onChange={handleChange} required />
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="relative group">
+                <img src={form.imageUrl} alt="preview" className="w-32 h-32 object-cover rounded-[2rem] border-4 border-white shadow-xl transition-transform group-hover:scale-105" />
+                <div className="absolute inset-0 bg-black/20 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                   <FiUploadCloud className="text-white text-2xl" />
+                </div>
+              </div>
+              
+              <div className="flex-grow w-full">
+                <div className="relative w-full">
+                  <input type="file" onChange={handleFileUpload} 
+                    className="absolute inset-0 opacity-0 cursor-pointer z-10" />
+                  <div className="w-full border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-green-400 transition-colors">
+                    <p className="text-sm font-bold text-gray-400">Click to upload a new image</p>
+                    <p className="text-[10px] text-gray-300 uppercase font-black mt-1">PNG, JPG or WEBP (Max 2MB)</p>
+                  </div>
+                </div>
+                {uploading && (
+                  <div className="mt-3 flex items-center gap-2 text-emerald-600 font-bold text-xs animate-pulse">
+                    <div className="w-2 h-2 bg-emerald-600 rounded-full"></div> Uploading new media...
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        )}
 
-        {/* Image Display & Change */}
-        <div className="md:col-span-2 bg-gray-50 p-4 rounded-lg border">
-          <label className="font-bold block mb-2">Change Image</label>
-          <div className="flex items-center gap-4">
-            <img src={form.imageUrl} alt="preview" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-md" />
-            <input type="file" onChange={handleFileUpload} />
-          </div>
-          {uploading && <p className="text-blue-600 mt-2 animate-pulse font-semibold">Uploading...</p>}
-        </div>
-
-        <button type="submit" className="md:col-span-2 bg-green-700 text-white p-4 rounded-xl font-bold hover:bg-green-800 shadow-lg transform transition active:scale-95">
-          Save All Changes
-        </button>
-      </form>
+          {/* Submit Button */}
+          <button type="submit" 
+            className="w-full bg-gradient-to-r from-green-700 to-emerald-600 text-white py-5 rounded-[2rem] font-black uppercase tracking-widest text-sm shadow-xl shadow-green-200 hover:shadow-green-300 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3">
+            <FiSave size={20} />
+            Save All Changes
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

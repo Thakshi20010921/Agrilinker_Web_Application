@@ -62,15 +62,28 @@ export default function Login() {
         token
       );
 
-      localStorage.setItem("userId", userId);
-      localStorage.setItem("roles", JSON.stringify(["FARMER"]));
-      // Store email for dashboard
-      localStorage.setItem("email", userEmail);
-      // Trigger dashboard to refresh products
-      window.dispatchEvent(new Event("farmerChanged"));
+      
+/*Dewmini start */
+localStorage.setItem("email", userEmail); 
 
-      toast.success("Login successful 🎉");
-
+if (roles && roles.length > 0) {
+    const roleList = roles.map(r => normalizeRole(r));
+    
+    let roleToSave;
+    
+    // 1. give first for fertilizer supplier
+    if (roleList.includes("FERTILIZERSUPPLIER")) {
+        roleToSave = "FERTILIZERSUPPLIER";
+    } 
+    // 2. otherwise get list's firstone
+    else {
+        roleToSave = roleList[0];
+    }
+    
+    localStorage.setItem("role", roleToSave);
+}
+/*Dewmini closed */
+toast.success("Login successful 🎉");
       // ✅ if roles are not any of these => block
       if (!hasAnyAllowedRole(roles)) {
         toast.error("Access denied");

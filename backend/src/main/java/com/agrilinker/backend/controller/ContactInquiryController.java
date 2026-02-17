@@ -7,8 +7,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.agrilinker.backend.model.ContactInquiry;
@@ -26,6 +29,7 @@ public class ContactInquiryController {
 
     // BUYER: create inquiry
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createInquiry(@RequestBody ContactInquiry inquiry) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth != null ? auth.getName() : null;
@@ -47,7 +51,7 @@ public class ContactInquiryController {
         inquiry.setFullName(inquiry.getFullName().trim());
         inquiry.setPhoneNumber(inquiry.getPhoneNumber().trim());
         inquiry.setSubject(inquiry.getSubject().trim());
-        inquiry.setPreferredContactMethod(inquiry.getPreferredContactMethod().trim().toUpperCase());
+        inquiry.setPreferredContactMethod(normalizeMethod(inquiry.getPreferredContactMethod()));
         inquiry.setMessage(inquiry.getMessage().trim());
 
         ContactInquiry saved = contactInquiryService.createInquiry(inquiry);
@@ -56,6 +60,7 @@ public class ContactInquiryController {
 
     // BUYER: my inquiries
     @GetMapping("/my")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ContactInquiry>> getMyInquiries() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth != null ? auth.getName() : null;
@@ -69,19 +74,22 @@ public class ContactInquiryController {
 
     // ADMIN: all inquiries
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllInquiries() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getName() == null || auth.getName().isBlank()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        // If you already protect /api/contact-us in SecurityConfig for ROLE_ADMIN, keep
-        // it there.
         return ResponseEntity.ok(contactInquiryService.getAllInquiries());
     }
 
-    // ADMIN: reply
+    // ADMIN: AI generate (returns draft only)
+    @PostMapping("/{id}/generate-ai-reply")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> generateAiReply(@PathVariable("id") String id) {
+        String reply = contactInquiryService.generateAiReply(id);
+        return ResponseEntity.ok(Map.of("suggestedReply", reply));
+    }
+
+    // ADMIN: reply save
     @PostMapping("/{id}/reply")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> replyToInquiry(@PathVariable("id") String id, @RequestBody Map<String, String> body) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String adminEmail = auth != null ? auth.getName() : null;
@@ -103,13 +111,11 @@ public class ContactInquiryController {
             return ResponseEntity.badRequest().body(Map.of("message", "Method must be EMAIL, PHONE, or WHATSAPP."));
         }
 
-        try {
-            ContactInquiry updated = contactInquiryService.replyToInquiry(id, adminEmail, replyMessage, method);
-            return ResponseEntity.ok(updated);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
-        }
+        ContactInquiry updated = contactInquiryService.replyToInquiry(id, adminEmail, replyMessage, method);
+        return ResponseEntity.ok(updated);
     }
+
+    // ----------------- helpers -----------------
 
     private String validateInquiry(ContactInquiry inquiry) {
         if (inquiry == null)
@@ -139,7 +145,7 @@ public class ContactInquiryController {
         if (method.isBlank())
             return "Preferred contact method is required.";
         if (!ALLOWED_CONTACT_METHODS.contains(method))
-            return "Preferred contact method must be Email, Phone, or WhatsApp.";
+            return "Preferred contact method must be EMAIL, PHONE, or WHATSAPP.";
 
         String message = safeTrim(inquiry.getMessage());
         if (message.isBlank())
@@ -156,9 +162,7 @@ public class ContactInquiryController {
 
     private String normalizeMethod(String value) {
         String v = safeTrim(value).toUpperCase();
-        if (v.equals("E-MAIL"))
-            return "EMAIL";
-        if (v.equals("MAIL"))
+        if (v.equals("E-MAIL") || v.equals("MAIL"))
             return "EMAIL";
         if (v.equals("WHATS APP"))
             return "WHATSAPP";

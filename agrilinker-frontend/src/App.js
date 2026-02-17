@@ -1,4 +1,4 @@
-// ✅ FULL src/App.js (ONLY /, /login, /register, /loginfertilizer are public)
+// ✅ FULL src/App.js (/, /landing, /login, /register, /loginfertilizer are public)
 import React from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -14,12 +14,13 @@ import FertilizerList from "./components/Fertilizers/FertilizerList";
 import AddFertilizer from "./components/Fertilizers/AddFertilizer";
 import UpdateFertilizer from "./components/Fertilizers/UpdateFertilizer";
 import FertilizerSupplierDashboard from "./pages/fertilizers/FertilizerSupplierDashboard";
-import FertilizerRecommendation from "./components/Fertilizers/FertilizerRecommendation";
+import CropAdvisor from "./components/Advisor/CropAdvisor";
 
 import Landing from "./pages/Landing";
+import IntroHome from "./pages/IntroHome"; // ✅ NEW (Intro first page)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Loginfertilizer from "./pages/Loginfertilizer";
+
 
 import Profile from "./components/Profile";
 import Marketplace from "./components/Marketplace";
@@ -64,9 +65,10 @@ import ChatBot from "./components/ChatBot";
 function App() {
   const location = useLocation();
 
-  // ✅ hide layout on public auth pages
+  // ✅ hide layout on public pages (intro + landing + auth)
   const hideLayout =
     location.pathname === "/" ||
+    location.pathname === "/landing" || // ✅ NEW (Landing is public and layout hidden)
     location.pathname === "/login" ||
     location.pathname === "/register" ||
     location.pathname === "/loginfertilizer";
@@ -90,10 +92,11 @@ function App() {
 
           <Routes>
             {/* ===================== PUBLIC ONLY ===================== */}
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={<IntroHome />} /> {/* ✅ Intro page first */}
+            <Route path="/landing" element={<Landing />} /> {/* ✅ then your Landing */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/loginfertilizer" element={<Loginfertilizer />} />
+           
 
             {/* ===================== PROTECTED UTILS ===================== */}
             <Route
@@ -144,11 +147,12 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
-              path="/fertilizers/recommend"
+              path="/crop-advisor"
               element={
                 <ProtectedRoute>
-                  <FertilizerRecommendation />
+                  <CropAdvisor />
                 </ProtectedRoute>
               }
             />
@@ -216,7 +220,6 @@ function App() {
               }
             />
 
-            {/* Contact Us now protected */}
             <Route
               path="/contact-us"
               element={
@@ -343,6 +346,7 @@ function App() {
             {/* ===================== FALLBACK ===================== */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+
           {!hideLayout && <ChatBot />}
           {!hideLayout && <Footer />}
         </CartProvider>

@@ -58,7 +58,7 @@ export default function FertilizerSupplierDashboard() {
             to="/fertilizers/add" 
             className="flex items-center bg-green-700 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-800 transition transform hover:-translate-y-1 active:scale-95"
           >
-            <FiPlus className="mr-2 text-xl"/> Add New Product
+            <FiPlus className="mr-2 text-xl"/> Add New Fertilizer
           </Link>
         </div>
 
@@ -98,9 +98,15 @@ export default function FertilizerSupplierDashboard() {
                       </td>
 {/* Price */}
 <td className="p-6 text-center">
-  <div className="inline-flex items-center text-green-700 font-bold bg-green-50 px-3 py-1 rounded-lg border border-green-100">
-    <span className="mr-1.5 text-[10px] font-black opacity-60">LKR</span> 
-   {f.price}
+  <div className="flex flex-col items-center gap-1">
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] text-gray-400 uppercase font-bold">Your:</span>
+      <span className="font-bold text-blue-600">Rs. {f.price}</span>
+    </div>
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] text-gray-400 uppercase font-bold">Market:</span>
+      <span className="font-black text-green-600">Rs. {f.displayPrice || (f.price + (f.price * 10 / 100))}</span>
+    </div>
   </div>
 </td>
 

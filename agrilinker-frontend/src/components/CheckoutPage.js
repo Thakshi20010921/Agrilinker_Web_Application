@@ -44,16 +44,20 @@ const CheckoutPage = () => {
         : "PRODUCT");
 
     return {
-      itemId,
-      itemType,
-      productId: itemId,
-      name: item.name,
-      quantity: item.quantity || 1,
-      price: Number(item.price) || 0,
-      farmerEmail:
-        item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
-    };
+    itemId,
+    itemType,
+    productId: item.productId || null,
+    fertilizerId: item.fertilizerId || (item.type === "fertilizer" ? item.id : null),
+    name: item.name,
+    quantity: item.quantity || 1,
+    price: Number(item.price) || 0,
+    farmerEmail:
+      item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
   };
+  };
+};
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,7 +75,9 @@ const CheckoutPage = () => {
 
     // ✅ validate ids
     const normalizedItems = cart.map(normalizeCartItem);
-    const missing = normalizedItems.find((x) => !x.itemId);
+    const missing = normalizedItems.find(
+  (x) => !x.productId && !x.fertilizerId
+);
 
     if (missing) {
       alert(
@@ -84,7 +90,8 @@ const CheckoutPage = () => {
 
     const orderData = {
       customer: { ...form },
-      items: normalizedItems, // ✅ includes itemId + itemType
+items: normalizedItems, // includes productId / fertilizerId
+
       totalAmount,
       paymentMethod,
       paymentStatus: payStatus,

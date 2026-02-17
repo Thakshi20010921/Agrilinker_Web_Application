@@ -22,7 +22,17 @@ public class CartService {
 
     public CartItem addToCart(String userId, CartItem item) {
 
-        Optional<CartItem> existing = cartRepository.findByUserIdAndProductId(userId, item.getProductId());
+        Optional<CartItem> existing = Optional.empty();
+
+        // ⭐ MARKETPLACE PRODUCT
+        if (item.getProductId() != null && !item.getProductId().isBlank()) {
+            existing = cartRepository.findByUserIdAndProductId(userId, item.getProductId());
+        }
+
+        // ⭐ FERTILIZER PRODUCT
+        else if (item.getFertilizerId() != null && !item.getFertilizerId().isBlank()) {
+            existing = cartRepository.findByUserIdAndFertilizerId(userId, item.getFertilizerId());
+        }
 
         if (existing.isPresent()) {
             CartItem cartItem = existing.get();
@@ -35,11 +45,20 @@ public class CartService {
         return cartRepository.save(item);
     }
 
-    public CartItem updateQuantity(String cartItemId, int quantity) {
+    public CartItem updateQuantity(String cartItemId, int change) {
+
         CartItem item = cartRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
 
-        item.setQuantity(quantity);
+        int newQty = item.getQuantity() + change;
+
+        // auto remove if qty becomes 0 or less
+        if (newQty <= 0) {
+            cartRepository.delete(item);
+            return null;
+        }
+
+        item.setQuantity(newQty);
         return cartRepository.save(item);
     }
 

@@ -21,6 +21,7 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [reviewProduct, setReviewProduct] = useState(null);
+const [reviewSummary, setReviewSummary] = useState({});
 
   // Advanced filters
   const [minPrice, setMinPrice] = useState("");
@@ -46,23 +47,47 @@ const Marketplace = () => {
   }, [search]);
 
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:8081/api/products");
-        const productsWithStock = response.data.map((p) => ({
-          ...p,
-          inStock: p.quantity > 0 && p.status === "available",
-        }));
-        setProducts(productsWithStock);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load products. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadProducts();
-  }, []);
+
+  const loadProducts = async () => {
+    try {
+
+      const response = await axios.get("http://localhost:8081/api/products");
+
+      const productsWithStock = response.data.map((p) => ({
+        ...p,
+        inStock: p.quantity > 0 && p.status === "available",
+      }));
+
+      setProducts(productsWithStock);
+
+      // ⭐ LOAD REVIEW SUMMARY FOR EACH PRODUCT
+      productsWithStock.forEach(p => {
+
+  // summary
+  axios.get(`http://localhost:8081/api/reviews/summary?productId=${p.id}`)
+    .then(res => {
+      setReviewSummary(prev => ({
+        ...prev,
+        [p.id]: res.data
+      }));
+    });
+
+});
+
+
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadProducts();
+
+}, []);
+
+
 
   const toggleWishlist = (id) => {
     setWishlist((prev) => {
@@ -310,6 +335,8 @@ const imageUrl = imagePath
 
 
           const id = product.id || product._id;
+          const summary = reviewSummary[id];
+
           const isWishlisted = wishlist.includes(id);
 
           return (
@@ -384,13 +411,31 @@ const imageUrl = imagePath
                   </div>
 
                   {/* Rating */}
-                  <div className="mt-2 flex items-center gap-2">
-                    <StarRating value={product.ratingAvg} />
-                    <span className="text-sm font-semibold text-gray-800">
-                      {(product.ratingAvg || 0).toFixed(1)}
-                    </span>
-                    <span className="text-xs text-gray-400">({product.ratingCount || 0})</span>
-                  </div>
+                  <div className="mt-2">
+
+  <div className="flex items-center gap-2">
+<StarRating value={summary?.totalReviews ? summary.positivePercent/20 : 0} />
+
+    <span className="text-sm font-semibold text-gray-800">
+      {summary?.totalReviews ? (summary.positivePercent/20).toFixed(1) : "0.0"
+}
+    </span>
+    <span className="text-xs text-gray-400">
+      ({summary?.totalReviews || 0})
+    </span>
+  </div>
+
+  {summary && (
+    <div className="text-xs text-gray-500 mt-1">
+      👍 {summary.positivePercent}% positive
+      {summary.topTheme && (
+        <div>Top: {summary.topTheme}</div>
+      )}
+    </div>
+  )}
+
+</div>
+
                 </div>
 
                 {/* CTA */}
@@ -441,7 +486,8 @@ const imageUrl = imagePath
           item={reviewProduct}
           type="product"
           onClose={() => setReviewProduct(null)}
-          onSubmitted={() => {}}
+          onSubmitted={() => window.location.reload()}
+
         />
       )}
     </div>

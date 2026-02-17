@@ -1,15 +1,39 @@
-// src/pages/fertilizers/FertilizerList.jsx
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { FiFilter, FiSearch, FiMapPin, FiPackage, FiTag } from "react-icons/fi";
+import { FiFilter, FiSearch, FiMapPin, FiPackage, FiTag, FiShoppingBag, FiStar, FiArrowRight, FiInfo, FiCheckCircle } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReviewModal from "../../components/ReviewModal";
 import FertilizerButton from "./FertilizerButton";
 
+const ExpandableText = ({ text, limit = 80 }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  if (text.length <= limit) {
+    return <p className="text-gray-500 text-sm mb-6 italic leading-relaxed font-medium">"{text}"</p>;
+  }
+
+  return (
+    <div className="mb-6">
+      <p className="text-gray-500 text-sm italic leading-relaxed font-medium inline">
+        "{isExpanded ? text : `${text.substring(0, limit)}...`}"
+      </p>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setIsExpanded(!isExpanded);
+        }}
+        className="ml-2 text-xs font-black uppercase tracking-tighter text-emerald-600 hover:text-emerald-800 transition-colors"
+      >
+        {isExpanded ? "Show Less" : "Read More"}
+      </button>
+    </div>
+  );
+};
+
 export default function FertilizerList() {
-  // ===== State =====
+  // ===== State (No changes here) =====
   const [fertilizers, setFertilizers] = useState([]);
   const [filteredFertilizers, setFilteredFertilizers] = useState([]);
 
@@ -21,39 +45,67 @@ export default function FertilizerList() {
 
   const { addToCart } = useContext(CartContext);
 
-  // Review modal state
   const [selectedItem, setSelectedItem] = useState(null);
   const [reviewType, setReviewType] = useState("fertilizer");
 
-  // ===== Pagination =====
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
+  const [reviewSummary, setReviewSummary] = useState({});
+
   // ===== Fetch fertilizers =====
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/fertilizers")
-      .then((res) => {
-        setFertilizers(res.data || []);
-        setFilteredFertilizers(res.data || []);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+
+  const userEmail = localStorage.getItem("email");
+
+  const url = userEmail
+    ? `http://localhost:8081/api/fertilizers?email=${userEmail}`
+    : `http://localhost:8081/api/fertilizers`;
+
+  axios.get(url)
+    .then((res) => {
+
+      const data = res.data || [];
+
+      setFertilizers(data);
+      setFilteredFertilizers(data);
+
+      // ⭐ ALWAYS LOAD REVIEW SUMMARY
+      data.forEach(f => {
+
+        const fid = f.id || f._id;
+
+        axios.get(`http://localhost:8081/api/reviews/summary?fertilizerId=${fid}`)
+          .then(r => {
+            setReviewSummary(prev => ({
+              ...prev,
+              [fid]: r.data
+            }));
+          })
+          .catch(()=>{});
+
+      });
+
+    })
+    .catch(err => console.error("API Error:", err));
+
+}, []);
+
 
   // ===== Highlight search match =====
   const highlightMatch = (text) => {
     if (!text) return "";
     if (!searchTerm) return text;
     const regex = new RegExp(`(${searchTerm})`, "gi");
-    return String(text).replace(regex, "<mark>$1</mark>");
+    return String(text).replace(regex, "<mark class='bg-yellow-200 rounded px-1'>$1</mark>");
   };
 
   // ===== Add to cart =====
   const handleBuy = (f) => {
     addToCart({
-      id: f.id || f._id,
+      fertilizerId: f.id || f._id, 
       name: f.name,
-      price: Number(f.price || 0),
+      price: Number(f.displayPrice || 0),
       unit: f.unit || "unit",
       imageUrl: f.imageUrl || "https://via.placeholder.com/300x200",
       type: "fertilizer",
@@ -62,11 +114,9 @@ export default function FertilizerList() {
     toast.success(`${f.name} added to cart!`);
   };
 
-  // ===== Filter, search, sort =====
+  // ===== Filter, search, sort (Logic Intact) =====
   useEffect(() => {
     let temp = [...fertilizers];
-
-    // search
     if (searchTerm.trim() !== "") {
       const text = searchTerm.toLowerCase();
       temp = temp.filter(
@@ -78,13 +128,10 @@ export default function FertilizerList() {
           (f.district && f.district.toLowerCase().includes(text))
       );
     }
-
-    // filters
     if (categoryFilter) temp = temp.filter((f) => f.category === categoryFilter);
     if (typeFilter) temp = temp.filter((f) => f.type === typeFilter);
     if (districtFilter) temp = temp.filter((f) => f.district === districtFilter);
 
-    // sorting
     if (sortOption === "priceLow") temp.sort((a, b) => (a.price || 0) - (b.price || 0));
     else if (sortOption === "priceHigh") temp.sort((a, b) => (b.price || 0) - (a.price || 0));
     else if (sortOption === "nameAZ") temp.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
@@ -93,191 +140,220 @@ export default function FertilizerList() {
     setCurrentPage(1);
   }, [fertilizers, searchTerm, sortOption, categoryFilter, typeFilter, districtFilter]);
 
-  // ===== Pagination calculations =====
   const totalPages = Math.ceil(filteredFertilizers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredFertilizers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6 md:p-10">
+    <div className="bg-gradient-to-br from-green-50 via-white to-emerald-50 min-h-screen p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Header & Filters */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
-          <h1 className="text-4xl font-extrabold text-green-800 border-l-8 border-green-600 pl-4">
-            Fertilizers
-          </h1>
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-6">
+          <div className="space-y-2">
+            <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-800 to-emerald-600 tracking-tight">
+              Premium Fertilizers
+            </h1>
+            <p className="text-gray-500 font-medium ml-1">Nurturing your fields with the best quality.</p>
+          </div>
 
           <div className="flex flex-wrap gap-3 items-center w-full lg:w-auto">
             <div className="relative flex-grow lg:flex-grow-0">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600" />
               <input
                 type="text"
-                placeholder="Search by name, code..."
+                placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl w-full lg:w-64 focus:ring-2 focus:ring-green-500 outline-none shadow-sm"
+                className="pl-12 pr-4 py-3 border-none bg-white rounded-2xl w-full lg:w-72 focus:ring-4 focus:ring-green-100 outline-none shadow-sm transition-all"
               />
             </div>
 
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
-            >
-              <option value="">Sort By</option>
-              <option value="priceLow">Price: Low → High</option>
-              <option value="priceHigh">Price: High → Low</option>
-              <option value="nameAZ">Name: A → Z</option>
-            </select>
+            <div className="flex gap-2">
+                <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="bg-white border-none p-3 rounded-2xl text-sm font-semibold text-gray-700 focus:ring-4 focus:ring-green-100 shadow-sm cursor-pointer transition-all">
+                    <option value="">Sort By</option>
+                    <option value="priceLow">Price: Low → High</option>
+                    <option value="priceHigh">Price: High → Low</option>
+                    <option value="nameAZ">Name: A → Z</option>
+                </select>
 
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
-            >
-              <option value="">All Categories</option>
-              <option value="Organic">Organic</option>
-              <option value="Chemical">Chemical</option>
-            </select>
-
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
-            >
-              <option value="">All Types</option>
-              <option value="Liquid">Liquid</option>
-              <option value="Granular">Granular</option>
-              <option value="Water-Soluble">Water-Soluble</option>
-              <option value="Powder">Powder</option>
-              <option value="Slow-Release">Slow-Release</option>
-            </select>
-
-            <select
-              value={districtFilter}
-              onChange={(e) => setDistrictFilter(e.target.value)}
-              className="border border-gray-200 p-2 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none shadow-sm bg-white"
-            >
-              <option value="">All Districts</option>
-              <option>Colombo</option><option>Gampaha</option><option>Kalutara</option><option>Kandy</option>
-              <option>Matale</option><option>Nuwara Eliya</option><option>Galle</option><option>Matara</option>
-              <option>Hambantota</option><option>Jaffna</option><option>Kilinochchi</option><option>Mannar</option>
-              <option>Vavuniya</option><option>Mullaitivu</option><option>Batticaloa</option><option>Ampara</option>
-              <option>Trincomalee</option><option>Kurunegala</option><option>Puttalam</option><option>Anuradhapura</option>
-              <option>Polonnaruwa</option><option>Badulla</option><option>Moneragala</option><option>Ratnapura</option>
-            </select>
+                <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-white border-none p-3 rounded-2xl text-sm font-semibold text-gray-700 focus:ring-4 focus:ring-green-100 shadow-sm cursor-pointer transition-all">
+                    <option value="">All Categories</option>
+                    <option value="Organic">Organic</option>
+                    <option value="Chemical">Chemical</option>
+                </select>
+            </div>
           </div>
+        </div>
+{/* 2. Alert Logic - Dynamic Rewards & Info ✅ */}
+<div className="max-w-7xl mx-auto mb-8">
+  {fertilizers.length > 0 && (
+    <div className="animate-fade-in">
+      {fertilizers.some(f => f.displayPrice > (f.price || 0)) ? (
+        /* No Discount  - Amber Style */
+        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/5 border-l-8 border-amber-500 p-6 rounded-[2rem] shadow-xl shadow-amber-900/5 flex items-center gap-5 backdrop-blur-sm border border-amber-100">
+          <div className="bg-amber-500 p-3 rounded-2xl text-white shadow-lg shadow-amber-200">
+            <FiInfo size={24} />
+          </div>
+          <div>
+            <h4 className="text-amber-900 font-black text-lg tracking-tight">Need a Fertilizer Discount? 💸</h4>
+            <p className="text-amber-800/80 font-bold text-sm">
+              You can get exclusive discounts by <Link to="/marketplace/add" className="underline decoration-amber-400 decoration-2 underline-offset-4 hover:text-amber-950 transition-colors">selling your farm products</Link> through our marketplace!
+            </p>
+          </div>
+        </div>
+      ) : (
+        /* Discount - Blue/Emerald Style */
+        <div className="bg-gradient-to-r from-emerald-600/10 to-blue-600/5 border-l-8 border-emerald-500 p-6 rounded-[2rem] shadow-xl shadow-green-900/5 flex items-center gap-5 backdrop-blur-sm border border-emerald-100">
+          <div className="bg-emerald-500 p-3 rounded-2xl text-white shadow-lg shadow-emerald-200">
+            <FiCheckCircle size={24} />
+          </div>
+          <div>
+            <h4 className="text-emerald-900 font-black text-lg tracking-tight">Active Farmer Rewards! 🏆</h4>
+            <p className="text-emerald-800/80 font-bold text-sm">
+              You've unlocked premium discounts because you're an active seller in our system. Keep growing with us!
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  )}
+</div>
+        {/* Filters Row 2 */}
+        <div className="flex flex-wrap gap-3 mb-10 items-center bg-white/50 backdrop-blur-md p-4 rounded-[2rem] border border-white/60 shadow-sm">
+            <div className="flex items-center gap-2 px-4 text-green-800 font-bold border-r border-green-200 mr-2">
+                <FiFilter /> <span className="text-sm uppercase tracking-wider">Advanced Filters</span>
+            </div>
+            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/80 border-none px-4 py-2 rounded-xl text-xs font-bold text-gray-600 focus:ring-2 focus:ring-green-400 shadow-sm">
+                <option value="">All Types</option>
+                <option value="Liquid">Liquid</option>
+                <option value="Granular">Granular</option>
+                <option value="Water-Soluble">Water-Soluble</option>
+                <option value="Powder">Powder</option>
+                <option value="Slow-Release">Slow-Release</option>
+            </select>
+
+            <select value={districtFilter} onChange={(e) => setDistrictFilter(e.target.value)} className="bg-white/80 border-none px-4 py-2 rounded-xl text-xs font-bold text-gray-600 focus:ring-2 focus:ring-green-400 shadow-sm">
+                <option value="">All Districts</option>
+                {["Colombo","Gampaha","Kalutara","Kandy","Matale","Nuwara Eliya","Galle","Matara","Hambantota","Jaffna","Kilinochchi","Mannar","Vavuniya","Mullaitivu","Batticaloa","Ampara","Trincomalee","Kurunegala","Puttalam","Anuradhapura","Polonnaruwa","Badulla","Moneragala","Ratnapura"].map(d => (
+                    <option key={d} value={d}>{d}</option>
+                ))}
+            </select>
         </div>
 
         {/* Action Buttons */}
         <div className="mb-10 flex flex-wrap gap-4">
           <FertilizerButton />
-          <Link
-            to="/fertilizers/recommend"
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-1"
-          >
-            Get Recommendation
-          </Link>
+          <Link 
+  to="/crop-advisor" 
+  className="text-sm font-bold text-emerald-700 hover:text-emerald-900 transition-all flex items-center gap-2 mt-4 decoration-emerald-200 underline-offset-4 hover:underline"
+>
+  <span className="bg-emerald-100 p-1 rounded-md">✨</span> 
+  Get Fertilizer Recommendations
+</Link>
         </div>
 
         {/* Fertilizer Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {currentItems.map((f) => {
             const id = f.id || f._id;
+            const summary = reviewSummary[id];
 
             return (
               <div
                 key={id}
-                className="group bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                className="group bg-white rounded-[2.5rem] overflow-hidden border border-white shadow-xl hover:shadow-2xl hover:shadow-green-100 transition-all duration-500 flex flex-col justify-between"
               >
-                <div className="p-5">
-                  <div className="relative overflow-hidden rounded-2xl mb-4">
-                   <img
-  src={
-    f.imageUrl
-      ? encodeURI(
-          f.imageUrl.startsWith("http")
-            ? f.imageUrl
-            : `http://localhost:8081/${
-                f.imageUrl.replace(/^.*uploads[\\/]/, "uploads/")
-              }`
-        )
-      : "/placeholder.jpg"
-  }
-  alt={f.name || "Fertilizer"}
-  className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
-  onError={(e) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = "/placeholder.jpg";
-  }}
-/>
-
-
-                    <div className="absolute top-3 left-3">
-                      <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-green-700 shadow-sm">
+                <div className="p-6">
+                  <div className="relative overflow-hidden rounded-[2rem] mb-6 aspect-video">
+                    <img
+                      src={f.imageUrl ? encodeURI(f.imageUrl.startsWith("http") ? f.imageUrl : `http://localhost:8081/${f.imageUrl.replace(/^.*uploads[\\/]/, "uploads/")}`) : "/placeholder.jpg"}
+                      alt={f.name || "Fertilizer"}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      onError={(e) => { e.currentTarget.src = "/placeholder.jpg"; }}
+                    />
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-green-700 shadow-sm border border-green-100">
                         {f.category}
                       </span>
                     </div>
                   </div>
 
-                  <h2
-                    className="text-2xl font-bold text-gray-800 mb-2 leading-tight"
-                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
-                  />
+                 <button
+  type="button"
+  onClick={() => { setSelectedItem(f); setReviewType("fertilizer"); }}
+  className="flex items-center gap-2 text-green-600 hover:text-green-800 font-bold text-xs uppercase tracking-widest mb-2 transition"
+>
+  <FiStar className="fill-green-600" /> Write a review
+</button>
 
-                  {/* Review */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedItem(f);
-                      setReviewType("fertilizer");
-                    }}
-                    className="text-green-600 hover:text-green-700 font-medium underline text-sm mb-4 block transition"
-                  >
-                    Write a review
-                  </button>
+{/* ⭐ REVIEW SUMMARY */}
+{summary && (
+  <div className="mb-4">
 
-                  <div className="space-y-2 mb-4 border-t border-gray-50 pt-4">
-                    <p className="flex items-center gap-2 text-sm text-gray-600">
-                      <FiTag className="text-green-600" /> 
-                      Code: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }} />
-                    </p>
-                    <p className="flex items-center gap-2 text-sm text-gray-600">
-                      <FiTag className="text-green-600" /> 
-                      Type: <span className="font-semibold" dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }} />
-                    </p>
-                    <p className="flex items-center gap-2 text-sm text-gray-600">
-                      <FiMapPin className="text-green-600" /> 
-                      District: <span className="font-semibold text-gray-800">{f.district}</span>
-                    </p>
-                    <p className="flex items-center gap-2 text-sm font-medium">
-                      <FiPackage className="text-green-600" /> 
-                      Stock: <span className={f.stock < 10 ? "text-red-600 font-bold" : "text-gray-800"}>{f.stock} {f.unit}</span>
-                    </p>
+    <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+      ⭐ {summary.totalReviews || 0} reviews
+    </div>
+
+    <div className="text-xs text-gray-500">
+      👍 {summary.positivePercent || 0}% positive
+    </div>
+
+    {summary.topTheme && (
+      <div className="text-xs text-gray-400">
+        Top: {summary.topTheme}
+      </div>
+    )}
+
+  </div>
+)}
+
+
+                    
+                  <div className="grid grid-cols-2 gap-4 mb-6 border-y border-gray-50 py-4">
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Code</span>
+                        <p className="text-sm font-bold text-gray-700 truncate" dangerouslySetInnerHTML={{ __html: highlightMatch(f.fertilizerCode) }} />
+                    </div>
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Type</span>
+                        <p className="text-sm font-bold text-gray-700 truncate" dangerouslySetInnerHTML={{ __html: highlightMatch(f.type) }} />
+                    </div>
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Location</span>
+                        <p className="text-sm font-bold text-gray-700 flex items-center gap-1"><FiMapPin className="text-green-500" /> {f.district}</p>
+                    </div>
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Inventory</span>
+                        <p className={`text-sm font-black ${f.stock < 10 ? "text-red-500 animate-pulse" : "text-gray-800"}`}>{f.stock} {f.unit}</p>
+                    </div>
                   </div>
 
-                  <p className="text-gray-500 text-sm mb-4 line-clamp-2 italic leading-relaxed">
-                    {f.description}
-                  </p>
+                  
+                      <ExpandableText text={f.description || "No description available."} limit={100} />
 
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-black text-green-700">Rs. {f.price}</span>
-                    <span className="text-sm text-gray-400 font-medium">/ {f.unit}</span>
-                    {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside
-                      ? <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full ml-2">
-                          {f.quantityInside} {f.unit === "bag" ? "kg" : "L"}
+                  <div className="flex items-end justify-between">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-gray-400 uppercase">Unit Price</span>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-3xl font-black text-green-700">Rs. {f.displayPrice}</span>
+                            <span className="text-xs text-gray-400 font-bold">/ {f.unit}</span>
+                        </div>
+                    </div>
+                    {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside && (
+                        <span className="bg-green-50 text-green-700 text-[10px] font-black px-3 py-1.5 rounded-xl border border-green-100">
+                          {f.quantityInside} {f.unit === "bag" ? "kg" : "L"} Net
                         </span>
-                      : ""}
+                    )}
                   </div>
                 </div>
 
-                <div className="p-5 pt-0">
+                <div className="p-6 pt-0">
                   <button
                     type="button"
                     onClick={() => handleBuy(f)}
-                    className="w-full bg-green-700 text-white py-3.5 rounded-2xl font-bold hover:bg-green-800 transition shadow-lg shadow-green-100 active:scale-95"
+                    className="w-full bg-gradient-to-r from-green-700 to-emerald-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:from-green-800 hover:to-emerald-700 transition-all shadow-lg shadow-green-100 active:scale-95 flex items-center justify-center gap-2"
                   >
-                    Buy Now
+                    <FiShoppingBag /> Buy Now
                   </button>
                 </div>
               </div>
@@ -287,16 +363,16 @@ export default function FertilizerList() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center mt-16 pb-10 gap-3">
+          <div className="flex justify-center items-center mt-20 pb-16 gap-3">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
                 type="button"
                 onClick={() => setCurrentPage(page)}
-                className={`w-12 h-12 flex items-center justify-center font-bold rounded-xl border transition-all duration-200 ${
+                className={`w-14 h-14 flex items-center justify-center font-black rounded-2xl transition-all duration-300 ${
                   currentPage === page
-                    ? "bg-green-700 text-white border-green-700 shadow-lg scale-110"
-                    : "bg-white text-gray-400 border-gray-200 hover:border-green-500 hover:text-green-600"
+                    ? "bg-green-700 text-white shadow-xl shadow-green-200 -translate-y-2 scale-110"
+                    : "bg-white text-gray-400 hover:bg-green-50 hover:text-green-600 shadow-sm"
                 }`}
               >
                 {page}
@@ -305,14 +381,14 @@ export default function FertilizerList() {
           </div>
         )}
 
-        {/* ✅ Review Modal */}
         {selectedItem && (
           <ReviewModal
             item={selectedItem}
             type={reviewType}
             userId={localStorage.getItem("email")}
             onClose={() => setSelectedItem(null)}
-            onSubmitted={() => {}}
+            onSubmitted={() => window.location.reload()}
+
           />
         )}
       </div>

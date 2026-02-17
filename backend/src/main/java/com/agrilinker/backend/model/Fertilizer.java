@@ -3,6 +3,7 @@ package com.agrilinker.backend.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Transient;
 
 @Document(collection = "fertilizers")
 public class Fertilizer {
@@ -24,7 +25,10 @@ public class Fertilizer {
     private int ratingCount = 0;
     private String district;
     private String supplierEmail;
-
+    private Double addedValuePercentage; // save 0%
+   
+    @Transient
+    private Double displayPrice; // calculated price
     public Fertilizer() {}
 
     public Fertilizer(String name, String description, double price, String unit,
@@ -79,4 +83,11 @@ public class Fertilizer {
     public void setRatingCount(int ratingCount) { this.ratingCount = ratingCount; }
     public String getSupplierEmail() { return supplierEmail; }
     public void setSupplierEmail(String supplierEmail) { this.supplierEmail = supplierEmail; }
+
+    public Double getAddedValuePercentage() { return addedValuePercentage; }
+    public void setAddedValuePercentage(Double addedValuePercentage) { this.addedValuePercentage = addedValuePercentage; }
+
+    public Double getDisplayPrice() { return displayPrice; }
+    public void setDisplayPrice(Double displayPrice) { this.displayPrice = displayPrice; }
+
 }

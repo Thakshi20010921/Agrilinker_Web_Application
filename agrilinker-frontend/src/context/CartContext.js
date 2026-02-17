@@ -42,19 +42,45 @@ export const CartProvider = ({ children }) => {
   const addToCart = async (item) => {
     if (!USER_ID) return;
 
-    const itemId = item.id || item._id;
+    const itemId =
+  item._id ||
+  item.id ||
+  item.productId ||
+  item.fertilizerId;
 
-    const payload = {
-      productId: item.productId || item.itemId || itemId, // supports normalized items too
-      name: item.name,
-      price: item.price,
-      unit: item.unit || "unit",
-      image:
-        item.imageUrl ||
-        (item.product_image ? `http://localhost:8081${item.product_image}` : "/images/placeholder.png"),
-      farmerEmail: item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
-      quantity: 1,
-    };
+const payload =
+  item.type === "fertilizer"
+    ? {
+        fertilizerId: itemId,
+        name: item.name,
+        price: item.price,
+        unit: item.unit || "unit",
+        image:
+          item.imageUrl ||
+          (item.product_image
+            ? `http://localhost:8081${item.product_image}`
+            : "/images/placeholder.png"),
+        farmerEmail:
+          item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
+        quantity: 1,
+      }
+    : {
+        productId: itemId,
+        name: item.name,
+        price: item.price,
+        unit: item.unit || "unit",
+        image:
+          item.imageUrl ||
+          (item.product_image
+            ? `http://localhost:8081${item.product_image}`
+            : "/images/placeholder.png"),
+        farmerEmail:
+          item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
+        quantity: 1,
+      };
+
+
+
 
     try {
       await api.post(`/cart/${USER_ID}`, payload);

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
 
+   
+boolean existsByFarmerEmail(String farmerEmail);
+
     List<Product> findByFarmerEmail(String farmerEmail);
 
 }
