@@ -19,6 +19,10 @@ import {
   Handshake,
   ShieldCheck,
   Leaf,
+  PhoneCall,
+  MessageCircle,
+  Mail,
+  Clock,
 } from "lucide-react";
 
 export default function IntroHome() {
@@ -50,8 +54,6 @@ export default function IntroHome() {
       <section className="relative pt-16 pb-12 bg-[#062016] text-white overflow-hidden">
         {/* 🌿 subtle texture */}
         <div className="absolute inset-0 z-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/leaf.png')] pointer-events-none" />
-
-        {/* ✅ basket ON BACKGROUND (no card) */}
 
         {/* ✅ leaves appear after stage 1 */}
         {stage >= 1 && <LeafBackground />}
@@ -128,23 +130,22 @@ export default function IntroHome() {
             </motion.div>
           </div>
 
-          {/* ================= RIGHT SIDE (EMPTY, just spacing) ================= */}
+          {/* ================= RIGHT SIDE ================= */}
           <div className="relative flex items-center justify-center min-h-[320px] lg:min-h-[520px]">
             <motion.img
               src={basketBadge}
               alt="Basket"
               className="
-      w-[280px] h-[280px]
-      md:w-[360px] md:h-[360px]
-      lg:w-[600px] lg:h-[600px]
-      drop-shadow-[0_25px_55px_rgba(0,0,0,0.55)]
-      select-none
-    "
+                w-[280px] h-[280px]
+                md:w-[360px] md:h-[360px]
+                lg:w-[600px] lg:h-[600px]
+                drop-shadow-[0_25px_55px_rgba(0,0,0,0.55)]
+                select-none
+              "
               animate={{ rotate: 360 }}
               transition={{ duration: 12, ease: "linear", repeat: Infinity }}
             />
           </div>
-
         </div>
 
         {/* MOVING TAPE appears with stage 2 */}
@@ -170,7 +171,8 @@ export default function IntroHome() {
                   One Platform, Every Role
                 </h2>
                 <p className="text-gray-500 text-xl">
-                  Tailored experiences for the heartbeat of the agricultural industry.
+                  Tailored experiences for the heartbeat of the agricultural
+                  industry.
                 </p>
               </div>
 
@@ -248,11 +250,12 @@ export default function IntroHome() {
           <MissionSection />
 
           {/* ================= FINAL CTA ================= */}
-          <section className="px-6 py-20 pb-32">
+          <section className="px-6 py-20 pb-16">
             <div className="max-w-7xl mx-auto bg-green-600 rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden shadow-2xl">
               <div className="relative z-10">
                 <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
-                  Start Growing with <br className="hidden md:block" /> AgriLinker Today
+                  Start Growing with <br className="hidden md:block" /> AgriLinker
+                  Today
                 </h2>
                 <button
                   onClick={() => navigate("/landing")}
@@ -266,6 +269,9 @@ export default function IntroHome() {
               <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-green-700 rounded-full opacity-50 blur-3xl"></div>
             </div>
           </section>
+
+          {/* ================= CONTACT FOOTER STRIP (NEW) ================= */}
+          <ContactFooterStrip />
         </>
       )}
     </div>
@@ -507,7 +513,9 @@ function MissionSection() {
         >
           <div className="inline-flex items-center justify-center px-8 py-5 rounded-[1.75rem] bg-green-500/90 text-[#062016] shadow-2xl">
             <div className="text-center">
-              <p className="text-sm font-semibold tracking-wide opacity-80">Our Mission</p>
+              <p className="text-sm font-semibold tracking-wide opacity-80">
+                Our Mission
+              </p>
               <h3 className="text-3xl md:text-5xl font-extrabold leading-tight">
                 Why AgriLinker Exists
               </h3>
@@ -564,8 +572,12 @@ function MissionCard({ icon, title, description, variants }) {
         </div>
       </div>
 
-      <h4 className="mt-6 text-xl md:text-2xl font-extrabold text-white">{title}</h4>
-      <p className="mt-3 text-white/85 leading-relaxed text-base md:text-lg">{description}</p>
+      <h4 className="mt-6 text-xl md:text-2xl font-extrabold text-white">
+        {title}
+      </h4>
+      <p className="mt-3 text-white/85 leading-relaxed text-base md:text-lg">
+        {description}
+      </p>
     </motion.div>
   );
 }
@@ -574,8 +586,8 @@ function FeatureCard({ icon, title, description, color, highlighted = false }) {
   return (
     <div
       className={`p-10 rounded-[2.5rem] transition-all duration-300 border ${highlighted
-        ? "border-green-200 shadow-xl ring-4 ring-green-50"
-        : "border-gray-100 hover:border-green-200 hover:shadow-lg"
+          ? "border-green-200 shadow-xl ring-4 ring-green-50"
+          : "border-gray-100 hover:border-green-200 hover:shadow-lg"
         } ${color}`}
     >
       <div className="bg-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm mb-8">
@@ -608,5 +620,132 @@ function WorkCard({ icon, title, steps }) {
         ))}
       </ul>
     </motion.div>
+  );
+}
+
+/* ================= CONTACT FOOTER STRIP (NEW) ================= */
+function ContactFooterStrip() {
+  const contacts = [
+    {
+      title: "Hotline",
+      value: "+94 11 245 8899",
+      icon: <PhoneCall className="w-6 h-6" />,
+      href: "tel:+94112458899",
+      badge: "Call us",
+    },
+    {
+      title: "WhatsApp",
+      value: "+94 77 222 3723",
+      icon: <MessageCircle className="w-6 h-6" />,
+      href: "https://wa.me/94772223723",
+      badge: "Chat now",
+    },
+    {
+      title: "Email",
+      value: "support@agrilinker.lk",
+      icon: <Mail className="w-6 h-6" />,
+      href: "mailto:support@agrilinker.lk",
+      badge: "Send mail",
+    },
+    {
+      title: "Business Hours",
+      value: "Mon - Sat, 8:00 AM to 6:00 PM",
+      icon: <Clock className="w-6 h-6" />,
+      href: null,
+      badge: "Open hours",
+    },
+  ];
+
+  return (
+    <section className="relative px-6 pb-24">
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="relative overflow-hidden rounded-[2.8rem] border border-gray-100 bg-white shadow-[0_25px_70px_rgba(0,0,0,0.06)]"
+        >
+          {/* soft blobs */}
+          <div className="absolute -top-24 -right-24 w-80 h-80 bg-green-200/40 rounded-full blur-3xl" />
+          <div className="absolute -bottom-28 -left-28 w-96 h-96 bg-emerald-200/30 rounded-full blur-3xl" />
+
+          <div className="relative z-10 p-10 md:p-14">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+              <div>
+                <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+                  Need Help? Contact AgriLinker
+                </h3>
+                <p className="mt-2 text-gray-500 text-lg">
+                  We’re happy to support you with orders, payments, and account
+                  issues.
+                </p>
+              </div>
+
+              <div className="inline-flex items-center gap-2 rounded-2xl bg-green-50 px-5 py-3 text-green-800 font-bold">
+                <Clock className="w-5 h-5" />
+                Mon - Sat • 8:00 AM - 6:00 PM
+              </div>
+            </div>
+
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {contacts.map((c, idx) => {
+                const CardInner = (
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.25 }}
+                    transition={{ duration: 0.55, delay: idx * 0.06 }}
+                    whileHover={{ y: -8 }}
+                    className="group rounded-[2.2rem] border border-gray-100 bg-white p-7 shadow-[0_18px_45px_rgba(0,0,0,0.05)] transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-700 flex items-center justify-center">
+                        {c.icon}
+                      </div>
+
+                      <span className="text-xs font-extrabold tracking-wide text-green-700 bg-green-50 px-3 py-1.5 rounded-full">
+                        {c.badge}
+                      </span>
+                    </div>
+
+                    <h4 className="mt-5 text-lg font-extrabold text-gray-900">
+                      {c.title}
+                    </h4>
+
+                    <p className="mt-2 text-gray-600 font-semibold leading-snug break-words">
+                      {c.value}
+                    </p>
+
+                    {c.href ? (
+                      <div className="mt-5 inline-flex items-center gap-2 text-green-700 font-bold">
+                        Contact{" "}
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    ) : (
+                      <div className="mt-5 text-gray-400 font-bold">Available</div>
+                    )}
+                  </motion.div>
+                );
+
+                return c.href ? (
+                  <a
+                    key={c.title}
+                    href={c.href}
+                    target={c.href.startsWith("http") ? "_blank" : undefined}
+                    rel={c.href.startsWith("http") ? "noreferrer" : undefined}
+                    className="block"
+                  >
+                    {CardInner}
+                  </a>
+                ) : (
+                  <div key={c.title}>{CardInner}</div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
   );
 }
