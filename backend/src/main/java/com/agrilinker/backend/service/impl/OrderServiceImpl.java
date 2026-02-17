@@ -87,8 +87,11 @@ public class OrderServiceImpl implements OrderService {
 
         Map<String, Object> customerPayload = new HashMap<>();
 
-        customerPayload.put("title", "Order Confirmed 🎉");
-        customerPayload.put("message", "Order " + saved.getOrderNumber() + " placed successfully.");
+        customerPayload.put("title", "Order Placed ✅");
+        customerPayload.put("message",
+                "Your order #" + saved.getOrderNumber() +
+                        " has been placed successfully. The farmer will prepare your items soon.");
+
         customerPayload.put("type", "ORDER");
         customerPayload.put("referenceId", saved.getId());
         customerPayload.put("createdAt", java.time.LocalDateTime.now());
@@ -107,8 +110,10 @@ public class OrderServiceImpl implements OrderService {
 
                 Map<String, Object> farmerPayload = new HashMap<>();
 
-                farmerPayload.put("title", "New Order Received 🛒");
-                farmerPayload.put("message", "You received order " + saved.getOrderNumber());
+                farmerPayload.put("title", "New Order Alert 📦");
+                farmerPayload.put("message",
+                        "A customer placed order #" + saved.getOrderNumber() +
+                                ". Please review and prepare the items.");
                 farmerPayload.put("type", "ORDER");
                 farmerPayload.put("referenceId", saved.getId());
                 farmerPayload.put("createdAt", java.time.LocalDateTime.now());
