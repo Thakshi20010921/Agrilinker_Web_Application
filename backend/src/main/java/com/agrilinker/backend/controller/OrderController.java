@@ -161,5 +161,10 @@ public ResponseEntity<Map<String, Double>> getPaymentBreakdown(@PathVariable Str
 
 
 
+@GetMapping("/farmer/monthly-sales/{email}")
+public ResponseEntity<List<Double>> getMonthlySales(@PathVariable String email) {
+    return ResponseEntity.ok(orderService.getMonthlySales(email));
+}
+
 
 }
