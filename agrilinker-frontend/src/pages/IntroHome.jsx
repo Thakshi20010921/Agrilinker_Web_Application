@@ -2,6 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import ChatBot from "../components/ChatBot"; // dewmini
 import {
   ShoppingCart,
   Sprout,
@@ -26,6 +27,8 @@ export default function IntroHome() {
 
   return (
     <div className="bg-white overflow-hidden font-sans selection:bg-green-200">
+      {/* dewmini ✅ CHATBOT - පේජ් එකේ හැමතැනටම පේන විදිහට උඩින්ම තියෙනවා */}
+      <ChatBot />
       {/* ================= HERO SECTION ================= */}
       <section className="relative pt-32 pb-24 bg-[#062016] text-white overflow-hidden">
         {/* 🌿 Subtle Background Pattern */}
