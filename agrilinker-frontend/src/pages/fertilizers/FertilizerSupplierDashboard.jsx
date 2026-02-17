@@ -58,7 +58,7 @@ export default function FertilizerSupplierDashboard() {
             to="/fertilizers/add" 
             className="flex items-center bg-green-700 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-800 transition transform hover:-translate-y-1 active:scale-95"
           >
-            <FiPlus className="mr-2 text-xl"/> Add New Product
+            <FiPlus className="mr-2 text-xl"/> Add New Fertilizer
           </Link>
         </div>
 

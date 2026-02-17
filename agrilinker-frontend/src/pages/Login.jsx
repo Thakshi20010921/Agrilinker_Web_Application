@@ -63,8 +63,26 @@ export default function Login() {
       );
 
       
+/*Dewmini start */
 localStorage.setItem("email", userEmail); 
 
+if (roles && roles.length > 0) {
+    const roleList = roles.map(r => normalizeRole(r));
+    
+    let roleToSave;
+    
+    // 1. එයාට roles කිහිපයක් තිබුණත්, ඒ අතර FERTILIZERSUPPLIER ඉන්නවා නම් එයාට ප්‍රමුඛතාවය දෙමු
+    if (roleList.includes("FERTILIZERSUPPLIER")) {
+        roleToSave = "FERTILIZERSUPPLIER";
+    } 
+    // 2. එහෙම නැත්නම් ලිස්ට් එකේ පළවෙනි එක ගමු
+    else {
+        roleToSave = roleList[0];
+    }
+    
+    localStorage.setItem("role", roleToSave);
+}
+/*Dewmini closed */
 toast.success("Login successful 🎉");
       // ✅ if roles are not any of these => block
       if (!hasAnyAllowedRole(roles)) {
