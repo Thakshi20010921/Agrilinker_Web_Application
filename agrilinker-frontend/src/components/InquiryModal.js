@@ -99,7 +99,7 @@ const InquiryModal = ({ product, onClose }) => {
               <span className="text-emerald-700 text-xs font-bold uppercase tracking-wider">
                 Location
               </span>
-              <span className="text-slate-700 font-medium">
+              <span className="text-slate-800 font-medium">
                 {product.location}
               </span>
             </div>
@@ -108,7 +108,7 @@ const InquiryModal = ({ product, onClose }) => {
               <span className="text-emerald-700 text-xs font-bold uppercase tracking-wider">
                 Your Identity
               </span>
-              <span className="text-emerald-600 font-medium truncate ml-4 text-sm">
+              <span className="text-slate-800 font-medium truncate ml-4 text-sm">
                 {buyerEmail}
               </span>
             </div>
@@ -116,7 +116,7 @@ const InquiryModal = ({ product, onClose }) => {
               <span className="text-emerald-700 text-xs font-bold uppercase tracking-wider">
                 Your Name
               </span>
-              <span className="text-emerald-600 font-medium truncate ml-4 text-sm">
+              <span className="text-slate-800 font-medium truncate ml-4 text-sm">
                 {buyerName}
               </span>
             </div>
