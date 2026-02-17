@@ -147,13 +147,14 @@ const InquiryList = () => {
                 {[
                   { name: "Dashboard", path: "/farmer/dashboard" },
                   { name: "Add Product", path: "/farmer/add-product2" },
-                  { name: "My Orders", path: "/orders" },
+                  { name: "My Orders", path: "/farmer/orders" },
                   { name: "My Products", path: "/farmer/my-products" },
+                  { name: "Sales Histoty", path: "/farmer/sales-history" },
                 ].map((item) => (
                   <button
                     key={item.name}
                     onClick={() => navigate(item.path)}
-                    className="w-[250px] text-lg h-[100px] bg-emerald-800 hover:bg-emerald-700 text-white font-semibold py-3 rounded-[50px] transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
+                    className="w-[250px] text-lg h-[100px] bg-[#29ab87] hover:bg-emerald-700 text-white font-semibold py-3 rounded-[50px] transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
                   >
                     {item.name}
                   </button>

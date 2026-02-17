@@ -14,7 +14,7 @@ const InquiryItem = ({ inquiry, onReplyClick }) => {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-[40px] p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col md:flex-row justify-between gap-6">
+    <div className="bg-white border border-slate-200 rounded-[20px] p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col md:flex-row justify-between gap-6">
       {/* LEFT SECTION */}
       <div className="flex-1 space-y-3">
         {/* Top Row */}
@@ -54,7 +54,7 @@ const InquiryItem = ({ inquiry, onReplyClick }) => {
       <div className="flex md:flex-col justify-between md:items-end items-center gap-4 md:min-w-[140px]">
         {/* Status Badge */}
         <span
-          className={`px-3 py-1 rounded-full text-xl font-semibold border flex items-center justify-centerw-[950px] h-[50px] ${
+          className={`px-3 py-1 rounded-full text-lg font-semibold border flex items-center justify-centerw-[950px] h-[35px] ${
             status === "OPEN"
               ? "bg-amber-50 text-amber-600 border-amber-200"
               : "bg-emerald-50 text-emerald-600 border-emerald-200"
@@ -67,7 +67,7 @@ const InquiryItem = ({ inquiry, onReplyClick }) => {
         {status === "OPEN" && (
           <button
             onClick={onReplyClick}
-            className="bg-emerald-600  font-bold hover:bg-emerald-700 text-white text-[19px] font-medium px-4 py-2 rounded-lg transition duration-200"
+            className="bg-emerald-600  font-bold hover:bg-emerald-700 text-white text-[17px] font-medium px-4 py-2 rounded-lg transition duration-200"
           >
             Reply
           </button>

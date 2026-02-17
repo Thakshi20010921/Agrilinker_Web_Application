@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const FarmerOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Modal එක සඳහා state
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -88,117 +90,141 @@ const FarmerOrders = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <main className="flex-1 p-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <header className="mb-10">
-            <h1 className="text-3xl font-black text-emerald-950">
-              Incoming Orders
-            </h1>
-            <p className="text-slate-70 font-medium">
-              Manage your sales and deliveries
-            </p>
-          </header>
+    <div className="min-h-screen bg-slate-50 p-6 md:p-10">
+      <div className="max-w-8xl mx-auto">
+        {/* Header */}
+        <header className="mb-10">
+          <h1 className="text-5xl font-black text-emerald-950">
+            Incoming Orders
+          </h1>
+          <p className="text-emerald-600 font-medium">
+            Manage your sales and deliveries
+          </p>
+        </header>
 
-          {/* Loading */}
-          {loading && (
-            <div className="text-center py-20">
-              <p className="text-slate-500 font-medium">Loading orders...</p>
-            </div>
-          )}
-
-          {/* Orders List */}
-          <div className="grid gap-6">
-            {!loading &&
-              orders.map((order) => (
-                <div
-                  key={order._id}
-                  className="bg-white p-6 rounded-[2rem] shadow-sm border border-emerald-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-                >
-                  {/* Order ID */}
-                  <div className="flex-1">
-                    <span className="text-xs font-bold text-slate-400 uppercase">
-                      Order ID
-                    </span>
-
-                    <h3 className="text-lg font-bold text-emerald-900">
-                      #{order.orderNumber} {/* .slice(-6)*/}
-                    </h3>
-
-                    <p className="text-sm text-slate-500">
-                      {order.orderDate
-                        ? new Date(order.orderDate).toLocaleDateString()
-                        : "No date"}
-                    </p>
-                  </div>
-
-                  {/* Customer */}
-                  <div className="flex-1">
-                    <span className="text-xs font-bold text-slate-400 uppercase">
-                      Customer
-                    </span>
-
-                    <p className="font-bold text-slate-700">
-                      {order.customer?.name || "Unknown"}
-                    </p>
-
-                    <p className="text-xs text-slate-500">
-                      {order.customer?.address || "No address"}
-                    </p>
-                  </div>
-
-                  {/* Items */}
-                  <div className="flex-1">
-                    <span className="text-xs font-bold text-slate-400 uppercase">
-                      Items
-                    </span>
-
-                    <p className="text-sm font-bold text-emerald-700">
-                      {order.items?.length || 0} Products • LKR{" "}
-                      {order.totalAmount}
-                    </p>
-
-                    <p className="text-xs text-slate-400">
-                      Paid via {order.paymentMethod}
-                    </p>
-                  </div>
-
-                  <div className="flex-1">
-                    <span className="text-xs font-bold text-slate-400 uppercase">
-                      Status
-                    </span>
-
-                    <p className="font-bold text-slate-700">{order.status}</p>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex gap-2">
-                    {/*<button className="px-5 py-2.5 bg-emerald-100 text-emerald-700 font-bold rounded-xl hover:bg-emerald-200 transition-all text-sm">
-                      Accept Order
-                    </button>*/}
-
-                    <button
-                      onClick={() => openOrderDetails(order)}
-                      className="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm"
-                    >
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-            {/* No orders */}
-            {!loading && orders.length === 0 && (
-              <div className="text-center py-20 bg-white rounded-[2.5rem] border border-dashed border-slate-300">
-                <p className="text-slate-400 font-medium">
+        <div className="flex flex-col lg:flex-row gap-10 bg-slate-100 p-6 md:p-10 rounded-[30px]">
+          {/* MAIN CONTENT AREA */}
+          <div className="flex-1">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[30px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-emerald-600"></div>
+                <p className="mt-4 text-emerald-600 font-bold">
+                  Loading orders...
+                </p>
+              </div>
+            ) : orders.length === 0 ? (
+              <div className="text-center py-24 bg-white rounded-[30px] border border-dashed border-slate-300">
+                <div className="text-6xl mb-4 opacity-20">📦</div>
+                <p className="text-slate-400 text-lg font-medium">
                   No orders received yet.
                 </p>
               </div>
+            ) : (
+              <div className="grid gap-6">
+                {orders.map((order) => (
+                  <div
+                    key={order._id}
+                    className="bg-white p-6 rounded-[2rem] shadow-sm border border-emerald-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:shadow-md transition-all"
+                  >
+                    <div className="flex-1">
+                      <span className="text-xs font-bold text-slate-400 uppercase">
+                        Order ID
+                      </span>
+                      <h3 className="text-lg font-bold text-slate-700">
+                        #{order.orderNumber}
+                      </h3>
+                      <p className="text-sm textblack">
+                        {order.orderDate
+                          ? new Date(order.orderDate).toLocaleDateString()
+                          : "No date"}
+                      </p>
+                    </div>
+
+                    <div className="flex-1">
+                      <span className="text-xs font-bold text-slate-400 uppercase">
+                        Customer
+                      </span>
+                      <p className="font-bold text-slate-700">
+                        {order.customer?.name || "Unknown"}
+                      </p>
+                      <p className="text-xs text-black truncate max-w-[120px]">
+                        {order.customer?.address || "No address"}
+                      </p>
+                    </div>
+
+                    <div className="flex-1">
+                      <span className="text-xs font-bold text-slate-400 uppercase">
+                        Items
+                      </span>
+                      <p className="text-sm font-bold text-slate-700">
+                        {order.items?.filter(
+                          (item) => item.farmerEmail === farmerEmail,
+                        ).length || 0}{" "}
+                        Products • LKR{" "}
+                        {order.items
+                          ?.filter((item) => item.farmerEmail === farmerEmail)
+                          .reduce(
+                            (total, item) => total + item.price * item.quantity,
+                            0,
+                          )
+                          .toLocaleString()}
+                      </p>
+                      <p className="text-xs text-black">
+                        Paid via {order.paymentMethod}
+                      </p>
+                    </div>
+
+                    <div className="flex-1">
+                      <span className="text-xs font-bold text-slate-400 uppercase">
+                        Status
+                      </span>
+                      <p className="font-bold text-emerald-600">
+                        {order.status}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openOrderDetails(order)}
+                        className="px-5 py-2.5 bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold rounded-xl hover:bg-emerald-100 transition-all text-sm active:scale-95"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
+
+          {/* RIGHT NAVIGATION SIDEBAR */}
+          <div className="lg:w-1/4 h-fit space-y-4">
+            <div className="flex flex-col items-center space-y-6">
+              {[
+                { name: "Dashboard", path: "/farmer/dashboard" },
+                { name: "Add Product", path: "/farmer/add-product2" },
+                { name: "My Orders", path: "/farmer/orders" },
+                { name: "My Products", path: "/farmer/my-products" },
+                { name: "My request", path: "/farmer/inquiries" },
+                { name: "Sales History", path: "/farmer/sales-history" },
+              ].map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => navigate(item.path)}
+                  className={`flex items-center justify-center w-full max-w-[240px] h-[100px] text-lg rounded-full font-bold transition-all duration-300 active:scale-95 shadow-lg border 
+                  ${
+                    item.name === "My Orders"
+                      ? "bg-emerald-800 text-white border-transparent shadow-emerald-200"
+                      : "bg-[#29ab87] text-white hover:bg-emerald-400 border-transparent shadow-emerald-100"
+                  }`}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* --- Detailed Order Modal --- */}
       {/* --- Professional Order Modal --- */}
@@ -258,7 +284,7 @@ const FarmerOrders = () => {
                     Customer Details
                   </h4>
                   <div className="space-y-1">
-                    <p className=" text-slate-900">
+                    <p className=" px-6 py-5 text-slate-600 font-medium">
                       {selectedOrder.customer?.name}
                     </p>
                     <p className="text-[15px] text-slate-900">
@@ -322,22 +348,24 @@ const FarmerOrders = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
-                      {selectedOrder.items?.map((item, idx) => (
-                        <tr
-                          key={idx}
-                          className="hover:bg-slate-50/30 transition-colors"
-                        >
-                          <td className="px-4 py-4 text-[14px]  text-slate-800">
-                            {item.name || "Product"}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-slate-600 text-center">
-                            {item.quantity}
-                          </td>
-                          <td className="px-4 py-4 text-sm font-semibold text-slate-900 text-right">
-                            LKR {(item.price * item.quantity).toLocaleString()}
-                          </td>
-                        </tr>
-                      ))}
+                      {selectedOrder.items
+                        ?.filter((item) => item.farmerEmail === farmerEmail)
+                        .map((item, idx) => (
+                          <tr key={idx}>
+                            <td className="px-4 py-4 text-[14px] text-slate-800">
+                              {item.name}
+                            </td>
+
+                            <td className="px-4 py-4 text-sm text-center">
+                              {item.quantity}
+                            </td>
+
+                            <td className="px-4 py-4 text-sm font-semibold text-right">
+                              LKR{" "}
+                              {(item.price * item.quantity).toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -383,7 +411,11 @@ const FarmerOrders = () => {
                   Total Amount
                 </p>
                 <p className="text-2xl font-black text-emerald-600">
-                  LKR {selectedOrder.totalAmount?.toLocaleString()}
+                  LKR{" "}
+                  {selectedOrder.items
+                    ?.filter((item) => item.farmerEmail === farmerEmail)
+                    .reduce((sum, item) => sum + item.price * item.quantity, 0)
+                    .toLocaleString()}
                 </p>
               </div>
               <div className="flex gap-3">
