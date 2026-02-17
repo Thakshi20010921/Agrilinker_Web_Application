@@ -25,4 +25,6 @@ public class CartItem {
     private String unit;
     private String image;
     private String farmerEmail;
+    private String fertilizerId;
+
 }

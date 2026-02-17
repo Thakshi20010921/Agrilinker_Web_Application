@@ -78,7 +78,7 @@ export default function FertilizerList() {
   // ===== Add to cart =====
   const handleBuy = (f) => {
     addToCart({
-      id: f.id || f._id,
+      fertilizerId: f.id || f._id, 
       name: f.name,
       price: Number(f.displayPrice || 0),
       unit: f.unit || "unit",

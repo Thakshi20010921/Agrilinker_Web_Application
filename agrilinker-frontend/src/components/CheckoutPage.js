@@ -32,26 +32,18 @@ const CheckoutPage = () => {
 
   // ✅ Normalize ID + TYPE for both Product & Fertilizer
   const normalizeCartItem = (item) => {
-    const itemId = item.productId || item.fertilizerId || item.id || item._id;
 
-    // Best: if your cart item already has item.type use it
-    // Otherwise infer: fertilizers you add should set type: "FERTILIZER"
-    const itemType =
-      item.type ||
-      item.itemType ||
-      (item.fertilizerId || item.type === "fertilizer"
-        ? "FERTILIZER"
-        : "PRODUCT");
+  return {
+    productId: item.productId || null,
+    fertilizerId: item.fertilizerId || (item.type === "fertilizer" ? item.id : null),
 
-    return {
-      itemId,
-      itemType,
-      name: item.name,
-      quantity: item.quantity || 1,
-      price: Number(item.price) || 0,
-      farmerEmail: item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
-    };
+    name: item.name,
+    quantity: item.quantity || 1,
+    price: Number(item.price) || 0
   };
+};
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +61,9 @@ const CheckoutPage = () => {
 
     // ✅ validate ids
     const normalizedItems = cart.map(normalizeCartItem);
-    const missing = normalizedItems.find((x) => !x.itemId);
+    const missing = normalizedItems.find(
+  (x) => !x.productId && !x.fertilizerId
+);
 
     if (missing) {
       alert(
@@ -82,7 +76,8 @@ const CheckoutPage = () => {
 
     const orderData = {
       customer: { ...form },
-      items: normalizedItems, // ✅ includes itemId + itemType
+items: normalizedItems, // includes productId / fertilizerId
+
       totalAmount,
       paymentMethod,
       paymentStatus: payStatus,

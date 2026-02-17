@@ -38,31 +38,46 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order createOrder(Order order) {
 
-        // attach farmer emails to each order item
+        // attach farmer emails + update stock
         for (OrderItem item : order.getItems()) {
 
+            String farmerEmail = null;
+
+            // ---------- PRODUCT ----------
             if (item.getProductId() != null && !item.getProductId().isBlank()) {
 
-                String farmerEmail = null;
-
-                // Try product first
                 Optional<Product> productOpt = productRepository.findById(item.getProductId());
 
                 if (productOpt.isPresent()) {
-                    farmerEmail = productOpt.get().getfarmerEmail();
-                } else {
 
-                    Optional<Fertilizer> fertOpt = fertilizerRepository.findById(item.getProductId());
+                    Product product = productOpt.get();
+                    farmerEmail = product.getfarmerEmail();
 
-                    if (fertOpt.isPresent()) {
-                        farmerEmail = fertOpt.get().getSupplierEmail();
+                    int newQty = product.getQuantity() - item.getQuantity();
+                    product.setQuantity(newQty);
+                    productRepository.save(product);
+                }
+            }
+
+            // ---------- FERTILIZER ----------
+            if (item.getFertilizerId() != null && !item.getFertilizerId().isBlank()) {
+
+                Optional<Fertilizer> fertOpt = fertilizerRepository.findById(item.getFertilizerId());
+
+                if (fertOpt.isPresent()) {
+
+                    Fertilizer fert = fertOpt.get();
+                    farmerEmail = fert.getSupplierEmail();
+
+                    if (fert.getStock() != null) {
+                        fert.setStock(fert.getStock() - item.getQuantity());
+                        fertilizerRepository.save(fert);
                     }
                 }
-
-                System.out.println("Detected farmer email = " + farmerEmail);
-                item.setfarmerEmail(farmerEmail);
-
             }
+
+            System.out.println("Detected farmer email = " + farmerEmail);
+            item.setfarmerEmail(farmerEmail);
         }
 
         Order saved;
@@ -76,7 +91,6 @@ public class OrderServiceImpl implements OrderService {
                     saved = orderRepository.save(order);
                     break;
                 } catch (DuplicateKeyException e) {
-                    // retry automatically
                 }
             }
 
@@ -84,12 +98,7 @@ public class OrderServiceImpl implements OrderService {
             saved = orderRepository.save(order);
         }
 
-        /*
-         * ======================================================
-         * 🔔 SEND NOTIFICATION TO CUSTOMER (PRODUCTION FORMAT)
-         * ======================================================
-         */
-
+        // CUSTOMER NOTIFICATION
         Notification customerNotification = Notification.builder()
                 .userEmail(saved.getCustomer().getEmail())
                 .title("Order Placed ✅")
@@ -102,16 +111,9 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         notificationRepository.save(customerNotification);
-
-        // send realtime SSE
         sse.sendToUser(customerNotification.getUserEmail(), customerNotification);
 
-        /*
-         * ======================================================
-         * 🔔 SEND NOTIFICATION TO ALL FARMERS IN THIS ORDER
-         * ======================================================
-         */
-
+        // FARMER NOTIFICATIONS
         for (OrderItem item : saved.getItems()) {
 
             if (item.getfarmerEmail() != null && !item.getfarmerEmail().isBlank()) {
@@ -119,8 +121,7 @@ public class OrderServiceImpl implements OrderService {
                 Notification farmerNotification = Notification.builder()
                         .userEmail(item.getfarmerEmail())
                         .title("New Order Alert 📦")
-                        .message("A customer placed order #" + saved.getOrderNumber()
-                                + ". Please review and prepare the items.")
+                        .message("A customer placed order #" + saved.getOrderNumber())
                         .type("ORDER")
                         .referenceId(saved.getId())
                         .read(false)
@@ -128,8 +129,6 @@ public class OrderServiceImpl implements OrderService {
                         .build();
 
                 notificationRepository.save(farmerNotification);
-
-                // realtime SSE
                 sse.sendToUser(farmerNotification.getUserEmail(), farmerNotification);
             }
         }

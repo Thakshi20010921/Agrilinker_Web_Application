@@ -48,19 +48,38 @@ export const CartProvider = ({ children }) => {
   item.productId ||
   item.fertilizerId;
 
-const payload = {
-  productId: itemId,
-  name: item.name,
-  price: item.price,
-  unit: item.unit || "unit",
-  image:
-    item.imageUrl ||
-    (item.product_image
-      ? `http://localhost:8081${item.product_image}`
-      : "/images/placeholder.png"),
-  farmerEmail: item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
-  quantity: 1,
-};
+const payload =
+  item.type === "fertilizer"
+    ? {
+        fertilizerId: itemId,
+        name: item.name,
+        price: item.price,
+        unit: item.unit || "unit",
+        image:
+          item.imageUrl ||
+          (item.product_image
+            ? `http://localhost:8081${item.product_image}`
+            : "/images/placeholder.png"),
+        farmerEmail:
+          item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
+        quantity: 1,
+      }
+    : {
+        productId: itemId,
+        name: item.name,
+        price: item.price,
+        unit: item.unit || "unit",
+        image:
+          item.imageUrl ||
+          (item.product_image
+            ? `http://localhost:8081${item.product_image}`
+            : "/images/placeholder.png"),
+        farmerEmail:
+          item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
+        quantity: 1,
+      };
+
+
 
 
     try {

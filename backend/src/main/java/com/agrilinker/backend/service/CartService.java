@@ -22,7 +22,17 @@ public class CartService {
 
     public CartItem addToCart(String userId, CartItem item) {
 
-        Optional<CartItem> existing = cartRepository.findByUserIdAndProductId(userId, item.getProductId());
+        Optional<CartItem> existing = Optional.empty();
+
+        // ⭐ MARKETPLACE PRODUCT
+        if (item.getProductId() != null && !item.getProductId().isBlank()) {
+            existing = cartRepository.findByUserIdAndProductId(userId, item.getProductId());
+        }
+
+        // ⭐ FERTILIZER PRODUCT
+        else if (item.getFertilizerId() != null && !item.getFertilizerId().isBlank()) {
+            existing = cartRepository.findByUserIdAndFertilizerId(userId, item.getFertilizerId());
+        }
 
         if (existing.isPresent()) {
             CartItem cartItem = existing.get();
