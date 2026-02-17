@@ -26,31 +26,46 @@ export default function FertilizerList() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
+  const [reviewSummary, setReviewSummary] = useState({});
+
   // ===== Fetch fertilizers =====
   useEffect(() => {
-    const userEmail = localStorage.getItem("email"); 
-    
-    // මේ log එකෙන් බලාගන්න පුළුවන් email එක ඇත්තටම එනවද කියලා
-    console.log("Current Logged-in Email:", userEmail); 
 
-    if (userEmail) {
-        axios
-          .get(`http://localhost:8081/api/fertilizers?email=${userEmail}`)
-          .then((res) => {
-            setFertilizers(res.data || []);
-            setFilteredFertilizers(res.data || []);
+  const userEmail = localStorage.getItem("email");
+
+  const url = userEmail
+    ? `http://localhost:8081/api/fertilizers?email=${userEmail}`
+    : `http://localhost:8081/api/fertilizers`;
+
+  axios.get(url)
+    .then((res) => {
+
+      const data = res.data || [];
+
+      setFertilizers(data);
+      setFilteredFertilizers(data);
+
+      // ⭐ ALWAYS LOAD REVIEW SUMMARY
+      data.forEach(f => {
+
+        const fid = f.id || f._id;
+
+        axios.get(`http://localhost:8081/api/reviews/summary?fertilizerId=${fid}`)
+          .then(r => {
+            setReviewSummary(prev => ({
+              ...prev,
+              [fid]: r.data
+            }));
           })
-          .catch((err) => console.error("API Error:", err));
-    } else {
-        // Email එක නැතිනම් සාමාන්‍ය විදිහට call කරන්න (එතකොට 10% වැඩි මිල පේයි)
-        axios.get(`http://localhost:8081/api/fertilizers`)
-          .then((res) => {
-            setFertilizers(res.data || []);
-            setFilteredFertilizers(res.data || []);
-          })
-          .catch((err) => console.error(err));
-    }
+          .catch(()=>{});
+
+      });
+
+    })
+    .catch(err => console.error("API Error:", err));
+
 }, []);
+
 
   // ===== Highlight search match =====
   const highlightMatch = (text) => {
@@ -216,6 +231,8 @@ export default function FertilizerList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {currentItems.map((f) => {
             const id = f.id || f._id;
+            const summary = reviewSummary[id];
+
             return (
               <div
                 key={id}
@@ -236,19 +253,37 @@ export default function FertilizerList() {
                     </div>
                   </div>
 
-                  <h2
-                    className="text-2xl font-black text-gray-800 mb-3 leading-tight group-hover:text-green-700 transition-colors"
-                    dangerouslySetInnerHTML={{ __html: highlightMatch(f.name) }}
-                  />
+                 <button
+  type="button"
+  onClick={() => { setSelectedItem(f); setReviewType("fertilizer"); }}
+  className="flex items-center gap-2 text-green-600 hover:text-green-800 font-bold text-xs uppercase tracking-widest mb-2 transition"
+>
+  <FiStar className="fill-green-600" /> Write a review
+</button>
 
-                  <button
-                    type="button"
-                    onClick={() => { setSelectedItem(f); setReviewType("fertilizer"); }}
-                    className="flex items-center gap-2 text-green-600 hover:text-green-800 font-bold text-xs uppercase tracking-widest mb-6 transition"
-                  >
-                    <FiStar className="fill-green-600" /> Write a review
-                  </button>
+{/* ⭐ REVIEW SUMMARY */}
+{summary && (
+  <div className="mb-4">
 
+    <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+      ⭐ {summary.totalReviews || 0} reviews
+    </div>
+
+    <div className="text-xs text-gray-500">
+      👍 {summary.positivePercent || 0}% positive
+    </div>
+
+    {summary.topTheme && (
+      <div className="text-xs text-gray-400">
+        Top: {summary.topTheme}
+      </div>
+    )}
+
+  </div>
+)}
+
+
+                    
                   <div className="grid grid-cols-2 gap-4 mb-6 border-y border-gray-50 py-4">
                     <div className="space-y-1">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Code</span>
@@ -328,7 +363,8 @@ export default function FertilizerList() {
             type={reviewType}
             userId={localStorage.getItem("email")}
             onClose={() => setSelectedItem(null)}
-            onSubmitted={() => {}}
+            onSubmitted={() => window.location.reload()}
+
           />
         )}
       </div>
