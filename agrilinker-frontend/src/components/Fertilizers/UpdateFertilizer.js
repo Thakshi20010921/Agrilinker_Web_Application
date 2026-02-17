@@ -24,7 +24,7 @@ export default function UpdateFertilizer() {
 
   const [uploading, setUploading] = useState(false);
 
-  // 1. පරණ දත්ත load කිරීම
+  // 1. loading old data
   useEffect(() => {
     axios.get(`http://localhost:8081/api/fertilizers/${id}`)
       .then(res => {

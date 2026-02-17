@@ -10,13 +10,13 @@ public class CropAdvisorService {
 
     private final ChatClient chatClient;
 
-    // ChatBot එකට පාවිච්චි කරපු ChatClient එකම මෙතනටත් Inject වෙනවා
+    // inject ChatClient which used for chatbot
     public CropAdvisorService(ChatClient.Builder builder) {
         this.chatClient = builder.build();
     }
 
     public RecommendationResponse getAnalysis(RecommendationRequest request) {
-    // AI එකට දෙන නියෝගය - Prompt එක දියුණු කර ඇත
+    // prompt
     String message = String.format(
         "Act as a professional Sri Lankan agronomist. The user provided the crop as: '%s'. " +
         "Even if the spelling is slightly wrong or it's a common name like 'Bandakka', identify it correctly. " +

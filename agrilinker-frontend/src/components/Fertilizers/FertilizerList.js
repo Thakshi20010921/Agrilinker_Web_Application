@@ -10,7 +10,6 @@ import FertilizerButton from "./FertilizerButton";
 const ExpandableText = ({ text, limit = 80 }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  // පෙළ සීමාවට වඩා අඩු නම් නිකන්ම පෙන්වන්න
   if (text.length <= limit) {
     return <p className="text-gray-500 text-sm mb-6 italic leading-relaxed font-medium">"{text}"</p>;
   }
@@ -190,7 +189,7 @@ export default function FertilizerList() {
   {fertilizers.length > 0 && (
     <div className="animate-fade-in">
       {fertilizers.some(f => f.displayPrice > (f.price || 0)) ? (
-        /* Discount නැති අයට - Amber Style */
+        /* No Discount  - Amber Style */
         <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/5 border-l-8 border-amber-500 p-6 rounded-[2rem] shadow-xl shadow-amber-900/5 flex items-center gap-5 backdrop-blur-sm border border-amber-100">
           <div className="bg-amber-500 p-3 rounded-2xl text-white shadow-lg shadow-amber-200">
             <FiInfo size={24} />
@@ -203,7 +202,7 @@ export default function FertilizerList() {
           </div>
         </div>
       ) : (
-        /* Discount ලැබුණු අයට - Blue/Emerald Style */
+        /* Discount - Blue/Emerald Style */
         <div className="bg-gradient-to-r from-emerald-600/10 to-blue-600/5 border-l-8 border-emerald-500 p-6 rounded-[2rem] shadow-xl shadow-green-900/5 flex items-center gap-5 backdrop-blur-sm border border-emerald-100">
           <div className="bg-emerald-500 p-3 rounded-2xl text-white shadow-lg shadow-emerald-200">
             <FiCheckCircle size={24} />
@@ -329,8 +328,8 @@ export default function FertilizerList() {
                     </div>
                   </div>
 
-                  {/* පරණ <p> tags ඔක්කොම අයින් කරලා මේක විතරක් දාන්න */}
-<ExpandableText text={f.description || "No description available."} limit={100} />
+                  
+                      <ExpandableText text={f.description || "No description available."} limit={100} />
 
                   <div className="flex items-end justify-between">
                     <div className="flex flex-col">

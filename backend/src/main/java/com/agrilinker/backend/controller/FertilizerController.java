@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/fertilizers")
-@CrossOrigin(origins = "http://localhost:3000") // Frontend එකත් එක්ක connect වෙන්න
+@CrossOrigin(origins = "http://localhost:3000") // connect to frontend
 public class FertilizerController {
 
     @Autowired
@@ -128,7 +128,7 @@ public class FertilizerController {
     // ======================================================
     @GetMapping
 public ResponseEntity<List<Fertilizer>> getAllFertilizers(@RequestParam(required = false) String email) {
-    // email එක ආවොත් ඒක service එකට යවනවා, නැත්නම් null යවනවා
+    
     return ResponseEntity.ok(fertilizerService.getAllFertilizersForUser(email));
 }
 
@@ -153,32 +153,6 @@ public ResponseEntity<List<Fertilizer>> getAllFertilizers(@RequestParam(required
         return ResponseEntity.noContent().build();
     }
 
-    // ======================================================
-    // ✅ FERTILIZER RECOMMENDATION
-    // ======================================================
-    /*@PostMapping("/recommend")
-    public ResponseEntity<String> recommendFertilizer(
-            @Valid @RequestBody FertilizerRecommendationRequest request) {
-
-        String recommendation = getRecommendation(
-                request.getCropType(),
-                request.getSoilType(),
-                request.getGrowthStage());
-
-        return ResponseEntity.ok(recommendation);
-    }*/
-
-  /*   private String getRecommendation(String crop, String soil, String stage) {
-        if (crop.equalsIgnoreCase("Rice") && soil.equalsIgnoreCase("Clay")) {
-            return "Recommended Fertilizers: Urea + Potash";
-        } else if (crop.equalsIgnoreCase("Tea") && soil.equalsIgnoreCase("Loamy")) {
-            return "Recommended Fertilizers: Nitrogen + Magnesium";
-        } else if (crop.equalsIgnoreCase("Coconut") && soil.equalsIgnoreCase("Sandy")) {
-            return "Recommended Fertilizers: NPK + Boron";
-        } else if (crop.equalsIgnoreCase("Vegetables") && soil.equalsIgnoreCase("Loamy")) {
-            return "Recommended Fertilizers: Compost + Nitrogen";
-        } else {
-            return "No specific recommendation found. Consult agronomist.";
-        }
-    }*/
+    
+  
 }

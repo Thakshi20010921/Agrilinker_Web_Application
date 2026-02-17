@@ -71,11 +71,11 @@ if (roles && roles.length > 0) {
     
     let roleToSave;
     
-    // 1. එයාට roles කිහිපයක් තිබුණත්, ඒ අතර FERTILIZERSUPPLIER ඉන්නවා නම් එයාට ප්‍රමුඛතාවය දෙමු
+    // 1. give first for fertilizer supplier
     if (roleList.includes("FERTILIZERSUPPLIER")) {
         roleToSave = "FERTILIZERSUPPLIER";
     } 
-    // 2. එහෙම නැත්නම් ලිස්ට් එකේ පළවෙනි එක ගමු
+    // 2. otherwise get list's firstone
     else {
         roleToSave = roleList[0];
     }
