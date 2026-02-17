@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin(origins = "http://localhost:5173") // React port එකට allow කරන්න
+@CrossOrigin(origins = "http://localhost:5173") 
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -39,14 +39,14 @@ public Map<String, String> askAI(@RequestBody Map<String, String> payload) {
                        "Tell the user that for more specific expert advice, they can use the 'Ask Questions' option in the Agri-Link system to connect with real experts.";
     }
 
-    // AI එකෙන් response එක ලබා ගැනීම
+    // Aget AI response
     String aiContent = chatClient.prompt()
             .system(systemPrompt)
             .user(userMessage)
             .call()
             .content();
 
-    // Frontend එකට JSON එකක් ලෙස යැවීම
+    // send jason to frontend
     Map<String, String> response = new HashMap<>();
     response.put("reply", aiContent);
     return response;

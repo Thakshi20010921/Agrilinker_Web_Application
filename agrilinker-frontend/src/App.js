@@ -20,7 +20,7 @@ import Landing from "./pages/Landing";
 import IntroHome from "./pages/IntroHome"; // ✅ NEW (Intro first page)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Loginfertilizer from "./pages/Loginfertilizer";
+
 
 import Profile from "./components/Profile";
 import Marketplace from "./components/Marketplace";
@@ -95,7 +95,7 @@ function App() {
             <Route path="/landing" element={<Landing />} /> {/* ✅ then your Landing */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/loginfertilizer" element={<Loginfertilizer />} />
+           
 
             {/* ===================== PROTECTED UTILS ===================== */}
             <Route

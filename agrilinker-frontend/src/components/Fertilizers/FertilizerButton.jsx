@@ -6,12 +6,12 @@ import { FiGrid } from "react-icons/fi";
 export default function FertilizerButton() {
   const navigate = useNavigate();
 
-  // 1. Storage එකෙන් දත්ත ටික ගමු
+  // 1. get data from storage 
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role"); // Main login එකෙන් එන string එක
-  const rolesJson = localStorage.getItem("roles"); // Fertilizer login එකෙන් එන JSON එක
+  const role = localStorage.getItem("role"); // string from main loging
+  const rolesJson = localStorage.getItem("roles"); // jason from fertilizer loging
 
-  // 2. දැනට ලොග් වෙලා ඉන්න කෙනා Supplier කෙනෙක්ද කියලා බලමු
+  // 2. is already logged user is a supplier 
   let isSupplier = false;
 
   if (role === "FERTILIZERSUPPLIER") {
@@ -27,17 +27,17 @@ export default function FertilizerButton() {
     }
   }
 
-  // Supplier නෙවෙයි නම් බටන් එක පෙන්වන්න එපා
+  // is not supplier then dont show button
   if (!isSupplier) {
     return null;
   }
 
   const handleClick = () => {
-    // ✅ දැනටමත් ලොග් වෙලා ඉන්නවා නම් කෙළින්ම Dashboard යවන්න
+    // is already logged then move to dashboard
     if (token) {
       navigate("/fertilizer-dashboard");
     } else {
-      // යම් හෙයකින් ලොග් වෙලා නැත්නම් විතරක් ලොගින් එකට
+      // if any reason not loging at any more then move to loging
       navigate("/loginfertilizer");
     }
   };

@@ -25,10 +25,10 @@ public class Fertilizer {
     private int ratingCount = 0;
     private String district;
     private String supplierEmail;
-    private Double addedValuePercentage; // 10% එක save කරන්න
+    private Double addedValuePercentage; // save 0%
    
     @Transient
-    private Double displayPrice; // කැල්කියුලේට් කරන මිල (DB එකේ save වෙන්නේ නැත)
+    private Double displayPrice; // calculated price
     public Fertilizer() {}
 
     public Fertilizer(String name, String description, double price, String unit,

@@ -10,10 +10,9 @@ const ChatBot = () => {
     const [loading, setLoading] = useState(false);
     const chatEndRef = useRef(null);
 
-    // ඔයා දුන්නු පින්තූරයේ තියෙන ඒ නියම Deep Green Gradient එක
+    
     const radiantGreen = "bg-gradient-to-r from-[#11702d] via-[#148234] to-[#11702d]";
-    const darkGreenBg = "bg-[#0a4d1f]"; // Background එකට තද කොළ පැහැයක්
-
+    const darkGreenBg = "bg-[#0a4d1f]"; 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chat]);
@@ -33,7 +32,7 @@ const ChatBot = () => {
             });
             setChat(prev => [...prev, { role: 'bot', text: res.data.reply }]);
         } catch (err) {
-            setChat(prev => [...prev, { role: 'bot', text: "සොරි මචං, පොඩි error එකක් ආවා. 🌱" }]);
+            setChat(prev => [...prev, { role: 'bot', text: "Failed to connect our system 🌱" }]);
         } finally {
             setLoading(false);
         }

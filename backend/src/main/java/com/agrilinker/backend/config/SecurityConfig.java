@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/buyer/**").hasRole("BUYER")
                         .requestMatchers("/api/fertilizersupplier/**").hasRole("FERTILIZERSUPPLIER")
 
-                        // ✅ Crop Advisor සඳහා අවසර ලබා දීම
+                        // ✅ Crop Advisor 
 .requestMatchers("/api/advisor/**").permitAll()
 
                         // All other requests need authentication
