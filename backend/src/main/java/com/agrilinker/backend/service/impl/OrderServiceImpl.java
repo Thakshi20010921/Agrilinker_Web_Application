@@ -1,6 +1,7 @@
 package com.agrilinker.backend.service.impl;
 
 import com.agrilinker.backend.model.Order;
+import com.agrilinker.backend.repository.NotificationRepository;
 import com.agrilinker.backend.repository.OrderRepository;
 import com.agrilinker.backend.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import com.agrilinker.backend.notifications.NotificationSseService;
 import com.agrilinker.backend.repository.ProductRepository;
 import com.agrilinker.backend.model.Product;
 import com.agrilinker.backend.model.OrderItem;
+import com.agrilinker.backend.model.Notification;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final NotificationSseService sse;
+    private final NotificationRepository notificationRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -85,18 +88,21 @@ public class OrderServiceImpl implements OrderService {
          * ======================================================
          */
 
-        Map<String, Object> customerPayload = new HashMap<>();
+        Notification customerNotification = Notification.builder()
+                .userEmail(saved.getCustomer().getEmail())
+                .title("Order Placed ✅")
+                .message("Your order #" + saved.getOrderNumber()
+                        + " has been placed successfully. The farmer will prepare your items soon.")
+                .type("ORDER")
+                .referenceId(saved.getId())
+                .read(false)
+                .createdAt(java.time.LocalDateTime.now())
+                .build();
 
-        customerPayload.put("title", "Order Placed ✅");
-        customerPayload.put("message",
-                "Your order #" + saved.getOrderNumber() +
-                        " has been placed successfully. The farmer will prepare your items soon.");
+        notificationRepository.save(customerNotification);
 
-        customerPayload.put("type", "ORDER");
-        customerPayload.put("referenceId", saved.getId());
-        customerPayload.put("createdAt", java.time.LocalDateTime.now());
-
-        sse.sendToUser(saved.getCustomer().getEmail(), customerPayload);
+        // send realtime SSE
+        sse.sendToUser(customerNotification.getUserEmail(), customerNotification);
 
         /*
          * ======================================================
@@ -106,19 +112,23 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderItem item : saved.getItems()) {
 
-            if (item.getfarmerEmail() != null) {
+            if (item.getfarmerEmail() != null && !item.getfarmerEmail().isBlank()) {
 
-                Map<String, Object> farmerPayload = new HashMap<>();
+                Notification farmerNotification = Notification.builder()
+                        .userEmail(item.getfarmerEmail())
+                        .title("New Order Alert 📦")
+                        .message("A customer placed order #" + saved.getOrderNumber()
+                                + ". Please review and prepare the items.")
+                        .type("ORDER")
+                        .referenceId(saved.getId())
+                        .read(false)
+                        .createdAt(java.time.LocalDateTime.now())
+                        .build();
 
-                farmerPayload.put("title", "New Order Alert 📦");
-                farmerPayload.put("message",
-                        "A customer placed order #" + saved.getOrderNumber() +
-                                ". Please review and prepare the items.");
-                farmerPayload.put("type", "ORDER");
-                farmerPayload.put("referenceId", saved.getId());
-                farmerPayload.put("createdAt", java.time.LocalDateTime.now());
+                notificationRepository.save(farmerNotification);
 
-                sse.sendToUser(item.getfarmerEmail(), farmerPayload);
+                // realtime SSE
+                sse.sendToUser(farmerNotification.getUserEmail(), farmerNotification);
             }
         }
 
