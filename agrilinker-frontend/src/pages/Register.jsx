@@ -31,7 +31,7 @@ export default function Register() {
         e.preventDefault();
         setError("");
 
-        // ✅ Frontend validation
+        // Frontend validation
         if (
             !form.fullName ||
             !form.email ||
@@ -68,10 +68,7 @@ export default function Register() {
                 roles: form.roles,
             });
 
-            // ✅ SUCCESS TOAST (professional)
             toast.success("Registration completed! Please log in.");
-
-            // ✅ Redirect to login
             navigate("/login");
 
         } catch (err) {
@@ -83,7 +80,6 @@ export default function Register() {
                 setError("Registration failed");
             }
 
-            // ❌ Error toast
             toast.error("Registration failed");
         }
     };
@@ -140,7 +136,8 @@ export default function Register() {
                     required
                 />
 
-                <div className="roles">
+                {/* Role Selection */}
+                <div className="roles" style={{ marginTop: "10px" }}>
                     <label>
                         <input
                             type="checkbox"
@@ -171,7 +168,30 @@ export default function Register() {
                     </label>
                 </div>
 
-                {error && <div className="error">{error}</div>}
+                {/* ✅ Fee Notice */}
+                <div
+                    style={{
+                        marginTop: "12px",
+                        padding: "10px 14px",
+                        background: "#f0fdf4",
+                        borderLeft: "4px solid #22c55e",
+                        color: "#065f46",
+                        fontSize: "14px",
+                        borderRadius: "6px",
+                        lineHeight: "1.5",
+                    }}
+                >
+                    <strong>Note:</strong> A 10% valuation is added to all fertilizer
+                    inventory before sale. This fee is waived for participating
+                    farmers who sell their products within the system and will be
+                    reflected as a 10% discount.
+                </div>
+
+                {error && (
+                    <div className="error" style={{ marginTop: "10px" }}>
+                        {error}
+                    </div>
+                )}
 
                 <button type="submit" className="btn-primary">
                     Create Account
