@@ -277,7 +277,9 @@ export default function FertilizerList() {
                       </span>
                     </div>
                   </div>
-
+<h2 className="text-xl font-black text-gray-900 mb-2">
+  {f.name}
+</h2>
                  <button
   type="button"
   onClick={() => { setSelectedItem(f); setReviewType("fertilizer"); }}
