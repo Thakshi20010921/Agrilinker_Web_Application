@@ -265,7 +265,7 @@ function AddProductPage() {
             {/* --- NEW RIGHT NAVIGATION CARD --- */}
             <div className="lg:w-1/4 h-fit space-y-4">
               <div className=" rounded-[0.5rem] pb-6 pt-0 ">
-                <div className="flex flex-col space-y-[50px]">
+                <div className="flex flex-col items-center space-y-[50px]">
                   {[
                     {
                       name: "Dashboard",
@@ -273,21 +273,27 @@ function AddProductPage() {
                       path: "/farmer/dashboard",
                     },
                     {
-                      name: "Add product",
+                      name: "Add Prodct",
                       icon: "",
                       path: "/farmer/add-product2",
                     },
-                    { name: "My Orders", icon: "", path: "/orders" },
+                    { name: "My Orders", icon: "", path: "/farmer/orders" },
                     {
                       name: "My Products",
                       icon: "",
                       path: "/farmer/my-products",
                     },
+                    { name: "My request", icon: "", path: "/farmer/inquiries" },
+                    {
+                      name: "Sales History",
+                      icon: "",
+                      path: "/farmer/sales-history",
+                    },
                   ].map((item) => (
                     <button
                       key={item.name}
                       onClick={() => navigate(item.path)}
-                      className="flex bg-[#DAEDE6] items-center h-[100px] space-x-4 s p-4 w-full rounded-2xl hover:bg-emerald-50 text-emerald-900 font-semibold transition-all duration-300 group active:scale-95 shadow-xl shadow-emerald-900/5 border border-transparent hover:border-emerald-100"
+                      className="flex items-center justify-center w-[200px] text-xl bg-[#29ab87] items-center h-[100px] space-x-4 s p-4  rounded-full hover:bg-emerald-400 text-white font-semibold transition-all duration-300 group active:scale-95 shadow-lg shadow-emerald-200 border border-transparent hover:border-emerald-500"
                     >
                       <span className="text-xl group-hover:scale-110 transition-transform">
                         {item.icon}

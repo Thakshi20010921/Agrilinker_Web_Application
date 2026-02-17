@@ -24,14 +24,10 @@ function Header() {
   const roles = user?.roles || [];
 
   // ✅ Only Buyer or Admin can see Support
-  const canViewSupport =
-    hasRole(roles, "BUYER") || hasRole(roles, "ADMIN");
+  const canViewSupport = hasRole(roles, "BUYER") || hasRole(roles, "ADMIN");
 
   // total quantity
-  const cartCount = cart.reduce(
-    (sum, item) => sum + (item.quantity || 1),
-    0
-  );
+  const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
@@ -87,13 +83,6 @@ function Header() {
           className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
         >
           Contact Us
-        </Link>
-
-        <Link
-          to="/farmer/FarmerHub"
-          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition duration-150"
-        >
-          Farmer Hub
         </Link>
       </nav>
 
