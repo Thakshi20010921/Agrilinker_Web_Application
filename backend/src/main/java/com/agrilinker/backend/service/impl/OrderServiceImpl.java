@@ -20,6 +20,8 @@ import com.agrilinker.backend.repository.ProductRepository;
 import com.agrilinker.backend.model.Product;
 import com.agrilinker.backend.model.OrderItem;
 import com.agrilinker.backend.model.Notification;
+import com.agrilinker.backend.repository.FertilizerRepository;
+import com.agrilinker.backend.model.Fertilizer;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final NotificationSseService sse;
     private final NotificationRepository notificationRepository;
+    private final FertilizerRepository fertilizerRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -40,24 +43,23 @@ public class OrderServiceImpl implements OrderService {
 
             if (item.getProductId() != null && !item.getProductId().isBlank()) {
 
-                Product product = productRepository.findById(item.getProductId())
-                        .orElseThrow(() -> new RuntimeException("Product not found"));
+                String farmerEmail = null;
 
-                // SAFE farmer email detection
+                // Try product first
+                Optional<Product> productOpt = productRepository.findById(item.getProductId());
 
-                String farmerEmail = product.getfarmerEmail();
+                if (productOpt.isPresent()) {
+                    farmerEmail = productOpt.get().getfarmerEmail();
+                } else {
 
-                if (farmerEmail == null || farmerEmail.isBlank()) {
+                    Optional<Fertilizer> fertOpt = fertilizerRepository.findById(item.getProductId());
 
-                    // fallback: many systems store owner email differently
-                    try {
-                        farmerEmail = product.getfarmerEmail(); // if your Product has this
-                    } catch (Exception ignored) {
+                    if (fertOpt.isPresent()) {
+                        farmerEmail = fertOpt.get().getSupplierEmail();
                     }
                 }
 
                 System.out.println("Detected farmer email = " + farmerEmail);
-
                 item.setfarmerEmail(farmerEmail);
 
             }
