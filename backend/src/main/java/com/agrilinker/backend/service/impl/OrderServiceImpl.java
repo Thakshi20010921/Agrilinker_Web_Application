@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.agrilinker.backend.util.OrderNumberGenerator;
 import org.springframework.dao.DuplicateKeyException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import java.util.Map;
 import com.agrilinker.backend.repository.ProductRepository;
 import com.agrilinker.backend.model.Product;
 import com.agrilinker.backend.model.OrderItem;
-import com.agrilinker.backend.service.ProductService;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final NotificationSseService sse;
     //
     private final ProductService productService;
+    
 
 
     @Autowired
@@ -148,6 +150,7 @@ if (order.getStatus() == null) {
     long completedOrdersCount = 0;
     int totalProductsSold = 0;
     double pendingPayments = 0;
+    int pendingOrders=0;
 
     for (Order order : farmerOrders) {
         double farmerOrderSubtotal = 0;
@@ -169,6 +172,7 @@ if (order.getStatus() == null) {
             totalProductsSold += farmerItemCount;
         } else if ("PENDING".equalsIgnoreCase(order.getStatus())) {
             pendingPayments += farmerOrderSubtotal;
+            pendingOrders++; 
         }
     }
 
@@ -180,37 +184,14 @@ if (order.getStatus() == null) {
             completedOrdersCount, 
             averageOrderValue, 
             totalProductsSold, 
-            pendingPayments
+            pendingPayments,
+            pendingOrders
     );
 }
 
-{/*@Override
-public List<Map<String,Object>> getPaymentBreakdown(String farmerEmail) {
 
-    List<Order> orders = orderRepository.findByFarmerEmail(farmerEmail);
 
-    double paid = 0;
-    double pending = 0;
-
-    for (Order order : orders) {
-
-        double total = order.getItems().stream()
-                .filter(item -> farmerEmail.equals(item.getfarmerEmail()))
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
-
-        if ("PAID".equalsIgnoreCase(order.getPaymentStatus()))
-            paid += total;
-        else
-            pending += total;
-    }
-
-    return List.of(
-            Map.of("name","PAID","value",paid),
-            Map.of("name","PENDING","value",pending)
-    );
-}*/}
-Override
+    @Override
     public Map<String, Double> getPaymentBreakdown(String farmerEmail) {
         List<Order> orders = orderRepository.findByFarmerEmail(farmerEmail);
         
@@ -237,6 +218,38 @@ Override
     }
 
 
+@Override
+public List<Double> getMonthlySales(String farmerEmail) {
+
+    List<Order> orders = orderRepository.findCompletedOrdersByFarmerEmail(farmerEmail);
+
+    List<Double> monthlySales = new ArrayList<>();
+
+    // initialize 12 months with 0
+    for (int i = 0; i < 12; i++) {
+        monthlySales.add(0.0);
+    }
+
+    for (Order order : orders) {
+
+        int month = order.getOrderDate().getMonth(); // 0-11
+
+        for (OrderItem item : order.getItems()) {
+
+            if (farmerEmail.equals(item.getfarmerEmail())) {
+
+                double total = item.getPrice() * item.getQuantity();
+
+                monthlySales.set(
+                    month,
+                    monthlySales.get(month) + total
+                );
+            }
+        }
+    }
+
+    return monthlySales;
+}
 
 
 }
