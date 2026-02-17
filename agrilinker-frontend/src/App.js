@@ -21,7 +21,6 @@ import IntroHome from "./pages/IntroHome"; // ✅ NEW (Intro first page)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-
 import Profile from "./components/Profile";
 import Marketplace from "./components/Marketplace";
 import CartPage from "./components/CartPage";
@@ -38,7 +37,7 @@ import FarmerOrders from "./components/farmer/FarmerOrders";
 import InquiryList from "./components/farmer/FarmerInquiryPage/InquiryList";
 import AddProductPage from "./components/farmer/AddProductPage/AddProductPage";
 import SalesHistory from "./components/farmer/SalesHistory";
-//import FarmerHub from "./components/farmer/FarmerHub";
+import FarmerHub from "./components/farmer/FarmerHub";
 
 import SupportPage from "./pages/support/SupportPage";
 import SupportHistory from "./pages/support/SupportHistory";
@@ -92,12 +91,12 @@ function App() {
 
           <Routes>
             {/* ===================== PUBLIC ONLY ===================== */}
-            <Route path="/" element={<IntroHome />} /> {/* ✅ Intro page first */}
-            <Route path="/landing" element={<Landing />} /> {/* ✅ then your Landing */}
+            <Route path="/" element={<IntroHome />} />{" "}
+            {/* ✅ Intro page first */}
+            <Route path="/landing" element={<Landing />} />{" "}
+            {/* ✅ then your Landing */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-           
-
             {/* ===================== PROTECTED UTILS ===================== */}
             <Route
               path="/access-denied"
@@ -115,7 +114,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             {/* ===================== PROTECTED (ANY LOGGED-IN USER) ===================== */}
             <Route
               path="/home"
@@ -129,7 +127,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/marketplace"
               element={
@@ -138,7 +135,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/fertilizers"
               element={
@@ -147,7 +143,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/crop-advisor"
               element={
@@ -156,7 +151,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/profile"
               element={
@@ -165,7 +159,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/cart"
               element={
@@ -174,7 +167,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/checkout"
               element={
@@ -183,7 +175,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/order-confirmation"
               element={
@@ -192,7 +183,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/orders"
               element={
@@ -201,7 +191,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             {/* ===================== SUPPORT (BUYER + ADMIN ONLY) ===================== */}
             <Route
               path="/support"
@@ -219,7 +208,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/contact-us"
               element={
@@ -228,7 +216,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             {/* ===================== FARMER ONLY ===================== */}
             <Route
               path="/farmer/dashboard"
@@ -270,11 +257,10 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/*<Route path="/farmer/FarmerHub" element={<FarmerHub />} />*/}
+            <Route path="/farmer/FarmerHub" element={<FarmerHub />} />
             <Route path="/farmer/orders" element={<FarmerOrders />} />
             <Route path="/farmer/inquiries" element={<InquiryList />} />
             <Route path="farmer/sales-history" element={<SalesHistory />} />
-
             {/* ===================== FERTILIZER SUPPLIER ONLY ===================== */}
             <Route
               path="/fertilizer-dashboard"
@@ -300,7 +286,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             {/* ===================== ADMIN ONLY ===================== */}
             <Route
               path="/admin"
@@ -342,7 +327,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             {/* ===================== FALLBACK ===================== */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
