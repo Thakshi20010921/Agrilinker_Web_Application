@@ -1,5 +1,5 @@
 // src/pages/Loginfertilizer.jsx
-import React, { useState, useContext, useEffect } from "react";
+/*import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -114,4 +114,4 @@ export default function Loginfertilizer() {
       </form>
     </div>
   );
-}
+}*/
