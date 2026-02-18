@@ -112,7 +112,7 @@ export default function AddFertilizer() {
             Add New Fertilizer
           </h1>
           <p className="text-green-50 text-sm font-medium opacity-80 mt-1">
-            List your product in the premium fertilizer palace
+            List your fertilizer in the premium fertilizer palace
           </p>
         </div>
 
@@ -246,7 +246,7 @@ export default function AddFertilizer() {
           <button type="submit"
             className="w-full bg-gradient-to-r from-green-700 to-emerald-600 text-white py-5 rounded-[2rem] font-black uppercase tracking-widest text-sm shadow-xl shadow-green-200 hover:shadow-green-300 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 mt-4">
             <FiPlusCircle size={20} />
-            Add Fertilizer Product
+            Add Fertilizer
           </button>
         </form>
       </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { FiFilter, FiSearch, FiMapPin, FiPackage, FiTag, FiShoppingBag, FiStar, FiArrowRight, FiInfo, FiCheckCircle } from "react-icons/fi";
+import { FiFilter, FiSearch, FiMapPin, FiShoppingBag, FiStar, FiInfo, FiCheckCircle } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";

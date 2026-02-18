@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FiEdit, FiTrash2, FiPlus, FiBox, FiDollarSign, FiPackage } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiPlus, FiBox, FiPackage } from "react-icons/fi";
 
 export default function FertilizerSupplierDashboard() {
   const [myFertilizers, setMyFertilizers] = useState([]);
@@ -118,7 +118,7 @@ export default function FertilizerSupplierDashboard() {
       <span className="font-bold text-blue-600">Rs. {f.price}</span>
     </div>
     <div className="flex items-center gap-2">
-      <span className="text-[10px] text-gray-400 uppercase font-bold">Market:</span>
+      <span className="text-[10px] text-gray-400 uppercase font-bold">Fertlizer Market:</span>
       <span className="font-black text-green-600">Rs. {f.displayPrice || (f.price + (f.price * 10 / 100))}</span>
     </div>
   </div>

@@ -126,9 +126,11 @@ export default function UpdateFertilizer() {
               <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Form Type</label>
               <select name="type" value={form.type} className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-600 cursor-pointer shadow-sm" onChange={handleChange} required>
                 <option value="">Select Type</option>
-                <option value="Granular">Granular</option>
                 <option value="Liquid">Liquid</option>
-                <option value="Powder">Powder</option>
+              <option value="Granular">Granular</option>
+              <option value="Water-Soluble">Water-Soluble</option>
+              <option value="Powder">Powder</option>
+              <option value="Slow-Release">Slow-Release</option>
               </select>
             </div>
 
