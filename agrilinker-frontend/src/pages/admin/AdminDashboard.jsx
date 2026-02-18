@@ -68,7 +68,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ ONLY ONE declaration
+  //  ONLY ONE declaration
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   const roleSummary = useMemo(

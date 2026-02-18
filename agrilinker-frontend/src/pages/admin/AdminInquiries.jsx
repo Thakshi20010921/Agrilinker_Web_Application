@@ -19,7 +19,7 @@ const normalizeMethod = (value) => {
     return normalized;
 };
 
-// ✅ supports id / _id
+// supports id / _id
 const getInquiryId = (inquiry) => String(inquiry?.id ?? inquiry?._id ?? "");
 
 const isReplied = (inquiry) =>
@@ -49,7 +49,7 @@ const getWhatsAppHref = (phoneNumber, message) => {
     return `https://wa.me/${withCountry}?text=${encodedMessage}`;
 };
 
-// ✅ TEMPLATE generator (only when button clicked)
+// TEMPLATE generator (only when button clicked)
 const buildTemplateReply = (inquiry) => {
     if (!inquiry) return "";
 
@@ -80,7 +80,7 @@ export default function AdminInquiries() {
     const [error, setError] = useState("");
 
     const [selectedInquiryId, setSelectedInquiryId] = useState("");
-    const [replyMessage, setReplyMessage] = useState(""); // ✅ keep clean initially
+    const [replyMessage, setReplyMessage] = useState(""); //  keep clean initially
 
     const [isSending, setIsSending] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -102,12 +102,12 @@ export default function AdminInquiries() {
                 setReplyMessage("");
             } else if (exists) {
                 setSelectedInquiryId(String(desiredId));
-                // ✅ keep reply area clean unless admin clicks a button
+                // keep reply area clean unless admin clicks a button
                 setReplyMessage("");
             } else {
                 const first = records[0];
                 setSelectedInquiryId(getInquiryId(first));
-                // ✅ keep reply area clean unless admin clicks a button
+                // keep reply area clean unless admin clicks a button
                 setReplyMessage("");
             }
         } catch (fetchError) {
@@ -123,7 +123,7 @@ export default function AdminInquiries() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // ✅ move replied to bottom + newest first inside groups
+    // move replied to bottom + newest first inside groups
     const sortedInquiries = useMemo(() => {
         const copy = [...inquiries];
         copy.sort((a, b) => {
@@ -171,7 +171,7 @@ export default function AdminInquiries() {
         toast.error("No valid contact channel found (missing email/phone).");
     };
 
-    // ✅ TEMPLATE button
+    // TEMPLATE button
     const handleUseTemplate = () => {
         if (!selectedInquiry) {
             toast.error("Select an inquiry first.");
@@ -185,7 +185,7 @@ export default function AdminInquiries() {
         toast.success("Template reply generated. You can edit it before sending.");
     };
 
-    // ✅ AI generate reply (backend must exist)
+    //  AI generate reply (backend must exist)
     const handleGenerateAiReply = async () => {
         if (!selectedInquiry) {
             toast.error("Select an inquiry first.");
@@ -306,11 +306,11 @@ export default function AdminInquiries() {
                                             type="button"
                                             onClick={() => {
                                                 setSelectedInquiryId(id);
-                                                setReplyMessage(""); // ✅ keep clean when switching
+                                                setReplyMessage(""); //  keep clean when switching
                                             }}
                                             className={`w-full rounded-2xl border px-4 py-4 text-left transition ${String(selectedInquiryId) === String(id)
-                                                    ? "border-emerald-300 bg-emerald-50"
-                                                    : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
+                                                ? "border-emerald-300 bg-emerald-50"
+                                                : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between gap-3">
@@ -384,7 +384,7 @@ export default function AdminInquiries() {
                                         <p className="mt-2 text-sm text-gray-700">{selectedInquiry.message}</p>
                                     </div>
 
-                                    {/* ✅ BUTTONS: Template + AI */}
+                                    {/* BUTTONS: Template + AI */}
                                     <div className="flex flex-wrap items-center gap-3">
                                         <button
                                             type="button"

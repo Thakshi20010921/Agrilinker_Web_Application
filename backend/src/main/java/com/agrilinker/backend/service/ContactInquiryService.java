@@ -15,6 +15,6 @@ public interface ContactInquiryService {
     // admin reply save
     ContactInquiry replyToInquiry(String inquiryId, String adminEmail, String replyMessage, String method);
 
-    // ✅ admin AI generate (does NOT save)
+    // admin AI generate (does NOT save)
     String generateAiReply(String inquiryId);
 }

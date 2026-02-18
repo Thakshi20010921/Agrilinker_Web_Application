@@ -20,7 +20,7 @@ const toRoleList = (rawRoles) => {
 const hasAnyAllowedRole = (roles) => {
   const list = toRoleList(roles).map(normalizeRole);
 
-  // ✅ your valid roles
+  // your valid roles
   const allowed = ["ADMIN", "FARMER", "BUYER", "FERTILIZERSUPPLIER"];
 
   return list.some((r) => allowed.includes(r));
@@ -28,7 +28,7 @@ const hasAnyAllowedRole = (roles) => {
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ to read "from"
+  const location = useLocation(); //  to read "from"
   const { loginUser } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
@@ -52,7 +52,7 @@ export default function Login() {
       console.log("FULL LOGIN RESPONSE:", res.data);
 
 
-      // ✅ store user + token
+      //  store user + token
       loginUser(
         {
           email: userEmail,
@@ -62,36 +62,36 @@ export default function Login() {
         token
       );
 
-      
-/*Dewmini start */
-localStorage.setItem("email", userEmail); 
 
-if (roles && roles.length > 0) {
-    const roleList = roles.map(r => normalizeRole(r));
-    
-    let roleToSave;
-    
-    // 1. give first for fertilizer supplier
-    if (roleList.includes("FERTILIZERSUPPLIER")) {
-        roleToSave = "FERTILIZERSUPPLIER";
-    } 
-    // 2. otherwise get list's firstone
-    else {
-        roleToSave = roleList[0];
-    }
-    
-    localStorage.setItem("role", roleToSave);
-}
-/*Dewmini closed */
-toast.success("Login successful 🎉");
-      // ✅ if roles are not any of these => block
+      /*Dewmini start */
+      localStorage.setItem("email", userEmail);
+
+      if (roles && roles.length > 0) {
+        const roleList = roles.map(r => normalizeRole(r));
+
+        let roleToSave;
+
+        // 1. give first for fertilizer supplier
+        if (roleList.includes("FERTILIZERSUPPLIER")) {
+          roleToSave = "FERTILIZERSUPPLIER";
+        }
+        // 2. otherwise get list's firstone
+        else {
+          roleToSave = roleList[0];
+        }
+
+        localStorage.setItem("role", roleToSave);
+      }
+      /*Dewmini closed */
+      toast.success("Login successful 🎉");
+      // if roles are not any of these => block
       if (!hasAnyAllowedRole(roles)) {
         toast.error("Access denied");
         navigate("/", { replace: true });
         return;
       }
 
-      // ✅ Industry: go back to intended page OR role dashboard
+      //  Industry: go back to intended page OR role dashboard
       const from = location.state?.from;
       navigate(from ? from : "/go", { replace: true });
     } catch (err) {
