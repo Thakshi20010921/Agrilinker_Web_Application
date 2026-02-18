@@ -335,17 +335,42 @@ export default function FertilizerList() {
 
                   <div className="flex items-end justify-between">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-gray-400 uppercase">Unit Price</span>
-                        <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-black text-green-700">Rs. {f.displayPrice}</span>
-                            <span className="text-xs text-gray-400 font-bold">/ {f.unit}</span>
-                        </div>
-                    </div>
-                    {(f.unit === "bottle" || f.unit === "bag") && f.quantityInside && (
-                        <span className="bg-green-50 text-green-700 text-[10px] font-black px-3 py-1.5 rounded-xl border border-green-100">
-                          {f.quantityInside} {f.unit === "bag" ? "kg" : "L"} Net
-                        </span>
-                    )}
+  <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+    Pricing Model
+  </span>
+  
+  {/* Logic to show Market Price vs Your Price */}
+  {f.displayPrice < (f.price || 0) + (f.price * 0.1) ? (
+    // If the user has a discount (displayPrice is lower than market price)
+    <div className="flex flex-col">
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400 font-bold line-through italic">
+          Market: Rs. {(f.price + (f.price * 0.1)).toFixed(2)}
+        </span>
+        <span className="bg-red-100 text-red-600 text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase">
+          -10% Off
+        </span>
+      </div>
+      <div className="flex items-baseline gap-1">
+        <span className="text-3xl font-black text-emerald-600 animate-pulse-slow">
+          Rs. {f.displayPrice}
+        </span>
+        <span className="text-xs text-gray-400 font-black">/ {f.unit}</span>
+      </div>
+      <span className="text-[9px] text-emerald-600 font-bold uppercase tracking-tighter">
+        Exclusive Farmer Price ✨
+      </span>
+    </div>
+  ) : (
+    // Regular pricing for non-sellers
+    <div className="flex items-baseline gap-1 mt-1">
+      <span className="text-3xl font-black text-gray-800">
+        Rs. {f.displayPrice}
+      </span>
+      <span className="text-xs text-gray-400 font-black">/ {f.unit}</span>
+    </div>
+  )}
+</div>
                   </div>
                 </div>
 

@@ -122,7 +122,7 @@ export default function AddFertilizer() {
           <div className="grid grid-cols-1 gap-6">
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">
-                <FiTag className="text-green-600" /> Product Name
+                <FiTag className="text-green-600" /> Fertilizer Name
               </label>
               <input type="text" name="name" placeholder="e.g. Premium Urea Plus"
                 className="w-full bg-gray-50/50 border-none p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-gray-700 shadow-sm"
