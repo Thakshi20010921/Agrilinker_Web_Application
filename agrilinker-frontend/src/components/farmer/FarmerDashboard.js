@@ -24,6 +24,8 @@ import {
   ClipboardList,
   Package,
   History,
+  BarChart3,
+  Store,
   Search,
   Bell,
   Download,
@@ -140,7 +142,7 @@ const FarmerDashboard = () => {
                 Farmer Dashboard
               </h1>
               <p className="text-emerald-500 text-sm">
-                Manage ypor harvest and Listing with analytics details
+                Manage your harvest and Listing with analytics details
               </p>
             </div>
           </div>
@@ -169,12 +171,12 @@ const FarmerDashboard = () => {
               },
               {
                 name: "Sales History",
-                icon: <History size={30} />,
+                icon: <BarChart3 size={30} />,
                 path: "/farmer/sales-history",
               },
               {
                 name: "Farmer Hub",
-                icon: <History size={30} />,
+                icon: <Store size={30} />,
                 path: "/farmer/FarmerHub",
               },
             ].map((item) => (
@@ -315,7 +317,7 @@ const FarmerDashboard = () => {
                     Payments
                   </span>
                   <div className="p-2 bg-red-50 rounded-lg text-red-600">
-                    <Package size={20} />
+                    <ChevronDown size={20} />
                   </div>
                 </div>
                 <p className="text-slate-600 text-2sm mt-2 pt-5">
@@ -424,12 +426,50 @@ const FarmerDashboard = () => {
                         </span>
                       </div>
                       <span className="font-bold text-slate-700">
-                        {item.value}%
+                        {item.value}
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Low Stock Items Card */}
+            <div className="mt-6 bg-white p-6 rounded-2xl border border-yellow-300 shadow-sm">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-yellow-700 font-bold text-lg">
+                  Low Stock Items
+                </h3>
+
+                <Package className="text-yellow-600" size={20} />
+              </div>
+
+              {/* Content */}
+              {products.filter((p) => p.quantity <= 10).length === 0 ? (
+                <p className="text-slate-500 text-sm">No low stock items ✅</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {products
+                    .filter((p) => p.quantity <= 50)
+                    .map((item) => (
+                      <div
+                        key={item.id}
+                        className="border border-yellow-200 rounded-lg p-3 bg-yellow-50"
+                      >
+                        <p className="font-bold text-slate-800">{item.name}</p>
+
+                        <p className="text-xs text-slate-400">
+                          Product ID: {item.id}
+                        </p>
+
+                        <p className="text-red-600 font-bold mt-1">
+                          Stock: {item.quantity}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
