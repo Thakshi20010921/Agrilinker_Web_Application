@@ -33,11 +33,6 @@ const FarmerHub = ({ userId, userRole }) => {
     storedRoles = rawRoles ? [rawRoles] : [];
   }
 
-  const isAuthorized = storedRoles.some(
-    (role) =>
-      role.toUpperCase() === "FARMER" || role.toUpperCase() === "SUPPLIER",
-  );
-
   const provinces = [
     "Western",
     "Central",
@@ -88,7 +83,6 @@ const FarmerHub = ({ userId, userRole }) => {
   };
 
   const handleCreateQuestion = async () => {
-    if (!isAuthorized) return alert("අවසර නැත!");
     const questionData = {
       questionText: newQuestion.text,
       options: newQuestion.options.map((opt, i) => ({
@@ -163,56 +157,48 @@ const FarmerHub = ({ userId, userRole }) => {
               </h2>
             </div>
 
-            {isAuthorized ? (
-              <div className="space-y-5">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-600 mb-2">
-                    ප්‍රශ්නය / Question
-                  </label>
-                  <textarea
-                    className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-green-400 transition"
-                    rows="3"
-                    value={newQuestion.text}
-                    placeholder="ඔබේ ප්‍රශ්නය මෙතැන ලියන්න...        . Write your question here"
-                    onChange={(e) =>
-                      setNewQuestion({ ...newQuestion, text: e.target.value })
-                    }
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-slate-600 mb-2">
+                  ප්‍රශ්නය / Question
+                </label>
+                <textarea
+                  className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-green-400 transition"
+                  rows="3"
+                  value={newQuestion.text}
+                  placeholder="ඔබේ ප්‍රශ්නය මෙතැන ලියන්න...        . Write your question here"
+                  onChange={(e) =>
+                    setNewQuestion({ ...newQuestion, text: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-slate-600 mb-2">
+                  පිළිතුරු තේරීම් / Answer choices
+                </label>
+                {newQuestion.options.map((_, i) => (
+                  <input
+                    key={i}
+                    className="w-full p-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-400 transition"
+                    placeholder={`පිළිතුර ${i + 1}`}
+                    value={_}
+                    onChange={(e) => {
+                      let old = [...newQuestion.options];
+                      old[i] = e.target.value;
+                      setNewQuestion({ ...newQuestion, options: old });
+                    }}
                   />
-                </div>
-
-                <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-slate-600 mb-2">
-                    පිළිතුරු තේරීම් / Answer choices
-                  </label>
-                  {newQuestion.options.map((_, i) => (
-                    <input
-                      key={i}
-                      className="w-full p-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-400 transition"
-                      placeholder={`පිළිතුර ${i + 1}`}
-                      value={_}
-                      onChange={(e) => {
-                        let old = [...newQuestion.options];
-                        old[i] = e.target.value;
-                        setNewQuestion({ ...newQuestion, options: old });
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleCreateQuestion}
-                  className="w-full bg-emerald-700 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-200 hover:scale-[1.02] active:scale-95 transition-all"
-                >
-                  Submit Question
-                </button>
+                ))}
               </div>
-            ) : (
-              <div className="p-4 bg-red-50 rounded-xl border border-red-100">
-                <p className="text-red-600 text-sm font-medium">
-                  ප්‍රශ්න සෑදිය හැක්කේ ගොවියන්ට හෝ සැපයුම්කරුවන්ට පමණි.
-                </p>
-              </div>
-            )}
+
+              <button
+                onClick={handleCreateQuestion}
+                className="w-full bg-emerald-700 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-200 hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                Submit Question
+              </button>
+            </div>
           </div>
         </div>
 
