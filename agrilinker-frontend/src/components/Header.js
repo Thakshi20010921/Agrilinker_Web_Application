@@ -26,6 +26,10 @@ function Header() {
   // ✅ Only Buyer or Admin can see Support
   const canViewSupport = hasRole(roles, "BUYER") || hasRole(roles, "ADMIN");
 
+  // Farmer Hub → Farmer or Supplier
+  const canViewFarmerHub =
+    hasRole(roles, "FARMER") || hasRole(roles, "FERTILIZERSUPPLIER");
+
   // total quantity
   const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
@@ -74,6 +78,15 @@ function Header() {
             className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
           >
             Support
+          </Link>
+        )}
+
+        {canViewFarmerHub && (
+          <Link
+            to="/farmer/FarmerHub"
+            className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+          >
+            Farmer Hub
           </Link>
         )}
 
