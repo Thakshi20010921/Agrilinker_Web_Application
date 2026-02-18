@@ -174,11 +174,11 @@ const MyProducts = () => {
               className="bg-white rounded-[20px] overflow-hidden shadow-xl shadow-slate-200/50 border border-emerald-50 hover:scale-[1.02] transition-transform duration-300"
             >
               {/* Product Image */}
-              <div className="flex bg-white  p-3 h-48 w-50 item-center bg-slate-200 relative gap-3">
+              <div className="flex bg-white  p-3 h-48 w-45 item-center bg-slate-200 relative gap-3">
                 <img
                   src={`http://localhost:8081${product.product_image}`}
                   alt={product.name}
-                  className="w-full h-full object-cover rounded-[20px]"
+                  className="w-45 h-full object-cover rounded-[20px]"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/300?text=No+Image";
@@ -211,7 +211,7 @@ const MyProducts = () => {
                   <span>📍 {product.location}</span>
                 </div>
                 <div className="flex items-center text-slate-500 text-sm mb-6 space-x-4">
-                  {product.quantity < 20 && (
+                  {product.quantity < 50 && (
                     <div className="top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider  shadow-lg shadow-red-200 gap-4">
                       ⚠️ Low Stock
                     </div>
