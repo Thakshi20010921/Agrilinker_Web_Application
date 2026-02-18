@@ -30,7 +30,7 @@ const CheckoutPage = () => {
     );
   }, [cart]);
 
-  // ✅ Normalize ID + TYPE for both Product & Fertilizer
+  //  Normalize ID + TYPE for both Product & Fertilizer
   const normalizeCartItem = (item) => {
     const itemId = item.productId || item.fertilizerId || item.id || item._id;
 
@@ -71,7 +71,7 @@ const CheckoutPage = () => {
   const processOrder = async (payStatus) => {
     if (cart.length === 0) return;
 
-    // ✅ validate ids
+    // validate ids
     const normalizedItems = cart.map(normalizeCartItem);
     const missing = normalizedItems.find(
       (x) => !x.productId && !x.fertilizerId,

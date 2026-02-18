@@ -30,7 +30,7 @@ const detectBrand = (n) => {
   return "CARD";
 };
 
-// ✅ Luhn check
+// Luhn check
 const luhnCheck = (num) => {
   const digits = num.split("").map((x) => parseInt(x, 10));
   if (digits.some((x) => Number.isNaN(x))) return false;
@@ -85,12 +85,12 @@ export default function PremiumPaymentModal({
   const errors = useMemo(() => {
     const e = {};
 
-    // ✅ Card number: exactly 16 digits + Luhn
+    //  Card number: exactly 16 digits + Luhn
     if (!digits) e.cardNumber = "Card number is required";
     else if (digits.length !== 16) e.cardNumber = "Card number must be 16 digits";
     else if (!luhnCheck(digits)) e.cardNumber = "Invalid card number";
 
-    // ✅ Expiry
+    //  Expiry
     if (!expiry) e.expiry = "Expiry is required";
     else if (!/^\d{2}\/\d{2}$/.test(expiry)) e.expiry = "Use MM/YY format";
     else if (!validExpiry(expiry)) e.expiry = "Card expired";

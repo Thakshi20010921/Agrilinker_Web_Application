@@ -3,8 +3,8 @@ import api from "../api/api";
 import { AuthContext } from "../context/AuthContext";
 
 const OrderHistory = () => {
-  const { user } = useContext(AuthContext);     // ✅ get logged-in user
-  const USER_ID = user?.email || null;          // ✅ email comes from user object
+  const { user } = useContext(AuthContext);     //  get logged-in user
+  const USER_ID = user?.email || null;          // email comes from user object
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
