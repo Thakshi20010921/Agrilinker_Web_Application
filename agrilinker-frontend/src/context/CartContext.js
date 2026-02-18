@@ -49,16 +49,16 @@ export const CartProvider = ({ children }) => {
   item.fertilizerId;
 
 const payload =
-  item.type === "fertilizer"
+  (item.type || "").toUpperCase() === "FERTILIZER"
+
     ? {
         fertilizerId: itemId,
         name: item.name,
         price: item.price,
         unit: item.unit || "unit",
         image:
-          item.imageUrl ||
-          (item.product_image
-            ? `http://localhost:8081${item.product_image}`
+          (item.imageUrl
+           ? `http://localhost:8081${item.imageUrl}`
             : "/images/placeholder.png"),
         farmerEmail:
           item.farmerEmail || item.ownerEmail || item.sellerEmail || "",
