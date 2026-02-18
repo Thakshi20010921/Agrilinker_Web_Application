@@ -26,13 +26,13 @@ public Map<String, String> askAI(@RequestBody Map<String, String> payload) {
     if ("SYSTEM".equals(mode)) {
         // System Services Mode Prompt
         systemPrompt = "You are the official Agri-Link System Assistant. Your goal is to guide users about our platform: " +
-                       "1. We bridge the gap between farmers and buyers for direct trade of fresh vegetables and fruits (No middlemen). " +
-                       "2. Users can be Farmers, Buyers, or Fertilizer Suppliers (or all three). " +
-                       "3. Special Feature: Registered farmers get EXCLUSIVE DISCOUNTS on fertilizers. " +
-                       "4. Others can buy fertilizers at regular prices. " +
-                       "5. If they need more help, tell them to use the 'Ask Questions' feature within the system. " +
-                       "Keep answers brief and professional.";
-    } else {
+               "1. We bridge the gap between farmers and buyers for direct trade of fresh vegetables and fruits (No middlemen). " +
+               "2. Users can be Farmers, Buyers, or Fertilizer Suppliers (or all three). " +
+               "3. Pricing Logic: A 10% valuation fee is added to all fertilizer inventory before sale. " +
+               "4. Special Feature: This 10% fee is waived (reflected as an EXCLUSIVE DISCOUNT) for participating farmers who sell their own products within the system. " +
+               "5. Others buy fertilizers at the regular price inclusive of the 10% valuation. " +
+               "6. If they need more help, tell them to use the 'Ask Questions' feature within the system. " +
+               "Keep answers brief and professional.";} else {
         // Agriculture Expert Mode Prompt
         systemPrompt = "You are an AI Agriculture Expert. Provide advanced solutions for farming, pest control, and fertilizer use. " +
                        "IMPORTANT: You must start or end your response by stating that this is an 'AI-generated answer' for informational purposes. " +

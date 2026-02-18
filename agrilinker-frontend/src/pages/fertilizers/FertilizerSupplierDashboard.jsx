@@ -9,6 +9,16 @@ export default function FertilizerSupplierDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const getImageUrl = (imageUrl) => {
+  if (!imageUrl) return "https://via.placeholder.com/60";
+  
+  return encodeURI(
+    imageUrl.startsWith("http") 
+      ? imageUrl 
+      : `http://localhost:8081/${imageUrl.replace(/^.*uploads[\\/]/, "uploads/")}`
+  );
+};
+
   const fetchMyFertilizers = useCallback(async (email) => {
     try {
       const res = await axios.get("http://localhost:8081/api/fertilizers");
@@ -51,7 +61,8 @@ export default function FertilizerSupplierDashboard() {
             <h1 className="text-4xl font-extrabold text-gray-900 border-l-8 border-green-600 pl-4">
               Supplier Dashboard
             </h1>
-            <p className="text-gray-600 mt-1 ml-6">Manage your fertilizer inventory and stock levels.</p>
+            <p className="text-gray-600 mt-1 ml-6">Manage your fertilizer inventory and stock levels.
+                A 10% valuation is added to all fertilizer inventory before sale. This fee is waived for participating farmers who sell their products within the system, reflected as a 10% discount.</p>
           </div>
           
           <Link 
@@ -83,11 +94,14 @@ export default function FertilizerSupplierDashboard() {
                       <td className="p-6">
                         <div className="flex items-center gap-4">
                           <div className="relative">
-                            <img 
-                              src={f.imageUrl || "https://via.placeholder.com/60"} 
-                              alt={f.name} 
-                              className="w-14 h-14 object-cover rounded-xl shadow-sm border border-gray-100" 
-                            />
+                           <img 
+  src={getImageUrl(f.imageUrl)} 
+  alt={f.name} 
+  className="w-14 h-14 object-cover rounded-xl shadow-sm border border-gray-100" 
+  onError={(e) => { 
+    e.currentTarget.src = "https://via.placeholder.com/60"; 
+  }}
+/>
                             <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                           </div>
                           <div>
