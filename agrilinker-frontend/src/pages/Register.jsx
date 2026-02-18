@@ -168,24 +168,7 @@ export default function Register() {
                     </label>
                 </div>
 
-                {/* ✅ Fee Notice */}
-                <div
-                    style={{
-                        marginTop: "12px",
-                        padding: "10px 14px",
-                        background: "#f0fdf4",
-                        borderLeft: "4px solid #22c55e",
-                        color: "#065f46",
-                        fontSize: "14px",
-                        borderRadius: "6px",
-                        lineHeight: "1.5",
-                    }}
-                >
-                    <strong>Note:</strong> A 10% valuation is added to all fertilizer
-                    inventory before sale. This fee is waived for participating
-                    farmers who sell their products within the system and will be
-                    reflected as a 10% discount.
-                </div>
+
 
                 {error && (
                     <div className="error" style={{ marginTop: "10px" }}>
