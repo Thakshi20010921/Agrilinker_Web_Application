@@ -21,7 +21,7 @@ export default function AddFertilizer() {
 
   const [imageFile, setImageFile] = useState(null);
 
-  const handleChange = (e) => {
+  /*const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (["price", "stock", "quantityInside"].includes(name)) {
@@ -33,7 +33,28 @@ export default function AddFertilizer() {
     }
 
     setForm({ ...form, [name]: value });
-  };
+  };*/
+
+  //new added start
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  if (["price", "stock", "quantityInside"].includes(name)) {
+    
+    if (value.includes("-")) return;
+
+    if (name === "price" || name === "quantityInside") {
+     
+      if (!/^\d*\.?\d*$/.test(value)) return;
+    } else {
+    
+      if (!/^\d*$/.test(value)) return;
+    }
+  }
+
+  setForm({ ...form, [name]: value });
+};
+//new add end
 
   const handleFileChange = (e) => {
     setImageFile(e.target.files[0]);
@@ -41,6 +62,24 @@ export default function AddFertilizer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+// new add start
+    if (Number(form.price) <= 0) {
+    toast.error("Price must be greater than 0");
+    return;
+  }
+  
+  if (Number(form.stock) <= 0) {
+    toast.error("Stock quantity must be greater than 0");
+    return;
+  }
+  if (form.unit === "bag" || form.unit === "bottle") {
+      if (!form.quantityInside || Number(form.quantityInside) <= 0) {
+        const label = form.unit === "bag" ? "Weight per Bag" : "Volume per Bottle";
+        toast.error(`${label} must be greater than 0`);
+        return;
+      }
+    }
+  //new add end
 
     const requiredFields = [
       "name",
@@ -202,7 +241,7 @@ export default function AddFertilizer() {
             {(form.unit === "bag" || form.unit === "bottle") && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                 <label className="text-[11px] font-black uppercase text-green-600 ml-1 tracking-widest">Net Content (Kg/L)</label>
-                <input type="number" name="quantityInside"
+                <input type="number" step="any" name="quantityInside"
                   placeholder="e.g. 50"
                   className="w-full bg-green-50/30 border border-green-100 p-4 rounded-2xl focus:ring-4 focus:ring-green-100 transition-all outline-none font-bold text-green-700 shadow-sm"
                   onChange={handleChange} />

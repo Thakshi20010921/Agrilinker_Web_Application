@@ -33,8 +33,27 @@ export default function UpdateFertilizer() {
       .catch(() => toast.error("Failed to load fertilizer data"));
   }, [id]);
 
-  const handleChange = (e) => {
+  /*const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };*/
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (["price", "stock", "quantityInside"].includes(name)) {
+      
+      if (value.includes("-")) return;
+
+      if (name === "price" || name === "quantityInside") {
+        
+        if (!/^\d*\.?\d*$/.test(value)) return;
+      } else {
+       
+        if (!/^\d*$/.test(value)) return;
+      }
+    }
+
+    setForm({ ...form, [name]: value });
   };
 
   const handleFileUpload = async (e) => {
@@ -56,7 +75,24 @@ export default function UpdateFertilizer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    //new add start
+    if (Number(form.price) <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
+    if (Number(form.stock) <= 0) {
+      toast.error("Stock must be greater than 0");
+      return;
+    }
     
+    if (form.unit === "bag" || form.unit === "bottle") {
+    if (!form.quantityInside || Number(form.quantityInside) <= 0) {
+      const label = form.unit === "bag" ? "Weight per Bag" : "Volume per Bottle";
+      toast.error(`${label} must be greater than 0`);
+      return;
+    }
+  }
+    //new add close
     const finalData = {
       ...form,
       price: Number(form.price),
