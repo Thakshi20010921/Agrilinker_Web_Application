@@ -20,7 +20,7 @@ export default function ProtectedRoute({ allowedRoles = [], children }) {
     const { user, authReady } = useContext(AuthContext);
     const location = useLocation();
 
-    // ✅ Wait until localStorage restore is done
+    // Wait until localStorage restore is done
     if (!authReady) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center text-gray-600">

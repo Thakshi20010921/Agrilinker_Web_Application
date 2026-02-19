@@ -1,10 +1,10 @@
-// ✅ src/pages/IntroHome.jsx
+//  src/pages/IntroHome.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ChatBot from "../components/ChatBot";
 
-// ✅ assets (make sure these exist)
+//  assets (make sure these exist)
 import leafLeft from "../assets/leaf-left.png";
 import leafRight from "../assets/leaf-right.png";
 import basketBadge from "../assets/basket.png";
@@ -28,7 +28,7 @@ import {
 export default function IntroHome() {
   const navigate = useNavigate();
 
-  // ✅ staged loading:
+  // staged loading:
   // 0 = glass AGRI LINKER + basket only
   // 1 = leaves slide in
   // 2 = subtitle + button + 3 checks
@@ -55,13 +55,13 @@ export default function IntroHome() {
         {/* 🌿 subtle texture */}
         <div className="absolute inset-0 z-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/leaf.png')] pointer-events-none" />
 
-        {/* ✅ leaves appear after stage 1 */}
+        {/*  leaves appear after stage 1 */}
         {stage >= 1 && <LeafBackground />}
 
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-14 items-center relative z-10">
           {/* ================= LEFT CONTENT ================= */}
           <div className="relative">
-            {/* ✅ Glass AGRI LINKER (stage 0) */}
+            {/* Glass AGRI LINKER (stage 0) */}
             <motion.div
               initial={{ opacity: 0, y: 18, scale: 0.98 }}
               animate={stage >= 0 ? { opacity: 1, y: 0, scale: 1 } : {}}
@@ -83,7 +83,7 @@ export default function IntroHome() {
               </h1>
             </motion.div>
 
-            {/* ✅ subtitle (stage 2) */}
+            {/* subtitle (stage 2) */}
             <motion.p
               initial={{ opacity: 0, y: 14 }}
               animate={stage >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
@@ -95,7 +95,7 @@ export default function IntroHome() {
               chains.
             </motion.p>
 
-            {/* ✅ button (stage 2) */}
+            {/*  button (stage 2) */}
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={stage >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
@@ -111,7 +111,7 @@ export default function IntroHome() {
               </button>
             </motion.div>
 
-            {/* ✅ checks (stage 2) */}
+            {/*  checks (stage 2) */}
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={stage >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
@@ -159,7 +159,7 @@ export default function IntroHome() {
         </motion.div>
       </section>
 
-      {/* ✅ REST OF PAGE (stage 3) */}
+      {/* REST OF PAGE (stage 3) */}
       {stage >= 3 && (
         <>
           {/* ================= ROLES SECTION ================= */}
@@ -278,7 +278,7 @@ export default function IntroHome() {
   );
 }
 
-/* ✅ Leaves appear AFTER stage 1 */
+/* Leaves appear AFTER stage 1 */
 function LeafBackground() {
   return (
     <div className="absolute inset-0 z-[2] pointer-events-none">
@@ -586,8 +586,8 @@ function FeatureCard({ icon, title, description, color, highlighted = false }) {
   return (
     <div
       className={`p-10 rounded-[2.5rem] transition-all duration-300 border ${highlighted
-          ? "border-green-200 shadow-xl ring-4 ring-green-50"
-          : "border-gray-100 hover:border-green-200 hover:shadow-lg"
+        ? "border-green-200 shadow-xl ring-4 ring-green-50"
+        : "border-gray-100 hover:border-green-200 hover:shadow-lg"
         } ${color}`}
     >
       <div className="bg-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm mb-8">

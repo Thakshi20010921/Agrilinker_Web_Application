@@ -46,7 +46,7 @@ public class AiInquiryReplyService {
                 return callWithRetry(prompt);
         }
 
-        // ✅ Retry once on transient network errors (Connection reset, I/O error, etc.)
+        // Retry once on transient network errors (Connection reset, I/O error, etc.)
         private String callWithRetry(String prompt) {
                 int maxAttempts = 2;
 

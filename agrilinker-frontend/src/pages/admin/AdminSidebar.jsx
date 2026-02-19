@@ -3,7 +3,7 @@ import {
   BarChart3,
   LayoutDashboard,
   MessageSquareWarning,
-  MessageSquareMore,   // ✅ Added
+  MessageSquareMore,   //  Added
   Settings,
 } from "lucide-react";
 
@@ -19,7 +19,7 @@ const navigationItems = [
     Icon: BarChart3,
   },
   {
-    label: "Inquiries",                // ✅ Added
+    label: "Inquiries",                //  Added
     to: "/admin/inquiries",
     Icon: MessageSquareMore,
   },
@@ -73,14 +73,14 @@ export default function AdminSidebar({ isExpanded, onToggle }) {
               key={item.label}
               to={item.to}
               className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${isActive
-                  ? "bg-green-50 text-green-700"
-                  : "text-gray-600 hover:bg-gray-50"
+                ? "bg-green-50 text-green-700"
+                : "text-gray-600 hover:bg-gray-50"
                 }`}
             >
               <span
                 className={`flex h-10 w-10 items-center justify-center rounded-xl ${isActive
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-100 text-gray-500"
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-100 text-gray-500"
                   }`}
               >
                 <item.Icon size={20} />

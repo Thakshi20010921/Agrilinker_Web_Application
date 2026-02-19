@@ -38,7 +38,7 @@ public class UserProfileService {
         if (updates.getAddress() != null)
             u.setAddress(updates.getAddress());
 
-        // ❌ do NOT update email / password / roles here
+        // do NOT update email / password / roles here
         // email stays same
         // password stays same
         // roles should be admin-only

@@ -13,11 +13,11 @@ const ReviewModal = ({ item, type = "auto", userId, onClose, onSubmitted }) => {
       return;
     }
 
-    // ✅ Detect IDs safely from many possible field names
+    //  Detect IDs safely from many possible field names
     const detectedProductId = item?.productId || item?._id || item?.id || null;
     const detectedFertilizerId = item?.fertilizerId || item?.fid || item?.fertId || null;
 
-    // ✅ Resolve type:
+    
     // - if parent passes "product" or "fertilizer", use it
     // - otherwise auto-detect using fertilizerId presence
     const resolvedType =
@@ -27,10 +27,10 @@ const ReviewModal = ({ item, type = "auto", userId, onClose, onSubmitted }) => {
         ? "fertilizer"
         : "product";
 
-    // ✅ Resolve correct target id for payload
+   
     const targetId =
       resolvedType === "fertilizer"
-        ? (detectedFertilizerId || detectedProductId) // fallback if fertilizer uses _id
+        ? (detectedFertilizerId || detectedProductId) 
         : detectedProductId;
 
     if (!targetId) {
@@ -39,7 +39,7 @@ const ReviewModal = ({ item, type = "auto", userId, onClose, onSubmitted }) => {
       return;
     }
 
-    // ✅ Use real user id/email (you store email in localStorage)
+   
     const uid =
   userId ||
   localStorage.getItem("userId") ||
@@ -62,8 +62,7 @@ if (!uid) {
 
     setLoading(true);
     try {
-      // optional debug:
-      // console.log("Submitting review:", payload);
+  
 
       await axios.post("http://localhost:8081/api/reviews", payload);
 

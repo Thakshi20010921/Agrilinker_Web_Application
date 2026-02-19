@@ -125,7 +125,8 @@ export default function FertilizerList() {
           (f.name && f.name.toLowerCase().includes(text)) ||
           (f.category && f.category.toLowerCase().includes(text)) ||
           (f.type && f.type.toLowerCase().includes(text)) ||
-          (f.district && f.district.toLowerCase().includes(text))
+          (f.district && f.district.toLowerCase().includes(text))||
+          (f.description && f.description.toLowerCase().includes(text))
       );
     }
     if (categoryFilter) temp = temp.filter((f) => f.category === categoryFilter);

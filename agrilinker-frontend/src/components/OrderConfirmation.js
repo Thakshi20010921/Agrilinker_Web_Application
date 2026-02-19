@@ -13,7 +13,7 @@ const OrderConfirmation = () => {
   const total =
     typeof order?.totalAmount === "number" ? order.totalAmount : null;
 
-  // ✅ 1) ADD THIS FUNCTION (inside component, before return)
+  
   const downloadInvoice = async () => {
     const orderNumber = order?.orderNumber;
     if (!orderNumber) {
@@ -27,7 +27,7 @@ const OrderConfirmation = () => {
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // change if you store token elsewhere
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
@@ -112,7 +112,7 @@ const OrderConfirmation = () => {
           View My Orders
         </button>
 
-        {/* ✅ 2) ADD THIS BUTTON */}
+        
         {order?.orderNumber && (
           <button
             onClick={downloadInvoice}

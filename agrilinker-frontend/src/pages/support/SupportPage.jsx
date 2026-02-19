@@ -21,7 +21,7 @@ const initialFormState = {
   description: "",
 };
 
-// ✅ uses your new backend route
+// uses your new backend route
 const MY_TICKETS_ENDPOINT = "/api/support-tickets/my";
 
 const statusStyles = {
@@ -37,7 +37,7 @@ export default function SupportPage() {
   const [formState, setFormState] = useState(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ buyer message viewing states
+  // buyer message viewing states
   const [myTickets, setMyTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState("");
   const [ticketsLoading, setTicketsLoading] = useState(false);
@@ -67,18 +67,18 @@ export default function SupportPage() {
       const tickets = Array.isArray(res.data) ? res.data : [];
       setMyTickets(tickets);
 
-      // ✅ auto-select first ticket if none selected
+      // auto-select first ticket if none selected
       if (tickets.length && !selectedTicketId) {
         setSelectedTicketId(tickets[0].id);
       }
 
-      // ✅ if selected ticket no longer exists, select first
+      // if selected ticket no longer exists, select first
       if (tickets.length && selectedTicketId) {
         const stillExists = tickets.some((t) => t.id === selectedTicketId);
         if (!stillExists) setSelectedTicketId(tickets[0].id);
       }
 
-      // ✅ if no tickets, clear selection
+      //  if no tickets, clear selection
       if (!tickets.length) setSelectedTicketId("");
     } catch (err) {
       console.error(err);
@@ -108,7 +108,7 @@ export default function SupportPage() {
         resolutionPreference: formState.resolutionPreference,
         contactMethod: formState.contactMethod,
         description: formState.description.trim(),
-        // ✅ DO NOT send buyerEmail from frontend (backend sets it from JWT)
+        // DO NOT send buyerEmail from frontend (backend sets it from JWT)
       };
 
       await api.post("/api/support-tickets", payload);
@@ -125,7 +125,7 @@ export default function SupportPage() {
     }
   };
 
-  // ✅ helper: build whatsapp link with a prefilled message
+  //  helper: build whatsapp link with a prefilled message
   const getWhatsappLink = (ticket) => {
     const orderId = ticket?.orderId || formState.orderId || "";
     const ticketId = ticket?.id || "";
@@ -236,7 +236,7 @@ export default function SupportPage() {
               />
             </label>
 
-            {/* ✅ Evidence / WhatsApp section */}
+            {/* Evidence / WhatsApp section */}
             <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
               <p className="text-sm font-semibold text-green-800">
                 Need to send evidence?
@@ -317,8 +317,8 @@ export default function SupportPage() {
                     type="button"
                     onClick={() => setSelectedTicketId(t.id)}
                     className={`w-full rounded-2xl border px-4 py-4 text-left transition ${selectedTicketId === t.id
-                        ? "border-green-300 bg-green-50"
-                        : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
+                      ? "border-green-300 bg-green-50"
+                      : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
                       }`}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -358,7 +358,7 @@ export default function SupportPage() {
                   Admin messages
                 </p>
 
-                {/* ✅ evidence button for selected ticket */}
+                {/*  evidence button for selected ticket */}
                 {selectedTicket ? (
                   <a
                     href={getWhatsappLink(selectedTicket)}

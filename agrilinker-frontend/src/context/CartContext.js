@@ -8,12 +8,12 @@ export const CartProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [cart, setCart] = useState([]);
 
-  // ✅ Use ONLY the logged-in user from AuthContext
+  //  Use ONLY the logged-in user from AuthContext
   const USER_ID = user?.id || user?.userId || user?.email || null;
 
   const loadCart = async () => {
     if (!USER_ID) {
-      setCart([]); // ✅ not logged in -> empty cart
+      setCart([]); //  not logged in -> empty cart
       return;
     }
 
@@ -33,7 +33,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ✅ reload cart when user changes (login/logout)
+  //  reload cart when user changes (login/logout)
   useEffect(() => {
     loadCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps

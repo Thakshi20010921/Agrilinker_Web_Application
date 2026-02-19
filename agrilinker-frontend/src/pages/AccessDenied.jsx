@@ -6,7 +6,7 @@ export default function AccessDenied() {
     const location = useLocation();
     const from = location.state?.from;
 
-    // ✅ keep it clean (don't show raw path)
+    //  keep it clean (don't show raw path)
     const friendlyPageName = (() => {
         if (!from) return "this page";
         if (from.startsWith("/admin")) return "the admin area";
