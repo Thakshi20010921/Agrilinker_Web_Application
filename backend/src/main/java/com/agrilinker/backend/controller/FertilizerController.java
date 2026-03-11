@@ -24,9 +24,9 @@ public class FertilizerController {
     @Autowired
     private FertilizerService fertilizerService;
 
-    // ======================================================
+    
     // ✅ IMAGE UPLOAD ENDPOINT
-    // ======================================================
+ 
     @PostMapping("/upload-image")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
@@ -56,9 +56,8 @@ public class FertilizerController {
         }
     }
 
-    // ======================================================
     // ✅ CREATE FERTILIZER (With Supplier Email)
-    // ======================================================
+ 
     @PostMapping
     public ResponseEntity<Fertilizer> createFertilizer(
             @Valid @RequestBody FertilizerRequest request) {
@@ -83,18 +82,18 @@ public class FertilizerController {
                 fertilizerService.createFertilizer(fertilizer));
     }
 
-    // ======================================================
+   
     // ✅ GET FERTILIZERS BY SUPPLIER EMAIL (For Dashboard)
-    // ======================================================
+    
     @GetMapping("/supplier/{email}")
     public ResponseEntity<List<Fertilizer>> getFertilizersBySupplier(@PathVariable String email) {
         List<Fertilizer> list = fertilizerService.getFertilizersBySupplier(email);
         return ResponseEntity.ok(list);
     }
 
-    // ======================================================
+   
     // ✅ UPDATE FERTILIZER
-    // ======================================================
+  
     @PutMapping("/{id}")
     public ResponseEntity<Fertilizer> updateFertilizer(
             @PathVariable String id,
@@ -123,18 +122,16 @@ public class FertilizerController {
                 : ResponseEntity.notFound().build();
     }
 
-    // ======================================================
     // ✅ GET ALL FERTILIZERS (For Marketplace)
-    // ======================================================
+
     @GetMapping
 public ResponseEntity<List<Fertilizer>> getAllFertilizers(@RequestParam(required = false) String email) {
     
     return ResponseEntity.ok(fertilizerService.getAllFertilizersForUser(email));
 }
 
-    // ======================================================
     // ✅ GET FERTILIZER BY ID
-    // ======================================================
+  
     @GetMapping("/{id}")
     public ResponseEntity<Fertilizer> getFertilizerById(@PathVariable String id) {
         Fertilizer fertilizer = fertilizerService.getFertilizerById(id);
@@ -144,9 +141,8 @@ public ResponseEntity<List<Fertilizer>> getAllFertilizers(@RequestParam(required
                 : ResponseEntity.notFound().build();
     }
 
-    // ======================================================
+   
     // ✅ DELETE FERTILIZER
-    // ======================================================
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFertilizer(@PathVariable String id) {
         fertilizerService.deleteFertilizer(id);
