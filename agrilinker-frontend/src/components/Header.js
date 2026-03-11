@@ -1,0 +1,125 @@
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
+import { AuthContext } from "../context/AuthContext";
+import { FaShoppingCart } from "react-icons/fa";
+import UserMenu from "./UserMenu";
+import NotificationBell from "./NotificationBell";
+
+// role helpers
+const normalizeRole = (role) =>
+  String(role || "")
+    .toUpperCase()
+    .replace(/^ROLE_/, "")
+    .replace(/[\s_-]/g, "");
+
+const hasRole = (roles, targetRole) =>
+  Array.isArray(roles) &&
+  roles.some((role) => normalizeRole(role) === normalizeRole(targetRole));
+
+function Header() {
+  const { cart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
+
+  const roles = user?.roles || [];
+
+  // ✅ Only Buyer or Admin can see Support
+  const canViewSupport = hasRole(roles, "BUYER") || hasRole(roles, "ADMIN");
+
+  // Farmer Hub → Farmer or Supplier
+  const canViewFarmerHub =
+    hasRole(roles, "FARMER") || hasRole(roles, "FERTILIZERSUPPLIER");
+
+  // total quantity
+  const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+
+  return (
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-md flex items-center justify-between px-8 py-6">
+      {/* Logo */}
+      <div className="flex items-center space-x-3">
+        <span className="rounded-full bg-white p-2 shadow-md">
+          <span className="text-green-700 text-2xl font-extrabold">A</span>
+        </span>
+        <Link
+          to="/"
+          className="text-white text-3xl font-extrabold tracking-wide drop-shadow-lg"
+        >
+          AgriLinker
+        </Link>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex space-x-8">
+        <Link
+          to="/home"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+        >
+          Home
+        </Link>
+
+        <Link
+          to="/marketplace"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+        >
+          Marketplace
+        </Link>
+
+        <Link
+          to="/fertilizers"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+        >
+          Fertilizers
+        </Link>
+
+        {/* ✅ Show only for Buyer & Admin */}
+        {canViewSupport && (
+          <Link
+            to="/support"
+            className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+          >
+            Support
+          </Link>
+        )}
+
+        {canViewFarmerHub && (
+          <Link
+            to="/farmer/FarmerHub"
+            className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+          >
+            Farmer Hub
+          </Link>
+        )}
+
+        {/* Contact Us visible for all */}
+        <Link
+          to="/contact-us"
+          className="text-white text-lg font-semibold px-3 py-2 rounded hover:bg-green-900 hover:text-green-300 transition"
+        >
+          Contact Us
+        </Link>
+      </nav>
+
+      {/* Right side */}
+      <div className="flex items-center space-x-4">
+        <NotificationBell />
+
+        <Link
+          to="/cart"
+          className="relative text-white text-3xl hover:text-green-300 hover:scale-110 transition"
+        >
+          <FaShoppingCart />
+
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-3 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+              {cartCount}
+            </span>
+          )}
+        </Link>
+
+        <UserMenu />
+      </div>
+    </header>
+  );
+}
+
+export default Header;
